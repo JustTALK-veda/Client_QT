@@ -15,10 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(label);
 
     coord = new Coordinate();
-    QString url = "rtsp://192.168.0.60:8554/test";
+    QString url = "rtsp://192.168.0.85:8554/test";
 
     videoThread = new VideoThread(url, label, coord);
-    tcpThread = new TcpThread(coord, "192.168.0.60", 12345);
+    tcpThread = new TcpThread(coord, "192.168.0.171", 12345);
 
     videoThread->start();
     tcpThread->start();
@@ -28,7 +28,7 @@ MainWindow::~MainWindow() {
     videoThread->stop();
     videoThread->wait();
 
-    tcpThread->requestInterruption();  // ✅ 안전한 종료 요청
+    tcpThread->requestInterruption();
     tcpThread->wait();
 
     delete videoThread;

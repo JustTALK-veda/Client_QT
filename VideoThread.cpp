@@ -3,9 +3,12 @@
 #include <QPixmap>
 #include <QMetaObject>
 #include <QDebug>
-#include <opencv2/opencv.hpp>  // Mat 사용 위해 유지
+#include <opencv2/opencv.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include "Coordinate.h"
+#include <vector>
+#include <QMutexLocker>
 
 using namespace cv;
 
@@ -35,6 +38,7 @@ void VideoThread::run() {
     GstElement* sink = gst_bin_get_by_name(GST_BIN(pipeline), "mysink");
     if (!sink) {
         qDebug() << "[VideoThread] appsink 핸들 가져오기 실패";
+        gst_object_unref(pipeline);
         return;
     }
 
@@ -74,35 +78,32 @@ void VideoThread::run() {
         gst_buffer_unmap(buffer, &map);
         gst_sample_unref(sample);
 
-        // 좌표값 읽기
-        int x = 0, y = 0;
+        // 메타데이터 읽기
+
+        std::vector<int> width_data;
+        int speaker_num = 0;
+
         if (m_coord) {
             m_coord->mutex.lock();
-            x = m_coord->x;
-            y = m_coord->y;
+
+            width_data.clear();
+            width_data.reserve(m_coord->width_data.size());
+            for (int w : m_coord->width_data) width_data.push_back(w);
+            speaker_num = m_coord->speaker_num;
             m_coord->mutex.unlock();
         }
 
-        qDebug() << "[VideoThread] 좌표 x =" << x << ", frame width =" << width;
+        // 로그 출력
+        QString width_info = width_data.size() >= 2
+                                 ? QString("%1, %2").arg(width_data[0]).arg(width_data[1])
+                                 : "비어있음";
 
-        int pixels_per_cm = 37;
-        int crop_half = 3 * pixels_per_cm;
+        qDebug() << "[VideoThread]"
+                 << ", width_data =" << width_info
+                 << ", speaker_num =" << speaker_num;
 
-        int roi_x = std::max(0, x - crop_half);
-        int roi_w = std::min(crop_half * 2, copy.cols - roi_x);
-
-        if (roi_w <= 0 || roi_x + roi_w > copy.cols) {
-            qDebug() << "[VideoThread] ROI 오류: roi_x =" << roi_x << ", roi_w =" << roi_w;
-            continue;
-        }
-
-        cv::Mat cropped = copy(Rect(roi_x, 0, roi_w, copy.rows)).clone();
-        if (cropped.empty()) {
-            qDebug() << "[VideoThread] 잘린 영상이 비어 있음";
-            continue;
-        }
-
-        QImage img(cropped.data, cropped.cols, cropped.rows, cropped.step, QImage::Format_BGR888);
+        // 영상 그대로 출력
+        QImage img(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
         if (img.isNull()) {
             qDebug() << "[VideoThread] QImage 생성 실패";
             continue;

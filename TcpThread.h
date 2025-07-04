@@ -7,7 +7,7 @@
 class TcpThread : public QThread {
     Q_OBJECT
 public:
-    TcpThread(Coordinate* coord, const QString& ip, int port);  // ✅ 생성자 선언
+    TcpThread(Coordinate* coord, const QString& ip, int port);
     void run() override;
 
 private:

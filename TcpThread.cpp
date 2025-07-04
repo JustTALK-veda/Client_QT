@@ -1,33 +1,68 @@
 #include "TcpThread.h"
-#include <QStringList>
+#include <QTcpSocket>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QDebug>
+#include "Coordinate.h"
+#include <QVector>
+TcpThread::TcpThread(Coordinate* coord, const QString& ip, int port)
+    : m_coord(coord), m_ip(ip), m_port(port) {}
 
 void TcpThread::run() {
     QTcpSocket socket;
-    socket.connectToHost("192.168.0.60",8554);  // IP 및 포트 조정
+    socket.connectToHost(m_ip, m_port);
 
     if (!socket.waitForConnected(3000)) {
-        qDebug() << "[TcpThread] 연결 실패";
+        qDebug() << "[TcpThread] 연결 실패:" << socket.errorString();
         return;
     }
-       qDebug() << "[TcpThread] 연결 성공";
+    qDebug() << "[TcpThread] 연결 성공";
+
     while (true) {
         if (socket.waitForReadyRead(1000)) {
             QByteArray data = socket.readAll();
-            QString str = QString::fromUtf8(data).trimmed();
-            QStringList parts = str.split(",");
+            QJsonParseError parseError;
+            QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
 
-            if (parts.size() >= 2) {
-                int x = parts[0].toInt();
-                int y = parts[1].toInt();
-
-                m_coord->mutex.lock();
-                m_coord->x = x;
-                m_coord->y = y;
-                m_coord->mutex.unlock();
-
-                qDebug() << "[TcpThread] 받은 좌표:" << x << y;
+            if (parseError.error != QJsonParseError::NoError) {
+                qDebug() << "[TcpThread] JSON 파싱 실패:" << parseError.errorString();
+                continue;
             }
+            if (!doc.isObject()) {
+                qDebug() << "[TcpThread] JSON이 객체 형식이 아님";
+                continue;
+            }
+
+            QJsonObject obj = doc.object();
+
+            // 1) width_data 파싱
+            std::vector<int> parsedWidths;
+            if (obj.contains("parsing width") && obj["parsing width"].isArray()) {
+                QJsonArray arr = obj["parsing width"].toArray();
+                parsedWidths.reserve(arr.size());
+                for (const QJsonValue& v : arr) {
+                    parsedWidths.push_back(v.toInt());
+                }
+            }
+
+            // 2) speaker_num 파싱
+            int parsedSpeaker = obj.value("speaker").toInt();
+
+            // 3) 공유 구조체에 저장 (뮤텍스 잠금)
+            {
+                QMutexLocker locker(&m_coord->mutex);
+                  QVector<int> qWidths;
+                  qWidths.reserve(parsedWidths.size());
+                   for (int w : parsedWidths) qWidths.append(w);
+                   m_coord->width_data = qWidths;
+                   m_coord->speaker_num = parsedSpeaker;
+            }
+            qDebug() << "[TcpThread] updated width_data:" << m_coord->width_data
+                     << ", speaker_num:" << parsedSpeaker;
         }
+
+        // 스레드 중단 요청 처리
         if (QThread::currentThread()->isInterruptionRequested()) {
             break;
         }
@@ -36,4 +71,3 @@ void TcpThread::run() {
     socket.disconnectFromHost();
     qDebug() << "[TcpThread] 종료";
 }
-
