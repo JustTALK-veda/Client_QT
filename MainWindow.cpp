@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <QVBoxLayout>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), videoThread(nullptr), tcpThread(nullptr) {
@@ -15,10 +16,23 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(label);
 
     coord = new Coordinate();
-    QString url = "rtsp://192.168.0.85:8554/test";
+    // Read RTSP URL from config/rpi_ip (fallback to default on error)
+    QString ip;
+    QString rtsp_url;
+    QFile cfgFile("config/rpi_ip");
+    if (cfgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&cfgFile);
+        ip = in.readLine().trimmed();
+        cfgFile.close();
+    } else {
+        qWarning() << "Could not open config/rpi_ip, using default IP";
+        ip = "192.168.0.30";
+    }
 
-    videoThread = new VideoThread(url, label, coord);
-    tcpThread = new TcpThread(coord, "192.168.0.171", 12345);
+    rtsp_url = QString("rtsp://%1:8554/test").arg(ip);
+
+    videoThread = new VideoThread(rtsp_url, label, coord);
+    tcpThread = new TcpThread(coord, ip, 12345);
 
     videoThread->start();
     tcpThread->start();
