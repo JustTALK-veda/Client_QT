@@ -7,7 +7,6 @@
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include "Coordinate.h"
-#include <vector>
 #include <QMutexLocker>
 
 using namespace cv;
@@ -60,64 +59,64 @@ void VideoThread::run() {
         }
 
         GstBuffer* buffer = gst_sample_get_buffer(sample);
-        GstCaps* caps = gst_sample_get_caps(sample);
-        GstStructure* s = gst_caps_get_structure(caps, 0);
-
-        int width = 0, height = 0;
-        gst_structure_get_int(s, "width", &width);
-        gst_structure_get_int(s, "height", &height);
-
         GstMapInfo map;
         if (!gst_buffer_map(buffer, &map, GST_MAP_READ)) {
             gst_sample_unref(sample);
             continue;
         }
 
-        cv::Mat mat(height, width, CV_8UC3, (char*)map.data);
-        cv::Mat copy = mat.clone();
+        int width = 0, height = 0;
+        GstCaps* caps = gst_sample_get_caps(sample);
+        GstStructure* s = gst_caps_get_structure(caps, 0);
+        gst_structure_get_int(s, "width", &width);
+        gst_structure_get_int(s, "height", &height);
+        Mat mat(height, width, CV_8UC3, (char*)map.data);
+        Mat copy = mat.clone();
+
         gst_buffer_unmap(buffer, &map);
         gst_sample_unref(sample);
 
-        // 메타데이터 읽기
-
-        std::vector<int> width_data;
-        int speaker_num = 0;
-
-        if (m_coord) {
-            m_coord->mutex.lock();
-
-            width_data.clear();
-            width_data.reserve(m_coord->width_data.size());
-            for (int w : m_coord->width_data) width_data.push_back(w);
-            speaker_num = m_coord->speaker_num;
-            m_coord->mutex.unlock();
-        }
-
-        // 로그 출력
-        QString width_info = width_data.size() >= 2
-                                 ? QString("%1, %2").arg(width_data[0]).arg(width_data[1])
-                                 : "비어있음";
-
-        qDebug() << "[VideoThread]"
-                 << ", width_data =" << width_info
-                 << ", speaker_num =" << speaker_num;
-
-        // 영상 그대로 출력
-        QImage img(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
-        if (img.isNull()) {
+        QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
+        if (fullImg.isNull()) {
             qDebug() << "[VideoThread] QImage 생성 실패";
             continue;
         }
+        QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
 
-        QPixmap pix = QPixmap::fromImage(img.rgbSwapped());
 
-        if (m_label) {
-            QMetaObject::invokeMethod(m_label, [=]() {
-                m_label->setPixmap(pix);
-            }, Qt::QueuedConnection);
+        QVector<QRect> cropRects;
+        if(m_coord)
+        {   QMutexLocker locker(&m_coord->mutex);
+            const auto& qv = m_coord->width_data;
+            int count = qv.size() / 4;
+            for (int i = 0; i < count; ++i) {
+                int x = qv[4*i + 0];
+                int y = qv[4*i + 1];
+                int w = qv[4*i + 2];
+                int h = qv[4*i + 3];
+                cropRects.append(QRect(x, y, w, h));
+            }
+        }
+        // 각 영역을 크롭하고 QLabel에 모두 표시
+        for (int i = 0; i < cropRects.size(); ++i) {
+            const QRect& rect = cropRects[i];
+
+            int x = std::clamp(rect.x(), 0, fullPix.width() - 1);
+            int y = std::clamp(rect.y(), 0, fullPix.height() - 1);
+            int w = std::clamp(rect.width(), 1, fullPix.width() - x);
+            int h = std::clamp(rect.height(), 1, fullPix.height() - y);
+            QRect roiRect(x, y, w, h);
+
+            QPixmap croppedPix = fullPix.copy(roiRect);
+            qDebug() << "[VideoThread] emit cropped area" << i << ":" << roiRect;
+
+            // invokeMethod 대신신호로 대체
+            emit cropped(i, croppedPix);
         }
     }
 
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);
 }
+
+
