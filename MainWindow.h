@@ -23,6 +23,9 @@ private:
     VideoThread* videoThread;
     TcpThread* tcpThread;
     Coordinate* coord;
+    
+    // JSON 설정 읽기 함수
+    bool loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort);
 
 private slots:
     void onCropped(int index,const QPixmap &pix);
