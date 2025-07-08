@@ -54,6 +54,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(mytest_cut
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        config/rpi_ip.json
     # qt_add_executable(mytest_cut
     #       ${PROJECT_SOURCES}
     )
@@ -80,6 +81,12 @@ if(APPLE) #apple설정
         COMMAND codesign --force --deep --sign - "${CMAKE_BINARY_DIR}/mytest_cut.app"
     )
 endif()
+
+add_custom_command(TARGET mytest_cut POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_SOURCE_DIR}/config
+          $<TARGET_FILE_DIR:mytest_cut>/config
+)
 
 target_link_libraries(mytest_cut PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${GST_LIBRARIES} ${GSTREAMER_APP_LIBRARIES}) #${GST_LIBRARIES} 이거 추가
 target_link_libraries(mytest_cut PRIVATE ${OpenCV_LIBS})
