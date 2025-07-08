@@ -29,3 +29,15 @@
 
 5. **CMakeLists.txt**  
    * 프로젝트의 빌드 방법을 정의하는 파일입니다.  
+
+# 설정파일
+- /config/rpi_ip.json
+```json
+[
+   {
+      "ip": "192.168.0.30", 
+      "rtsp_port": 8554, 
+      "tcp_port": 12345
+   }
+]
+```
