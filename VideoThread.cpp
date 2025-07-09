@@ -9,8 +9,6 @@
 #include "Coordinate.h"
 #include <QMutexLocker>
 
-using namespace cv;
-
 VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord)
     : m_url(url), m_label(label), m_coord(coord), m_stop(false) {}
 
@@ -23,19 +21,24 @@ void VideoThread::run() {
 
     QString pipelineStr = QString(
                               "rtspsrc location=%1 latency=100 ! "
-                              "decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink"
+                              "decodebin ! "
+                              "videoconvert ! "
+                              "video/x-raw,format=RGB !"
+                              "appsink name=mysink"
                               ).arg(m_url);
 
     qDebug() << "[VideoThread] pipeline =" << pipelineStr;
 
     GstElement* pipeline = gst_parse_launch(pipelineStr.toStdString().c_str(), nullptr);
-    if (!pipeline) {
+    if (!pipeline) 
+    {
         qDebug() << "[VideoThread] 파이프라인 생성 실패";
         return;
     }
 
     GstElement* sink = gst_bin_get_by_name(GST_BIN(pipeline), "mysink");
-    if (!sink) {
+    if (!sink) 
+    {
         qDebug() << "[VideoThread] appsink 핸들 가져오기 실패";
         gst_object_unref(pipeline);
         return;
@@ -51,16 +54,23 @@ void VideoThread::run() {
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     qDebug() << "[VideoThread] 파이프라인 재생 시작";
 
-    while (!m_stop) {
+    while (!m_stop) 
+    {
+        qDebug() << "[VideoThread] sample 수신 대기 중";
+
         GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
-        if (!sample) {
+        if (!sample) 
+        {
             qDebug() << "[VideoThread] sample 수신 실패";
             continue;
         }
+        qDebug() << "[VideoThread] sample 수신 성공";
 
         GstBuffer* buffer = gst_sample_get_buffer(sample);
         GstMapInfo map;
-        if (!gst_buffer_map(buffer, &map, GST_MAP_READ)) {
+        if (!gst_buffer_map(buffer, &map, GST_MAP_READ)) 
+        {
+            qDebug() << "[VideoThread] 버퍼 매핑 실패";
             gst_sample_unref(sample);
             continue;
         }
@@ -70,26 +80,31 @@ void VideoThread::run() {
         GstStructure* s = gst_caps_get_structure(caps, 0);
         gst_structure_get_int(s, "width", &width);
         gst_structure_get_int(s, "height", &height);
-        Mat mat(height, width, CV_8UC3, (char*)map.data);
-        Mat copy = mat.clone();
+
+        qDebug() << "[VideoThread] width =" << width << ", height =" << height;
+        
+        cv::Mat mat(height, width, CV_8UC3, (char*)map.data);
+        cv::Mat copy = mat.clone();
 
         gst_buffer_unmap(buffer, &map);
         gst_sample_unref(sample);
 
         QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
-        if (fullImg.isNull()) {
+        if (fullImg.isNull()) 
+        {
             qDebug() << "[VideoThread] QImage 생성 실패";
             continue;
         }
         QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
 
-
         QVector<QRect> cropRects;
         if(m_coord)
-        {   QMutexLocker locker(&m_coord->mutex);
+        {   
+            QMutexLocker locker(&m_coord->mutex);
             const auto& qv = m_coord->width_data;
             int count = qv.size() / 4;
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < count; ++i) 
+            {
                 int x = qv[4*i + 0];
                 int y = qv[4*i + 1];
                 int w = qv[4*i + 2];
@@ -97,8 +112,15 @@ void VideoThread::run() {
                 cropRects.append(QRect(x, y, w, h));
             }
         }
+        if (cropRects.isEmpty()) 
+        {
+            qDebug() << "[VideoThread] 크롭 영역이 설정되지 않았습니다.";
+            emit cropped(0, fullPix); // 전체 이미지를 기본으로 emit
+            continue;
+        }
         // 각 영역을 크롭하고 QLabel에 모두 표시
-        for (int i = 0; i < cropRects.size(); ++i) {
+        for (int i = 0; i < cropRects.size(); ++i) 
+        {
             const QRect& rect = cropRects[i];
 
             int x = std::clamp(rect.x(), 0, fullPix.width() - 1);
@@ -115,6 +137,8 @@ void VideoThread::run() {
         }
     }
 
+    qDebug() << "[VideoThread] 스레드 종료 요청됨";
+    
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);
 }
