@@ -1,11 +1,6 @@
-// MainWindow.cpp
+
 
 #include "MainWindow.h"
-#include "VideoThread.h"
-#include "TcpThread.h"
-#include "Coordinate.h"
-
-#include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>

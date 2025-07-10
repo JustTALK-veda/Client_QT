@@ -8,6 +8,7 @@
 #include <gst/app/gstappsink.h>
 #include "Coordinate.h"
 #include <QMutexLocker>
+#include <QPainter>
 
 VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord)
     : m_url(url), m_label(label), m_coord(coord), m_stop(false) {}
@@ -98,6 +99,7 @@ void VideoThread::run() {
         QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
 
         QVector<QRect> cropRects;
+
         if(m_coord)
         {   
             QMutexLocker locker(&m_coord->mutex);
@@ -119,7 +121,12 @@ void VideoThread::run() {
             continue;
         }
         // 각 영역을 크롭하고 QLabel에 모두 표시
-        for (int i = 0; i < cropRects.size(); ++i) 
+
+        int angle = 359;
+        int px = (angle * fullPix.width()) / 360;
+        qDebug() << "각도:" << angle << "픽셀 위치(px):" << px;
+
+        for (int i = 0; i < cropRects.size(); ++i)
         {
             const QRect& rect = cropRects[i];
 
@@ -131,6 +138,18 @@ void VideoThread::run() {
 
             QPixmap croppedPix = fullPix.copy(roiRect);
             qDebug() << "[VideoThread] emit cropped area" << i << ":" << roiRect;
+
+            //하이라이팅
+
+            if (px >= x && px < x + w) {
+                qDebug() << "테두리 그리기 시작";
+                QPainter painter(&croppedPix);
+                painter.setPen(QPen(Qt::blue, 5));  // 파란색, 두께 5px 테두리
+                painter.setBrush(Qt::NoBrush);     // 채우지 않음
+                painter.drawRect(0, 0, w - 1, h - 1); // 크롭된 영역에 테두리 그리기
+                painter.end();  // QPainter 종료ㄱ
+                qDebug() << "테두리 그리기 완료";
+            }
 
             // invokeMethod 대신신호로 대체
             emit cropped(i, croppedPix);
