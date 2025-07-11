@@ -5,7 +5,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-#include <QDebug>
+#include <QApplication> // 화면 비율 맞추기
+#include <QScreen> // 화면 비율 맞추기
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,10 +16,26 @@ MainWindow::MainWindow(QWidget *parent)
     , coord(nullptr)
 {
     auto central = new QWidget(this);
-    layout = new QHBoxLayout(central);
+    layout = new QGridLayout(central);
     setCentralWidget(central);
 
     coord = new Coordinate();
+
+    layout->setSpacing(0);  // 그리드 셀 간의 간격을 없앰
+
+    const int rowCount = 4;
+    const int colCount = 4;
+
+    for (int i = 0; i < rowCount; ++i) {
+        for (int j = 0; j < colCount; ++j) {
+            QLabel* label = new QLabel(this);
+            label->setStyleSheet("background-color: rgba(169, 169, 169, 0.5);");
+            label->setAlignment(Qt::AlignCenter);
+            label->setFixedSize(480, 360);  // 크기를 고정
+            layout->addWidget(label, i, j);  // 그리드에 배치
+            labels.append(label);
+        }
+    }
 
     // JSON 파일에서 설정 읽기
     QString ip;
@@ -60,16 +78,27 @@ MainWindow::~MainWindow() {
 
 void MainWindow::onCropped(int index, const QPixmap &pix) {
     // 새로운 index면 QLabel 생성
-    if (index >= labels.size()) {
-        auto lbl = new QLabel;
-        lbl->setStyleSheet("background-color:black;");
-        lbl->setScaledContents(true);
-        layout->addWidget(lbl);
-        labels.append(lbl);
-    }
-    // 해당 QLabel에 pixmap 설정
-    labels[index]->setPixmap(pix);
-    //labels[index]->setFixedSize(pix.size()); 고정 크기 없애기
+    // if (index >= labels.size()) {
+    //     auto lbl = new QLabel;
+    //     lbl->setStyleSheet("background-color:black;");
+    //     lbl->setScaledContents(true);
+    //     layout->addWidget(lbl);
+    //     labels.append(lbl);
+    // }
+
+    // //<화면 비율 맞추기 test>
+    // // 화면 크기 가져오기
+    // QSize screenSize = qApp->primaryScreen()->size();
+
+    // // QLabel 크기를 화면 크기에 맞게 설정
+    // labels[index]->resize(screenSize.width(), screenSize.height());
+    // // 해당 QLabel에 pixmap 설정
+     if (index < labels.size()) {
+         labels[index]->resize(pix.size());
+         labels[index]->setPixmap(pix.scaled(labels[index]->size(), Qt::KeepAspectRatio));
+     }
+   // labels[index]->setPixmap(pix);
+//     labels[index]->setPixmap(pix.scaled(labels[index]->size(), Qt::KeepAspectRatio));
 }
 
 bool MainWindow::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {

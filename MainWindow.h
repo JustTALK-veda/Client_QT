@@ -19,7 +19,7 @@ public:
 
 private:
     QVector<QLabel*> labels;
-    QHBoxLayout *layout;
+    QGridLayout *layout;
     VideoThread* videoThread;
     TcpThread* tcpThread;
     Coordinate* coord;
