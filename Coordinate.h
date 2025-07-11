@@ -5,10 +5,10 @@
 #include <QVector>
 
 struct Coordinate {
-    int x = 0;
-    int y = 0;
+    //int x = 0;
+    //int y = 0;
     QVector<int> width_data; // server에서 받아오는 값
-    int speaker_num = 0;//server에서 받아오는 값2
+    int angles; // 마이크 각도 값
     QMutex mutex;
 };
 

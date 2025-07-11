@@ -44,6 +44,8 @@ void TcpThread::run() {
             // width_data 파싱
             std::vector<int> parsedWidths;
 
+           // std::vector<int> parseAngles;
+
             if (obj.contains("parsing width") && obj["parsing width"].isArray()) {
                 QJsonArray arr = obj["parsing width"].toArray();
                 parsedWidths.reserve(arr.size());
@@ -52,8 +54,24 @@ void TcpThread::run() {
                 }
             }
 
+            // if (obj.contains("angle") && obj["angle"].toInt()) {
+            //     int parsedAngle = obj["angle"].toInt();
+            //     m_coord->angles = parsedAngle;  // angle 값을 저장
+            //     qDebug() << "[TcpThread] 받은 angle 값:" << m_coord->angles;
+            // }
+
+
+            qDebug() << "[TcpThread] 받은 width_data:" << parsedWidths;
+            // if (obj.contains("parseAngles") && obj["parseAngles"].isArray()) {
+            //     QJsonArray arr = obj["parseAngles"].toArray();
+            //     parsedWidths.reserve(arr.size());
+            //     for (const QJsonValue& v : arr) {
+            //         parseAngles.push_back(v.toInt());
+            //     }
+            // }
             //speaker_num 파싱
-            int parsedSpeaker = obj.value("speaker").toInt();
+           // int parsedSpeaker = obj.value("speaker").toInt();
+
 
             //공유 구조체에 저장 (뮤텍스 잠금)
             {
@@ -61,11 +79,24 @@ void TcpThread::run() {
                 QVector<int> qWidths;
                 qWidths.reserve(parsedWidths.size());
                 for (int w : parsedWidths) qWidths.append(w);
+                // QVector<int> qAngles;
+                // qAngles.reserve(parseAngles.size());
+                // for (int angle : parseAngles) {
+                //     qAngles.append(angle);
+                // }
+                if (obj.contains("angle") && obj["angle"].toInt()) {
+                    int parsedAngle = obj["angle"].toInt();
+                    m_coord->angles = parsedAngle;  // angle 값 저장
+
+                }
+
                 m_coord->width_data = qWidths;
-                m_coord->speaker_num = parsedSpeaker;
+
+                //m_coord->speaker_num = parsedSpeaker;
+                //m_coord->angles = qAngles;
             }
             qDebug() << "[TcpThread] updated width_data:" << m_coord->width_data
-                     << ", speaker_num:" << parsedSpeaker;
+                     << ",angles값:" << m_coord->angles;
         }
 
         // 스레드 중단 요청 처리

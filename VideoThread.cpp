@@ -114,17 +114,16 @@ void VideoThread::run() {
                 cropRects.append(QRect(x, y, w, h));
             }
         }
+
         if (cropRects.isEmpty()) 
         {
             qDebug() << "[VideoThread] 크롭 영역이 설정되지 않았습니다.";
             emit cropped(0, fullPix); // 전체 이미지를 기본으로 emit
             continue;
         }
-        // 각 영역을 크롭하고 QLabel에 모두 표시
 
-        int angle = 359;
-        int px = (angle * fullPix.width()) / 360;
-        qDebug() << "각도:" << angle << "픽셀 위치(px):" << px;
+
+
 
         for (int i = 0; i < cropRects.size(); ++i)
         {
@@ -140,6 +139,11 @@ void VideoThread::run() {
             qDebug() << "[VideoThread] emit cropped area" << i << ":" << roiRect;
 
             //하이라이팅
+            //잘 받아오는지 확인
+            int px = m_coord->angles;
+            px=(px*fullPix.width()) / 360;
+
+            qDebug() << "테두리용 angles값 : "<<  m_coord->angles;;
 
             if (px >= x && px < x + w) {
                 qDebug() << "테두리 그리기 시작";
