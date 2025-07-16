@@ -55,6 +55,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         config/rpi_ip.json
+        lobby.h lobby.cpp
 
     # qt_add_executable(mytest_cut
     #       ${PROJECT_SOURCES}

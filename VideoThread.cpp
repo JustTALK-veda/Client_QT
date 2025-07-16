@@ -148,19 +148,19 @@ void VideoThread::run() {
             int cx = wdata[4*i + 0];
             int cy = wdata[4*i + 1];
             // 너비·높이 w,h = wdata[4*i+2], wdata[4*i+3] 은 무시하고
-            // 항상 W×H 로 자르고 싶다면 아래처럼:
+            // 항상 W×H 로 자르고 싶음 아래
             int x0 = std::clamp(cx - W/2, 0, fullW - W);
             int y0 = std::clamp(cy - H/2, 0, fullH - H);
 
             QRect roi(x0, y0, W, H);
             QPixmap pix = fullPix.copy(roi);
 
-            // (옵션) 테두리
-            QPainter p(&pix);
-            p.setPen(QPen(Qt::blue,3));
-            p.setBrush(Qt::NoBrush);
-            p.drawRect(0,0,W-1,H-1);
-            p.end();
+            // // (옵션) 테두리
+            // QPainter p(&pix);
+            // p.setPen(QPen(Qt::blue,3));
+            // p.setBrush(Qt::NoBrush);
+            // p.drawRect(0,0,W-1,H-1);
+            // p.end();
 
             crops.emplace_back(x0, std::move(pix));
         }
