@@ -7,6 +7,7 @@
 #include "Coordinate.h"
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include <QElapsedTimer>
 
 class VideoThread : public QThread {
     Q_OBJECT
@@ -27,6 +28,9 @@ private:
     QLabel* m_label;
     Coordinate* m_coord;
     bool m_stop;
+    QElapsedTimer fpsTimer;   // FPS 측정용 타이머
+    int fpsFrameCount = 0;    // 프레임 카운터
+    QVector<int>prevX;
 };
 
 #endif // VIDEOTHREAD_H

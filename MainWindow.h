@@ -9,6 +9,7 @@
 #include "TcpThread.h"
 #include "Coordinate.h"
 #include <QHBoxLayout>
+#include <QScrollArea>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,7 +24,9 @@ private:
     VideoThread* videoThread;
     TcpThread* tcpThread;
     Coordinate* coord;
-    
+    QScrollArea *scroll;
+    QWidget *container;
+
     // JSON 설정 읽기 함수
     bool loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort);
 
