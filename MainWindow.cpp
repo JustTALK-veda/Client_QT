@@ -19,6 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *central = new QWidget(this);
     setCentralWidget(central);
     auto *mainLayout = new QVBoxLayout(central);
+
+    panoLabel = new QLabel;
+    panoLabel->setMinimumHeight(200);                       // 원하시는 높이로
+    panoLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(panoLabel);                       // 맨 위에 추가
+
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->setSpacing(5);
 
@@ -82,6 +88,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QString rtspUrl = QString("rtsp://%1:%2/test").arg(ip).arg(rtspPort);
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
+    connect(videoThread, &VideoThread::fullFrame,
+            this,       &MainWindow::updatePano,
+            Qt::QueuedConnection);
     bool ok = connect(videoThread, &VideoThread::cropped,
             this,       &MainWindow::onCropped,
             Qt::QueuedConnection);
@@ -90,6 +99,13 @@ MainWindow::MainWindow(QWidget *parent)
     videoThread->start();
 
 
+}
+// 슬롯 정의
+void MainWindow::updatePano(const QPixmap &pix) {
+    panoLabel->setPixmap(pix.scaled(
+        panoLabel->size(),
+        Qt::KeepAspectRatio,
+        Qt::SmoothTransformation));
 }
 
 MainWindow::~MainWindow() {
@@ -112,13 +128,6 @@ void MainWindow::onCropped(int index, const QPixmap &pix) {
         qDebug() << "[onCropped] called! index=" << index
         << " pix.isNull()=" << pix.isNull();
 
-     // if (index < labels.size()) {
-     //     QSize labelSize(480,360);
-     //     labels[index]->resize(labelSize);
-     //     labels[index]->setPixmap(pix.scaled(labelSize, Qt::KeepAspectRatio));
-     //     //* labels[index]->resize(pix.size());
-     //     //* labels[index]->setPixmap(pix.scaled(labels[index]->size(), Qt::KeepAspectRatio)); // pix는 원본 값을 가져옴
-     // }
 
     if (index >= labels.size()){
 
@@ -133,7 +142,7 @@ void MainWindow::onCropped(int index, const QPixmap &pix) {
          labels.append(lbl);
     }
 
-    // 2) 이미 추가된 레이블에 pixmap 설정 또는 숨기기
+    //이미 추가된 레이블에 pixmap 설정 또는 숨기기
     QLabel *target = labels[index];
     if (pix.isNull()) {
         target->hide();

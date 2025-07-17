@@ -8,18 +8,20 @@
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include <QElapsedTimer>
+#include <opencv2/opencv.hpp>
 
 class VideoThread : public QThread {
     Q_OBJECT
 
 signals:
     void cropped(int index,const QPixmap& pixmap); //Index 번째 크롭된 이미지를 전달
+    void fullFrame(const QPixmap &pix);//전체 프레임용 시그널
 
 public:
     VideoThread(const QString& url, QLabel* label, Coordinate* coord);
     void run() override;
     void stop();
-
+    //void startRecording
 
 
 

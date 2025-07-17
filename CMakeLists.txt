@@ -20,6 +20,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Core Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(PkgConfig REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Multimedia REQUIRED)
+
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
 pkg_check_modules(GSTREAMER_APP REQUIRED gstreamer-app-1.0)
 
@@ -93,6 +96,9 @@ add_custom_command(TARGET mytest_cut POST_BUILD
 target_link_libraries(mytest_cut PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${GST_LIBRARIES} ${GSTREAMER_APP_LIBRARIES}) #${GST_LIBRARIES} 이거 추가
 target_link_libraries(mytest_cut PRIVATE ${OpenCV_LIBS})
 target_link_libraries(mytest_cut PRIVATE Qt6::Core Qt6::Network)
+target_link_libraries(mytest_cut PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+#target_link_libraries(mytest_cut PRIVATE Qt6::Widgets Qt6::Multimedia) #lobby 만약 본인 얼굴 나오게 한다면
+
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.

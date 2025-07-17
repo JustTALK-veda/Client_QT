@@ -7,6 +7,8 @@
 #include "Coordinate.h"
 #include <QVector>
 #include <QtCore/qpoint.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 TcpThread::TcpThread(Coordinate* coord, const QString& ip, int port)
     : m_coord(coord), m_ip(ip), m_port(port) {}

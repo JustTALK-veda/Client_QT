@@ -10,6 +10,10 @@
 #include "Coordinate.h"
 #include <QMutexLocker>
 #include <QPainter>
+#include <QStandardPaths>
+#include <QDir>
+#include <QDateTime>
+
 
 VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord)
     : m_url(url), m_label(label), m_coord(coord), m_stop(false) {}
@@ -21,14 +25,53 @@ void VideoThread::stop() {
 void VideoThread::run() {
     gst_init(nullptr, nullptr);
 
+    //녹화 기능
+    QString desktopPath = QStandardPaths::writableLocation(
+        QStandardPaths::DesktopLocation
+        );
+    QString recordFile = QDir(desktopPath).filePath(
+        QDateTime::currentDateTime()
+            .toString("record_yyyyMMdd_hhmmss.mp4")
+        );
+    qDebug() << "[VideoThread] Recording to:" << recordFile;
+
+//Mac에서 가장 좋은 파이프라인
     QString pipelineStr = QString(
                               "rtspsrc location=%1 latency=100 ! "
-                              "decodebin ! "
+                              "application/x-rtp,media=video,encoding-name=H264 ! "
+                              "rtph264depay ! "
+                              "h264parse ! "
+                              "vtdec ! "             // ← 여기서 하드웨어 디코딩
                               "videoconvert ! "
                               "video/x-raw,format=RGB ! "
-                              "appsink name=mysink"
+                              "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
                               ).arg(m_url);
 
+// //원래 파이프라인
+//     QString pipelineStr = QString(
+//                               "rtspsrc location=%1 "
+//                               "latency=100 ! "
+//                               "decodebin ! "
+//                               "videoconvert ! "
+//                               "video/x-raw,format=RGB ! "
+//                               "appsink name=mysink" // appsink보다는 vtdec사용할것
+//                               ).arg(m_url);
+// //영상 녹화 ver.
+    // QString pipelineStr = QString(
+    //                           "rtspsrc location=%1 latency=100 protocols=GST_RTSP_LOWER_TRANS_TCP "
+    //                           "! rtph264depay ! h264parse name=parser ! tee name=t "
+    //                           // 화면 표시
+    //                           "t. ! queue max-size-buffers=1 leaky=downstream "
+    //                           "    ! parser. ! avdec_h264 "
+    //                           "    ! videoconvert ! video/x-raw,format=RGB "
+    //                           "    ! appsink name=mysink sync=false "
+    //                           // 녹화 저장
+    //                           "t. ! queue max-size-buffers=1 leaky=downstream "
+    //                           "    ! vaapih264enc bitrate=4000 "
+    //                           "    ! video/x-h264,profile=baseline "
+    //                           "    ! h264parse ! mp4mux "
+    //                           "    ! filesink location=" + recordFile
+    //                           ).arg(m_url);
 
 
     qDebug() << "[VideoThread] pipeline =" << pipelineStr;
@@ -122,7 +165,7 @@ void VideoThread::run() {
         }
 
         QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
-
+        emit fullFrame(fullPix);
         int fullW=fullPix.width();
         int fullH=fullPix.height();
 
@@ -155,13 +198,6 @@ void VideoThread::run() {
             QRect roi(x0, y0, W, H);
             QPixmap pix = fullPix.copy(roi);
 
-            // // (옵션) 테두리
-            // QPainter p(&pix);
-            // p.setPen(QPen(Qt::blue,3));
-            // p.setBrush(Qt::NoBrush);
-            // p.drawRect(0,0,W-1,H-1);
-            // p.end();
-
             crops.emplace_back(x0, std::move(pix));
         }
 
@@ -172,55 +208,6 @@ void VideoThread::run() {
             qDebug() << "[VideoThread] emit cropped" << i;
             emit cropped(i, crops[i].second);
         }
-        // QVector<QRect> cropRects;
-
-        // if(m_coord)
-        // {
-        //     QMutexLocker locker(&m_coord->mutex);
-        //     const auto& qv = m_coord->width_data;
-        //     int count = qv.size() / 4;
-        //     for (int i = 0; i < count; ++i)
-        //     {
-        //         int x = qv[4*i + 0];
-        //         int y = qv[4*i + 1];
-        //         int w = qv[4*i + 2];
-        //         int h = qv[4*i + 3];
-        //         cropRects.append(QRect(x, y, w, h));
-        //     }
-        // }
-
-
-
-        // for (int i = 0; i < cropRects.size(); ++i)
-        // {
-        //     const QRect& rect = cropRects[i];
-
-        //     int x = std::clamp(rect.x(), 0, fullPix.width() - 1);
-        //     int y = std::clamp(rect.y(), 0, fullPix.height() - 1);
-        //     int w = std::clamp(rect.width(), 1, fullPix.width() - x);
-        //     int h = std::clamp(rect.height(), 1, fullPix.height() - y);
-        //     QRect roiRect(x, y, w, h);
-
-        //     QPixmap croppedPix = fullPix.copy(roiRect);
-        //     qDebug() << "[VideoThread] emit cropped area" << i << ":" << roiRect;
-
-        //     //하이라이팅
-        //     //잘 받아오는지 확인 (다시 수정해야되는 부분)
-        //     int px = m_coord->angles;
-        //     px=(px*fullPix.width()) / 360;
-
-        //     qDebug() << "테두리용 angles값 : "<<  m_coord->angles;;
-
-        //     if (px >= x && px < x + w) {
-        //         qDebug() << "테두리 그리기 시작";
-        //         QPainter painter(&croppedPix);
-        //         painter.setPen(QPen(Qt::blue, 5));  // 파란색, 두께 5px 테두리
-        //         painter.setBrush(Qt::NoBrush);     // 채우지 않음
-        //         painter.drawRect(0, 0, w - 1, h - 1); // 크롭된 영역에 테두리 그리기
-        //         painter.end();  // QPainter 종료ㄱ
-        //         qDebug() << "테두리 그리기 완료";
-        //     }
-
 
     }
 

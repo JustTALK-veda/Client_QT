@@ -26,13 +26,13 @@ private:
     Coordinate* coord;
     QScrollArea *scroll;
     QWidget *container;
-
+    QLabel* panoLabel;               //파노라마용 QLabel
     // JSON 설정 읽기 함수
     bool loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort);
 
 private slots:
     void onCropped(int index,const QPixmap &pix);
-
+    void updatePano(const QPixmap &pix);
 };
 
 #endif // MAINWINDOW_H
