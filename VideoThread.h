@@ -7,6 +7,7 @@
 #include "Coordinate.h"
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include <glib.h>
 #include <QElapsedTimer>
 #include <opencv2/opencv.hpp>
 

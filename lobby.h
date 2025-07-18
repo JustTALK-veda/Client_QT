@@ -1,26 +1,28 @@
-#ifndef LOBBY_H
-#define LOBBY_H
+#pragma once
 
 #include <QWidget>
-#include <QVector>
+#include <QTimer>
 #include <QLabel>
-#include <QGridLayout>
-#include <QScrollArea>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <opencv2/opencv.hpp>
 
 class Lobby : public QWidget {
     Q_OBJECT
+
 public:
     explicit Lobby(QWidget *parent = nullptr);
+    ~Lobby();
 
 signals:
-    void accepted();    // 수락 버튼 눌렀을 때
+    void accepted();  // 입장 시그널
+
+private slots:
+    void grabFrame();       // 타이머 호출로 프레임 갱신
+    void onEnterClicked();  // 버튼 클릭 시
 
 private:
-    QVector<QLabel*> labels;
-    QGridLayout *gridLayout;
+    cv::VideoCapture cap;   // 웹캠 캡처
+    QTimer* timer;          // 프레임 타이머
+    QLabel* videoLabel;     // 영상 표시용
+    QPushButton* enterBtn;  // 입장 버튼
 };
-
-#endif // LOBBY_H

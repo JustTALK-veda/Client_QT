@@ -26,18 +26,18 @@ void VideoThread::run() {
     gst_init(nullptr, nullptr);
 
     //녹화 기능
-    QString desktopPath = QStandardPaths::writableLocation(
-        QStandardPaths::DesktopLocation
-        );
-    QString recordFile = QDir(desktopPath).filePath(
-        QDateTime::currentDateTime()
-            .toString("record_yyyyMMdd_hhmmss.mp4")
-        );
-    qDebug() << "[VideoThread] Recording to:" << recordFile;
+    // QString desktopPath = QStandardPaths::writableLocation(
+    //     QStandardPaths::DesktopLocation
+    //     );
+    // QString recordFile = QDir(desktopPath).filePath(
+    //     QDateTime::currentDateTime()
+    //         .toString("record_yyyyMMdd_hhmmss.mp4")
+    //     );
+    // qDebug() << "[VideoThread] Recording to:" << recordFile;
 
 //Mac에서 가장 좋은 파이프라인
     QString pipelineStr = QString(
-                              "rtspsrc location=%1 latency=100 ! "
+                              "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
                               "application/x-rtp,media=video,encoding-name=H264 ! "
                               "rtph264depay ! "
                               "h264parse ! "
@@ -113,7 +113,6 @@ void VideoThread::run() {
     {
         qDebug() << "[VideoThread] sample 수신 대기 중";
 
-        qDebug() << "[VideoThread] sample1 수신 성공";
         GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
         if (!sample)
         {
@@ -152,7 +151,7 @@ void VideoThread::run() {
             qDebug() << "[VideoThread] QImage 생성 실패";
             continue;
         }
-
+         qDebug() << "[VideoThread] QImage 생성 성공";
         //fps계산( 풀 프레임 기준 )
 
         fpsFrameCount++;
@@ -165,6 +164,8 @@ void VideoThread::run() {
         }
 
         QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
+
+        qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
         emit fullFrame(fullPix);
         int fullW=fullPix.width();
         int fullH=fullPix.height();
@@ -173,6 +174,8 @@ void VideoThread::run() {
         {
             QMutexLocker locker(&m_coord->mutex);
             wdata = m_coord->width_data;
+            qDebug() << "[VideoThread] 받은 width_data:" << wdata;
+
         }
 
         // ’wdata’ 크기가 4의 배수인지 확인
@@ -197,6 +200,38 @@ void VideoThread::run() {
 
             QRect roi(x0, y0, W, H);
             QPixmap pix = fullPix.copy(roi);
+            qDebug() << "[VideoThread] crop" << i << ": roi =" << roi << ", isNull =" << pix.isNull();
+//             //하드코딩으로 확인
+//             {
+//                 QMutexLocker locker(&m_coord->mutex);
+//                 m_coord->angle_data = QVector<int>{90};
+//             }
+
+//             // 로컬 복사해서 작업
+//             QVector<int> angle_data;
+//             {
+//                 QMutexLocker locker(&m_coord->mutex);
+//                 angle_data = m_coord->angle_data;
+//             }
+// //여기까지
+            // 하이라이팅 조건 검사
+            for (int j = 0; j < m_coord->angle_data.size(); ++j) {
+                int angle = m_coord->angle_data[j];
+                int px = (angle * fullW) / 360;
+
+                qDebug() << "[하이라이트 검사] angle:" << angle
+                         << "→ px:" << px
+                         << ", 크롭영역: [" << x0 << "~" << (x0 + W) << "]";
+
+                if (px >= x0 && px < x0 + W) {
+                    QPainter painter(&pix);
+                    painter.setPen(QPen(Qt::yellow, 5));
+                    painter.setBrush(Qt::NoBrush);
+                    painter.drawRect(0, 0, W - 1, H - 1);
+                    painter.end();
+                    break; // 하나라도 걸리면 테두리 그리기
+                }
+            }
 
             crops.emplace_back(x0, std::move(pix));
         }
@@ -208,6 +243,9 @@ void VideoThread::run() {
             qDebug() << "[VideoThread] emit cropped" << i;
             emit cropped(i, crops[i].second);
         }
+
+
+
 
     }
 

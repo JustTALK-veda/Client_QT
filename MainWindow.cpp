@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent)
     tcpThread = new TcpThread(coord, ip, tcpPort);
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsp://%1:%2/test").arg(ip).arg(rtspPort);
+    QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame,
             this,       &MainWindow::updatePano,

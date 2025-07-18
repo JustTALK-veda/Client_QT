@@ -7,7 +7,7 @@
 struct Coordinate {
 
     QVector<int> width_data; // server에서 받아오는 값
-    int angles; // 마이크 각도 값
+    QVector<int> angle_data;
     QMutex mutex;
 };
 
