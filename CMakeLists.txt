@@ -46,9 +46,9 @@ elseif(WIN32)
     message(STATUS "Windows용 설정")
 
     # Windows용 OpenSSL
-    set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
-    set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-    set(OPENSSL_LIBRARIES "${OPENSSL_ROOT_DIR}/lib/libssl.lib" "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
+    # set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL-Win64")
+    # set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+    # set(OPENSSL_LIBRARIES "${OPENSSL_ROOT_DIR}/lib/libssl.lib" "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
 
     # Windows용 OpenCV 경로(맞춰서 설치)
     set(OpenCV_DIR "C:/opencv/build")
@@ -110,7 +110,9 @@ target_link_libraries(mytest_cut PRIVATE
     ${GSTREAMER_APP_LIBRARIES}
     ${GLIB_LIBRARIES}
     ${OpenCV_LIBS}
-    ${OPENSSL_LIBRARIES}
+    # ${OPENSSL_LIBRARIES}
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 # macOS 전용 codesign + 번들 속성
