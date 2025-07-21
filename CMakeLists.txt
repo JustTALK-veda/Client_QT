@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
     lobby.h
     lobby.cpp
     config/rpi_ip.json
+    #client_tls.c
+    #client_tls.h
 )
 
 #  window/mac 설정
@@ -57,11 +59,15 @@ endif()
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia)
+find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia MultimediaWidgets)
 
 find_package(PkgConfig REQUIRED)
+
+#Gstreamer/Glib/GIO설정
+
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
 pkg_check_modules(GSTREAMER_APP REQUIRED gstreamer-app-1.0)
+pkg_check_modules(GLIB REQUIRED glib-2.0 gobject-2.0 gio-2.0)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -70,16 +76,26 @@ include_directories(
     ${Qt6Widgets_INCLUDE_DIRS}
     ${GST_INCLUDE_DIRS}
     ${GSTREAMER_APP_INCLUDE_DIRS}
+    ${GLIB_INCLUDE_DIRS}
+
 )
+message(STATUS "GLIB_INCLUDE_DIRS = ${GLIB_INCLUDE_DIRS}")
 
 link_directories(
     ${GST_LIBRARY_DIRS}
     ${GSTREAMER_APP_LIBRARY_DIRS}
+    ${GLIB_LIBRARY_DIRS}
 )
+add_definitions(${GLIB_CFLAGS_OTHER})
+
+
+
 
 qt_add_executable(mytest_cut
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
+    client_tls.h client_tls.c
+    mypage.h mypage.cpp
 )
 
 qt_finalize_executable(mytest_cut)
@@ -89,8 +105,10 @@ target_link_libraries(mytest_cut PRIVATE
     Qt6::Core
     Qt6::Network
     Qt6::Multimedia
+    Qt6::MultimediaWidgets
     ${GST_LIBRARIES}
     ${GSTREAMER_APP_LIBRARIES}
+    ${GLIB_LIBRARIES}
     ${OpenCV_LIBS}
     ${OPENSSL_LIBRARIES}
 )

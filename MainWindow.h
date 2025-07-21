@@ -10,6 +10,9 @@
 #include "Coordinate.h"
 #include <QHBoxLayout>
 #include <QScrollArea>
+#include <QAudioSource>
+#include <QAudioFormat>
+#include <QPushButton>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -29,10 +32,23 @@ private:
     QLabel* panoLabel;               //파노라마용 QLabel
     // JSON 설정 읽기 함수
     bool loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort);
+    //웹캠
+    cv::VideoCapture cap;
+    QTimer         *webcamTimer;
+    QLabel         *webcamLabel;
+    QAudioSource *audioSource;
+    QIODevice *audioDevice;
+    QPushButton *AudioBtn;
+    bool audioEnabled; //음소거
+
 
 private slots:
     void onCropped(int index,const QPixmap &pix);
     void updatePano(const QPixmap &pix);
+    void webcam();
+    //void webCamData();
+    //오디오
+    void processAudio();
 };
 
 #endif // MAINWINDOW_H

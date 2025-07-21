@@ -42,7 +42,7 @@ void Lobby::grabFrame() {
     cap >> frame;
     if (frame.empty()) return;
 
-    // BGR → RGB
+    //BGR → RGB
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     QImage qimg(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
     videoLabel->setPixmap(QPixmap::fromImage(qimg));

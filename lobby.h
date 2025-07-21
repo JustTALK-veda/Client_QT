@@ -26,3 +26,33 @@ private:
     QLabel* videoLabel;     // 영상 표시용
     QPushButton* enterBtn;  // 입장 버튼
 };
+// lobby.h
+//mac
+// #pragma once
+
+// #include <QWidget>
+// #include <QCamera>
+// #include <QCameraDevice>
+// #include <QMediaCaptureSession>
+// #include <QVideoWidget>
+// #include <QPushButton>
+// #include <QVBoxLayout>
+
+// class Lobby : public QWidget {
+//     Q_OBJECT
+// public:
+//     explicit Lobby(QWidget *parent = nullptr);
+//     ~Lobby();
+
+// signals:
+//     void accepted();  // "입장하기" 버튼 클릭 시
+
+// private slots:
+//     void onEnterClicked();
+
+// private:
+//     QCamera *camera;
+//     QMediaCaptureSession *captureSession;
+//     QVideoWidget *videoWidget;
+//     QPushButton *enterBtn;
+// };
