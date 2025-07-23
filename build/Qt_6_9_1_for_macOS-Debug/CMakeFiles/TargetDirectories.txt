@@ -1,0 +1,9 @@
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/JustTalk.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/edit_cache.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/rebuild_cache.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/list_install_components.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/install.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/install/local.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/install/strip.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/JustTalk_autogen_timestamp_deps.dir
+/Users/yj/JustTalk/build/Qt_6_9_1_for_macOS-Debug/CMakeFiles/JustTalk_autogen.dir
