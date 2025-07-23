@@ -23,15 +23,15 @@ void VideoThread::run() {
     gst_init(nullptr, nullptr);
 
     //Mac
-    QString pipelineStr = QString(
+    //QString pipelineStr = QString(
                               //window ver.
-                              // QString pipelineStr = QString(
-                              //                           "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                              //                           "decodebin ! "
-                              //                           "videoconvert ! "
-                              //                           "video/x-raw,format=RGB ! "
-                              //                           "appsink name=mysink"
-                              //                           ).arg(m_url);
+                              QString pipelineStr = QString(
+                                                        "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                                                        "decodebin ! "
+                                                        "videoconvert ! "
+                                                        "video/x-raw,format=RGB ! "
+                                                        "appsink name=mysink"
+                                                        ).arg(m_url);
 
 
                               // "rtspsrc name = src location=%1 latency=100 !" //인증서 검증 건너뛴다.
@@ -43,15 +43,15 @@ void VideoThread::run() {
                               // "video/x-raw,format=RGB ! "
                               // "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
                               // ).arg(m_url);
-                              "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                              "application/x-rtp,media=video,encoding-name=H264 ! "
-                              "rtph264depay ! "
-                              "h264parse ! "
-                              "vtdec ! "             // ← 여기서 하드웨어 디코딩
-                              "videoconvert ! "
-                              "video/x-raw,format=RGB ! "
-                              "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
-                              ).arg(m_url);
+                              // "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                              // "application/x-rtp,media=video,encoding-name=H264 ! "
+                              // "rtph264depay ! "
+                              // "h264parse ! "
+                              // "vtdec ! "             // ← 여기서 하드웨어 디코딩
+                              // "videoconvert ! "
+                              // "video/x-raw,format=RGB ! "
+                              // "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
+                              // ).arg(m_url);
 
 
     qDebug() << "[VideoThread] pipeline =" << pipelineStr;

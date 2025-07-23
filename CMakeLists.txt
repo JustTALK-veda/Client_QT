@@ -19,6 +19,9 @@ set(PROJECT_SOURCES
         MainWindow.ui
         VideoThread.h
         VideoThread.cpp
+        meeting.ui
+        meeting.h
+        meeting.cpp
         # Coordinate.h
         # TcpThread.h
         # TcpThread.cpp
@@ -63,7 +66,7 @@ find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia MultimediaWidgets)
-
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(PkgConfig REQUIRED)
 
 #Gstreamer/Glib/GIO설정
@@ -71,6 +74,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
 pkg_check_modules(GSTREAMER_APP REQUIRED gstreamer-app-1.0)
 pkg_check_modules(GLIB REQUIRED glib-2.0 gobject-2.0 gio-2.0)
+pkg_check_modules(GST_RTSP_SERVER REQUIRED gstreamer-rtsp-server-1.0)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -80,6 +84,7 @@ include_directories(
     ${GST_INCLUDE_DIRS}
     ${GSTREAMER_APP_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS}
+    ${GST_RTSP_SERVER_INCLUDE_DIRS}
 
 )
 message(STATUS "GLIB_INCLUDE_DIRS = ${GLIB_INCLUDE_DIRS}")
@@ -88,6 +93,8 @@ link_directories(
     ${GST_LIBRARY_DIRS}
     ${GSTREAMER_APP_LIBRARY_DIRS}
     ${GLIB_LIBRARY_DIRS}
+    ${GST_RTSP_SERVER_LIBRARY_DIRS}
+
 )
 add_definitions(${GLIB_CFLAGS_OTHER})
 
@@ -100,6 +107,14 @@ qt_add_executable(JustTalk
     Coordinate.h
     TcpThread.h TcpThread.cpp
     config/rpi_ip.json
+    rtspserver.h RtspServer.cpp
+    audio_control.h audio_control.cpp
+    CameraWidget.h CameraWidget.cpp
+
+
+
+
+
 
     # client_tls.h client_tls.c
     # mypage.h mypage.cpp
@@ -118,7 +133,9 @@ target_link_libraries(JustTalk PRIVATE
     ${GLIB_LIBRARIES}
     ${OpenCV_LIBS}
     ${OPENSSL_LIBRARIES}
+    ${GST_RTSP_SERVER_LIBRARIES}
 )
+target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 
 # macOS 전용 codesign + 번들 속성
 if(APPLE)
