@@ -22,18 +22,38 @@ void VideoThread::stop() {
 void VideoThread::run() {
     gst_init(nullptr, nullptr);
 
+    QString pipelineStr;
+
+#ifdef _WIN32
+    pipelineStr = QString(
+                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                      "decodebin ! "
+                      "videoconvert ! "
+                      "video/x-raw,format=RGB ! "
+                      "appsink name=mysink"
+                      ).arg(m_url);
+#else __APPLE__
+    pipelineStr = QString(
+        "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+        "application/x-rtp,media=video,encoding-name=H264 ! "
+        "rtph264depay ! "
+        "h264parse ! "
+        "vtdec ! "
+        "videoconvert ! "
+        "video/x-raw,format=RGB ! "
+        "appsink name=mysink"
+    ).arg(m_url);
+#endif
     //Mac
     //QString pipelineStr = QString(
                               //window ver.
-                              QString pipelineStr = QString(
-                                                        "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                                                        "decodebin ! "
-                                                        "videoconvert ! "
-                                                        "video/x-raw,format=RGB ! "
-                                                        "appsink name=mysink"
-                                                        ).arg(m_url);
-
-
+                              // QString pipelineStr = QString(
+                              //                           "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                              //                           "decodebin ! "
+                              //                           "videoconvert ! "
+                              //                           "video/x-raw,format=RGB ! "
+                              //                           "appsink name=mysink"
+                              //                           ).arg(m_url);
                               // "rtspsrc name = src location=%1 latency=100 !" //인증서 검증 건너뛴다.
                               // "application/x-rtp,media=video,encoding-name=H264 ! "
                               // "rtph264depay ! "
