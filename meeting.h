@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "ui_Meeting.h"
+#include "stackpage.h"
 #include "VideoThread.h"
 #include "Coordinate.h"
 #include "TcpThread.h"
@@ -39,7 +40,7 @@ private:
 signals:
 
 private slots:
-    void onCropped(int index, const QPixmap &pix);
+    //void onCropped(int index, const QPixmap &pix);
     void updatePano(const QPixmap &pix);
 };
 

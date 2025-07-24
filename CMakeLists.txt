@@ -67,6 +67,7 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 
 find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia MultimediaWidgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(PkgConfig REQUIRED)
 
 #Gstreamer/Glib/GIO설정
@@ -112,6 +113,8 @@ qt_add_executable(JustTalk
     CameraWidget.h CameraWidget.cpp
     CameraWidget.ui
     lobby.h lobby.cpp lobby.ui
+    stackpage.h stackpage.cpp
+    pagewidget.h pagewidget.cpp
 
 
 
@@ -142,6 +145,7 @@ target_link_libraries(JustTalk PRIVATE
     ${OPENSSL_LIBRARIES}
     ${GST_RTSP_SERVER_LIBRARIES}
 )
+target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 
 # macOS 전용 codesign + 번들 속성

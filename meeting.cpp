@@ -20,6 +20,9 @@ meeting::meeting(QWidget *parent)
 {
     ui->setupUi(this);
     shared_frame_ptr = new cv::Mat();
+    // 4) Next 버튼을 눌렀을 때 페이지 전환하도록 연결
+    connect(ui->nextButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToNextPage);
+    connect(ui->prevButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToPreviousPage);
 
     QString ip;
     int rtspPort, tcpPort;
@@ -33,12 +36,13 @@ meeting::meeting(QWidget *parent)
 
     QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
-    //connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
-    bool ok = connect(videoThread, &VideoThread::fullFrame,
-                      this, &meeting::updatePano,
-                      Qt::QueuedConnection);
-    qDebug() << "VideoThread::fullFrame connected?" << ok;
-    //connect(videoThread, &VideoThread::cropped, this, &MainWindow::onCropped, Qt::QueuedConnection);
+    connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
+    // bool ok = connect(videoThread, &VideoThread::fullFrame,
+    //                   this, &meeting::updatePano,
+    //                   Qt::QueuedConnection);
+    // qDebug() << "VideoThread::fullFrame connected?" << ok;
+    //connect(videoThread, &VideoThread::cropped, this, &meeting::onCropped, Qt::QueuedConnection);
+    connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
     videoThread->start();
 
     // 웹캠 다이얼로그 추가
@@ -58,7 +62,7 @@ meeting::~meeting() {
     delete tcpThread;
     delete coord;
 }
-
+/*
 void meeting::setupPages() {
     const int cols = 2;
     const int total = (labels.size() + perPage - 1) / perPage;
@@ -87,7 +91,7 @@ void meeting::setupPages() {
         }
         ui->stackedWidget->addWidget(page);
     }
-}
+}*/
 
 
 void meeting::updatePano(const QPixmap &pix) {
@@ -99,6 +103,7 @@ void meeting::updatePano(const QPixmap &pix) {
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation));
 }
+/*
 void meeting::onCropped(int index, const QPixmap &pix) {
 
     QLabel *target = labels[index];
@@ -117,7 +122,7 @@ void meeting::onCropped(int index, const QPixmap &pix) {
     if (index < labels.size()) {
         labels[index]->setPixmap(pix);  // 해당 크롭된 이미지를 QLabel에 설정
     }
-}
+}*/
 
 bool meeting::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
     QFile file("config/rpi_ip.json");

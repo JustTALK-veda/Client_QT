@@ -1,5 +1,6 @@
 #include "RtspServer.h"
 #include "audio_control.h"
+#include "thread"
 
 std::atomic<bool> running(true);
 std::atomic<bool> frame_enabled(true);
@@ -77,7 +78,7 @@ void start_rtsp_server() {
 
     #ifdef _WIN32
         const gchar* audio_src = "wasapisrc low-latency=true ";
-    #else __APPLE__
+    #elif __APPLE__
         const gchar* audio_src = "osxaudiosrc device=100 ";
     #endif
 

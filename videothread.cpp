@@ -38,7 +38,7 @@ void VideoThread::run() {
                       "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
                       "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
                       ).arg(m_url);
-#else __APPLE__
+#elif __APPLE__
     pipelineStr = QString(
                         "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
                         "application/x-rtp,media=video,encoding-name=H264 ! "
