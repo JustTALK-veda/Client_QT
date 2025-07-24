@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 0; i < rowCount; ++i) {
         for (int j = 0; j < colCount; ++j) {
             QLabel *lbl = new QLabel(container);
-            lbl->setFixedSize(300, 220);
+            lbl->setFixedSize(480, 360);
             lbl->setAlignment(Qt::AlignCenter);
             lbl->setStyleSheet("background-color: #F0F0F0;");
             layout->addWidget(lbl, i, j);
@@ -200,7 +200,7 @@ void MainWindow::onCropped(int index, const QPixmap &pix) {
          auto *lbl = new QLabel(container);
          lbl->setStyleSheet("background-color: rgba(169, 169, 169, 0.5);");
          lbl->setAlignment(Qt::AlignCenter);
-         lbl->setFixedSize(300, 220);
+         lbl->setFixedSize(480, 360);
          int row = index / 2;
          int col = index % 2;
          layout->addWidget(lbl, row, col);
