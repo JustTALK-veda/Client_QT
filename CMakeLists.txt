@@ -111,6 +111,11 @@ qt_add_executable(JustTalk
     audio_control.h audio_control.cpp
     CameraWidget.h CameraWidget.cpp
     CameraWidget.ui
+    lobby.h lobby.cpp lobby.ui
+
+
+
+
 
 
 

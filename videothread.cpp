@@ -25,19 +25,19 @@ void VideoThread::run() {
     QString pipelineStr;
 
 #ifdef _WIN32
-    pipelineStr = QString(
-                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                      "decodebin ! "
-                      "videoconvert ! "
-                      "video/x-raw,format=RGB ! "
-                      "appsink name=mysink"
-                      ).arg(m_url);
-    // audio
     // pipelineStr = QString(
-                      // "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
-                      // "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
-                      // "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
-                      // ).arg(m_url);
+    //                   "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+    //                   "decodebin ! "
+    //                   "videoconvert ! "
+    //                   "video/x-raw,format=RGB ! "
+    //                   "appsink name=mysink"
+    //                   ).arg(m_url);
+    // audio
+    pipelineStr = QString(
+                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
+                      "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
+                      "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
+                      ).arg(m_url);
 #else __APPLE__
     pipelineStr = QString(
                         "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "

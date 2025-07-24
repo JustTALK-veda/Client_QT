@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "meeting.h"
+#include "lobby.h"
 #include <QAudioSource>
 #include <QMediaDevices>
 #include <QAudioFormat>
@@ -17,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
    // , audioEnabled(true)
 {
     ui.setupUi(this);
+    //Lobby *lobbyPage = new Lobby(this);
     meeting *meetingPage = new meeting(this);
     ui.stackedWidget->addWidget(meetingPage);
     ui.stackedWidget->setCurrentWidget(meetingPage);
