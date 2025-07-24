@@ -96,6 +96,7 @@ qt_add_executable(mytest_cut
     ${PROJECT_SOURCES}
     client_tls.h client_tls.c
     mypage.h mypage.cpp
+    config/camera_calibration_fisheye.yml
 )
 
 qt_finalize_executable(mytest_cut)
