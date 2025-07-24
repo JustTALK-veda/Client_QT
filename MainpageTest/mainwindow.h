@@ -3,6 +3,7 @@
 
 #include <QStackedWidget>
 #include <QMainWindow>
+#include "stackpage.h"
 #include "ui_mainwindow.h"
 
 QT_END_NAMESPACE
@@ -18,8 +19,5 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QStackedWidget *pagesStack;
-    void createNewPage();
-    void goToPreviousPage();
 };
 #endif // MAINWINDOW_H

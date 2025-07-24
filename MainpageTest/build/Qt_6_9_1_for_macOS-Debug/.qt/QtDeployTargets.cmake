@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_MainpageTest_FILE /Users/yj/Desktop/Mainpage/MainpageTest/build/Qt_6_9_1_for_macOS-Debug/MainpageTest.app/Contents/MacOS/MainpageTest)
-set(__QT_DEPLOY_TARGET_MainpageTest_TYPE EXECUTABLE)

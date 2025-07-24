@@ -1,22 +1,21 @@
 #ifndef STACKPAGE_H
 #define STACKPAGE_H
 
-#include <QWidget>
+#include <QStackedWidget>
 
-namespace Ui {
-class Stackpage;
-}
-
-class Stackpage : public QWidget
+class Stackpage : public QStackedWidget
 {
     Q_OBJECT
 
 public:
     explicit Stackpage(QWidget *parent = nullptr);
     ~Stackpage();
+    void goToPreviousPage();
+    void goToNextPage();
+    void createNewPage();
 
 private:
-    Ui::Stackpage *ui;
+
 };
 
 #endif // STACKPAGE_H
