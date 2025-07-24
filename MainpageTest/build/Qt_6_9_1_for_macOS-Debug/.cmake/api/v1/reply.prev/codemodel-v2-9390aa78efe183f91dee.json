@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-9031acdf418c3b7a88fb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "MainpageTest",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "MainpageTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MainpageTest-Debug-9793d7d534f2a3bf2ebd.json",
+					"name" : "MainpageTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "MainpageTest_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MainpageTest_autogen-Debug-66ac01a71532bbb33ca2.json",
+					"name" : "MainpageTest_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "MainpageTest_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-MainpageTest_autogen_timestamp_deps-Debug-5f079b5b12f6d74b364a.json",
+					"name" : "MainpageTest_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/yj/Desktop/Mainpage/MainpageTest/build/Qt_6_9_1_for_macOS-Debug",
+		"source" : "/Users/yj/Desktop/Mainpage/MainpageTest"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
