@@ -107,9 +107,11 @@ qt_add_executable(JustTalk
     Coordinate.h
     TcpThread.h TcpThread.cpp
     config/rpi_ip.json
-    rtspserver.h RtspServer.cpp
+    RtspServer.h RtspServer.cpp
     audio_control.h audio_control.cpp
     CameraWidget.h CameraWidget.cpp
+    CameraWidget.ui
+
 
 
 

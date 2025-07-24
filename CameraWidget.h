@@ -1,12 +1,13 @@
-#ifndef CAMERAWIDGET_H
-#define CAMERAWIDGET_H
-
+#ifndef CAMERA_WIDGET_H
+#define CAMERA_WIDGET_H
+#include "ui_CameraWidget.h"
 #include <QWidget>
 #include <QTimer>
 #include <QLabel>
 #include <QImage>
 #include <opencv2/opencv.hpp>
 #include "RtspServer.h"
+
 
 class CameraWidget : public QWidget {
     Q_OBJECT
@@ -18,14 +19,16 @@ public:
 public slots:
     void startCam();
     void stopCam();
-
-private slots:
     void captureFrame();
+    void onMicButtonClicked();
+    void onCamButtonClicked();
 
 private:
     void initCamoffImage();
+    void resizeEvent(QResizeEvent *event);
 
 private:
+    Ui::cameraWidgetForm *ui;
     QSize targetSize;
     QImage camoffImage;
     QImage fallbackImage;
@@ -34,6 +37,8 @@ private:
     cv::VideoCapture cap;
     cv::Mat latest_frame;
     std::mutex frame_mutex;
+    bool micEnabled = false;
+    bool camEnabled = false;
 };
 
-#endif // CAMERAWIDGET_H
+#endif // CAMERA_WIDGET_H

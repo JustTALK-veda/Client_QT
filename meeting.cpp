@@ -16,18 +16,10 @@ meeting::meeting(QWidget *parent)
     , videoThread(nullptr)
     , tcpThread(nullptr)
     , coord(new Coordinate)
-    , ui(new Ui::Form)
+    , ui(new Ui::meetingForm)
 {
     ui->setupUi(this);
-    labels.append(ui->label_2);
-    labels.append(ui->label_3);
-    labels.append(ui->label_4);
-    labels.append(ui->label_5);
     shared_frame_ptr = new cv::Mat();
-
-    connect(ui->CamButton, &QPushButton::clicked, this, &meeting::onCamButtonClicked);
-    connect(ui->MicButton, &QPushButton::clicked, this, &meeting::onMicButtonClicked);
-
 
     QString ip;
     int rtspPort, tcpPort;
@@ -180,25 +172,3 @@ bool meeting::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
     return true;
 }
 
-// 마이크 버튼 토글
-void meeting::onMicButtonClicked()
-{
-    micEnabled = !micEnabled;
-    set_mic_enabled(micEnabled);
-    ui->MicButton->setText(micEnabled ? "마이크 ON" : "마이크 OFF");
-}
-
-// 웹캠 버튼 토글
-void meeting::onCamButtonClicked()
-{
-    camEnabled = !camEnabled;
-    if (camEnabled) {
-        enable_streaming(true);
-        camerawidget->startCam();
-        ui->CamButton->setText("웹캠 ON");
-    } else {
-        enable_streaming(false);
-        camerawidget->stopCam();
-        ui->CamButton->setText("웹캠 OFF");
-    }
-}

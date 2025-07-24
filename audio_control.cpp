@@ -4,11 +4,13 @@
 
 static GstElement* g_mic_vol = nullptr;
 static std::mutex g_mic_vol_mutex;
+static bool g_mic_desired_enabled = false;
 
 void set_mic_enabled(bool enable) {
+    g_mic_desired_enabled = enable;
     std::lock_guard<std::mutex> lock(g_mic_vol_mutex);
     if (!g_mic_vol) {
-        g_printerr("set_mic_enabled: mic_vol not ready yet.\n");
+        //g_printerr("set_mic_enabled: mic_vol not ready yet.\n");
         return;
     }
     g_object_set(g_mic_vol, "mute", enable ? FALSE : TRUE, NULL);
@@ -38,6 +40,9 @@ void audio_on_media_prepared(GstRTSPMedia* media, gpointer) {
         if (g_mic_vol) {
             gst_object_ref(g_mic_vol);
             g_print("mic_vol element captured.\n");
+
+            g_object_set(g_mic_vol, "mute", g_mic_desired_enabled ? FALSE : TRUE, NULL);
+            g_print("[MIC] (restored) %s\n", g_mic_desired_enabled ? "ON" : "OFF (muted)");
         } else {
             g_printerr("mic_vol element not found!\n");
         }

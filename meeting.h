@@ -6,9 +6,9 @@
 #include "VideoThread.h"
 #include "Coordinate.h"
 #include "TcpThread.h"
-#include "CameraWidget.h"
 #include "RtspServer.h"
 #include "audio_control.h"
+#include "CameraWidget.h"
 
 class meeting : public QWidget
 {
@@ -18,7 +18,7 @@ public:
     ~meeting();
 
 private:
-    Ui::Form *ui;
+    Ui::meetingForm *ui;
     QDialog *camDialog = nullptr;
     CameraWidget *camerawidget = nullptr;
 
@@ -33,9 +33,6 @@ private:
     // bool         audioEnabled;
     // QWidget *container;
 
-    bool micEnabled = false;
-    bool camEnabled = false;
-
     void setupPages();
     bool loadConfigFromJson(QString &ip,int &rtspPort,int &tcpPort);
 
@@ -44,8 +41,6 @@ signals:
 private slots:
     void onCropped(int index, const QPixmap &pix);
     void updatePano(const QPixmap &pix);
-    void onMicButtonClicked();
-    void onCamButtonClicked();
 };
 
 #endif // MEETING_H
