@@ -26,15 +26,16 @@ meeting::meeting(QWidget *parent)
 
     QString ip;
     int rtspPort, tcpPort;
-    if (!loadConfigFromJson(ip, rtspPort, tcpPort)) {
-        ip = "192.168.0.85"; rtspPort = 8554; tcpPort = 12345;
-    }
+    // if (!loadConfigFromJson(ip, rtspPort, tcpPort)) {
+    //     ip = "192.168.0.50"; rtspPort = 8555; tcpPort = 12345;
+    // }
 
     //meta data 수신 스레드
-    tcpThread = new TcpThread(coord, ip, tcpPort);
+    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
+
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
     // bool ok = connect(videoThread, &VideoThread::fullFrame,

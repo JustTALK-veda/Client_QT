@@ -192,6 +192,37 @@ void VideoThread::run() {
 
         }
 
+        QVector<int> angles;
+        {
+            QMutexLocker locker(&m_coord->mutex);
+            angles = m_coord->angle_data;
+        }
+
+        if (angles.isEmpty())
+        {
+            // qDebug() << "[VideoThread] angle_data가 비어있음, 하이라이팅 생략";
+            continue;
+        }
+
+        int angle = angles.last();
+
+        int angle_px = (angle * mat.cols) / 360;
+        cv::line(mat, cv::Point(angle_px, 0), cv::Point(angle_px, mat.rows), cv::Scalar(0, 0, 255), 5);
+
+        // draw each box onto the raw OpenCV frame
+        for (size_t k = 0; k + 3 < wdata.size(); k += 4) {
+            int cx = wdata[k];
+            int cy = wdata[k + 1];
+            int w = wdata[k + 2];
+            int h = wdata[k + 3];
+
+            cv::rectangle(mat,
+                          cv::Point(cx - w/2, cy - h/2),
+                          cv::Point(cx + w/2, cy + h/2),
+                          cv::Scalar(0, 255, 0), 2);
+        }
+
+
         // ’wdata’ 크기가 4의 배수인지 확인
         int rectCount = wdata.size() / 4;
         if (rectCount == 0) {
@@ -202,11 +233,16 @@ void VideoThread::run() {
         }
 
         QVector<std::pair<int,QPixmap>> crops;
+
         crops.reserve(rectCount);
+
+        int highlighted_rect_index = -1; // 하이라이팅할 인덱스
+        int min_distance = fullW;
 
         for (int i = 0; i < rectCount; ++i) {
             int cx = wdata[4*i + 0];
             int cy = wdata[4*i + 1];
+
             // 너비·높이 w,h = wdata[4*i+2], wdata[4*i+3] 은 무시하고
             // 항상 W×H 로 자르고 싶음 아래
             int x0 = std::clamp(cx - W/2, 0, fullW - W);
@@ -216,40 +252,31 @@ void VideoThread::run() {
             QPixmap pix = fullPix.copy(roi);
 
             qDebug() << "[VideoThread] crop" << i << ": roi =" << roi << ", isNull =" << pix.isNull();
-            //             //하드코딩으로 확인
-            //             {
-            //                 QMutexLocker locker(&m_coord->mutex);
-            //                 m_coord->angle_data = QVector<int>{0,60,90,120,150};
-            //             }
 
-            //             // 로컬 복사해서 작업
-            //             QVector<int> angle_data;
-            //             {
-            //                 QMutexLocker locker(&m_coord->mutex);
-            //                 angle_data = m_coord->angle_data;
-            //             }
-            // // //여기까지
-            // 하이라이팅 조건 검사
-            for (int j = 0; j < m_coord->angle_data.size(); ++j) {
-                int angle = m_coord->angle_data[j];
-                int px = (angle * fullW) / 360;
-
-                qDebug() << "[하이라이트 검사] angle:" << angle
-                         << "→ px:" << px
-                         << ", 크롭영역: [" << x0 << "~" << (x0 + W) << "]";
-
-                if (px >= x0 && px < x0 + W) {
-                    QPainter painter(&pix);
-                    painter.setPen(QPen(Qt::yellow, 5));
-                    painter.setBrush(Qt::NoBrush);
-                    painter.drawRect(0, 0, W - 1, H - 1);
-                    painter.end();
-                    break; // 하나라도 걸리면 테두리 그리기
-                }
+            int dx = std::abs(cx - angle_px);
+            if (dx > fullW/2) dx = fullW - dx;
+            if (dx < min_distance) {
+                min_distance = dx;
+                highlighted_rect_index = i;
+            }
+            crops.emplace_back(x0, std::move(pix));
             }
 
-            crops.emplace_back(x0, std::move(pix));
-        }
+            if (highlighted_rect_index != -1) {
+
+
+                QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
+                QPainter painter(&highlighted_pix);
+                painter.setPen(QPen(Qt::yellow, 5));
+                painter.setBrush(Qt::NoBrush);
+                painter.drawRect(0, 0, W + 10, H + 10);
+                painter.end();
+
+            }
+            else {
+                qDebug() << "[VideoThread] highlighted index가 -1, 하이라이팅 없음";
+            }
+
 
         // 4) x0 기준 정렬 & emit
         std::sort(crops.begin(), crops.end(),
@@ -269,6 +296,7 @@ void VideoThread::run() {
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);
 }
+
 // //*/ // //복호화 추가해서 수정한 ver.
 
 // #include "VideoThread.h"
@@ -280,7 +308,7 @@ void VideoThread::run() {
 // #include <gst/gst.h>
 // #include <gst/app/gstappsink.h>
 // #include "Coordinate.h"
-// #include <QMutexLocker>
+// #include <ㄴQMutexLocker>
 // #include <QPainter>
 // #include <QStandardPaths>
 // #include <QDir>
@@ -584,5 +612,4 @@ void VideoThread::run() {
 
 //     gst_element_set_state(pipeline, GST_STATE_NULL);
 //     gst_object_unref(pipeline);
-// }
-
+//

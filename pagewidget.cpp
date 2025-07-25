@@ -7,7 +7,7 @@ PageWidget::PageWidget(QWidget* parent) : QWidget(parent) {
 
     for (int i = 0; i < 4; ++i) {
         QLabel* lbl = new QLabel(this);
-        lbl->setMinimumSize(300, 220);
+        lbl->setMinimumSize(480, 360);
         lbl->setAlignment(Qt::AlignCenter);
         lbl->setStyleSheet("background-color: lightgray;");
         labels.push_back(lbl);
