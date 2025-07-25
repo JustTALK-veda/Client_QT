@@ -1,4 +1,9 @@
 build/
+.qt/
+CMakeFiles/
+JustTalk_autogen/
+
+cmake_install.cmake
 CMakeLists.txt.user
 
 .DS_Store
