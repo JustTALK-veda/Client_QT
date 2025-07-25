@@ -36,7 +36,7 @@ set(PROJECT_SOURCES
 
 if(APPLE)
     message(STATUS "macOS용 설정")
-
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
     # macOS용 OpenSSL
     set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl@3")
     set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
@@ -115,6 +115,7 @@ qt_add_executable(JustTalk
     lobby.h lobby.cpp lobby.ui
     stackpage.h stackpage.cpp
     pagewidget.h pagewidget.cpp
+    start.h start.cpp start.ui
 
 
 

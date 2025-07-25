@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "meeting.h"
+#include "start.h"
 #include "lobby.h"
 #include <QAudioSource>
 #include <QMediaDevices>
@@ -18,9 +19,20 @@ MainWindow::MainWindow(QWidget *parent)
    // , audioEnabled(true)
 {
     ui.setupUi(this);
-    //Lobby *lobbyPage = new Lobby(this);
+    Start *startPage = new Start(this);
+    Lobby *lobbyPage = new Lobby(this);
     meeting *meetingPage = new meeting(this);
+
+    ui.stackedWidget->addWidget(startPage);
+    ui.stackedWidget->addWidget(lobbyPage);
     ui.stackedWidget->addWidget(meetingPage);
-    ui.stackedWidget->setCurrentWidget(meetingPage);
+
+    ui.stackedWidget->setCurrentWidget(startPage);
+    connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=](){
+        ui.stackedWidget->setCurrentWidget(meetingPage);
+    });
+    connect(startPage, &Start::enterRemotePageRequested, this, [=](){
+        ui.stackedWidget->setCurrentWidget(lobbyPage);
+    });
 }
 MainWindow::~MainWindow(){}

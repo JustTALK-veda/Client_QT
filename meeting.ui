@@ -62,23 +62,23 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="prevButton">
         <property name="text">
-         <string>PushButton</string>
+         <string>prev</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="nextButton">
         <property name="text">
-         <string>PushButton</string>
+         <string>next</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="prevButton">
+       <widget class="QPushButton" name="exitButton">
         <property name="text">
-         <string>PushButton</string>
+         <string>exit</string>
         </property>
        </widget>
       </item>

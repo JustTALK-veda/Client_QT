@@ -11,6 +11,8 @@ class Stackpage : public QStackedWidget
 public:
     explicit Stackpage(QWidget *parent = nullptr);
     ~Stackpage();
+    bool isFirstPage();
+    bool isLastPage();
     void goToPreviousPage();
     void goToNextPage();
     void setLabel(int globalIndex, const QPixmap& pix);

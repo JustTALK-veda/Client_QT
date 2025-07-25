@@ -18,6 +18,9 @@ public:
 
 private:
     Ui::Lobby *ui;
+
+signals:
+    void enterMeetingRequested();
 };
 
 #endif // LOBBY_H

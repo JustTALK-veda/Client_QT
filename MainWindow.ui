@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QStackedWidget" name="stackedWidget">
+   <widget class="Stackpage" name="stackedWidget">
     <property name="geometry">
      <rect>
       <x>28</x>
@@ -24,10 +24,8 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>-1</number>
     </property>
-    <widget class="QWidget" name="page"/>
-    <widget class="QWidget" name="page_2"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -42,6 +40,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Stackpage</class>
+   <extends>QStackedWidget</extends>
+   <header>stackpage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

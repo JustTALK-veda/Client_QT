@@ -12,26 +12,32 @@ Stackpage::~Stackpage()
 {
 }
 
-void Stackpage::goToPreviousPage() {
-    // 현재 페이지의 인덱스를 가져옴
-    int currentIndex = this->currentIndex();
 
+bool Stackpage::isFirstPage(){
+    if (this->currentIndex() > 0)
+        return false;
+    else
+        return true;
+}
+
+bool Stackpage::isLastPage(){
+    if (this->currentIndex() < this->count() - 1)
+        return false;
+    else
+        return true;
+}
+
+void Stackpage::goToPreviousPage() {
     // 이전 페이지로 전환 (첫 번째 페이지보다 작은 인덱스일 때는 넘어가지 않도록 처리)
-    if (currentIndex > 0) {
-        this->setCurrentIndex(currentIndex - 1);  // 이전 페이지로 설정
+    if (!isFirstPage()) {
+        this->setCurrentIndex(this->currentIndex() - 1);  // 이전 페이지로 설정
     }
 }
 
 void Stackpage::goToNextPage() {
-    // 현재 페이지 인덱스
-    int currentIndex = this->currentIndex();
-
-    // 전체 페이지 수
-    int totalPages = this->count();
-
     // 다음 페이지가 존재할 경우에만 이동
-    if (currentIndex < totalPages - 1) {
-        this->setCurrentIndex(currentIndex + 1);  // 다음 페이지로 이동
+    if (!isLastPage()) {
+        this->setCurrentIndex(this->currentIndex() + 1);  // 다음 페이지로 이동
     }
 }
 

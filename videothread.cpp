@@ -32,7 +32,7 @@ void VideoThread::run() {
     //                   "video/x-raw,format=RGB ! "
     //                   "appsink name=mysink"
     //                   ).arg(m_url);
-    // audio
+    //audio
     pipelineStr = QString(
                       "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
                       "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "

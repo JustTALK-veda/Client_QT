@@ -7,6 +7,7 @@ Lobby::Lobby(QWidget *parent)
     , ui(new Ui::Lobby)
 {
     ui->setupUi(this);
+    connect(ui->enterButton, &QPushButton::clicked, this, &Lobby::enterMeetingRequested);
 }
 
 Lobby::~Lobby()
