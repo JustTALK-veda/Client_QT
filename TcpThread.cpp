@@ -9,7 +9,7 @@
 #include <QtCore/qpoint.h>
 
 
-TcpThread::TcpThread(Coordinate* coord, const QString& ip, int port)
+TcpThread::TcpThread(Coordinate* coord, const QString ip, int port)
     : m_coord(coord), m_ip(ip), m_port(port) {}
 
 void TcpThread::run() {

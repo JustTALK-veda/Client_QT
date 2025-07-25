@@ -149,10 +149,14 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     //Metadata 수신 스레드 먼저 시작
-    tcpThread = new TcpThread(coord, ip, tcpPort);
+    // tcpThread = new TcpThread(coord, ip, tcpPort);
+    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
+
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+    // QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
+
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame,
             this,       &MainWindow::updatePano,

@@ -117,13 +117,72 @@ void VideoThread::run() {
         // qDebug() << "[VideoThread] width =" << width << ", height =" << height;
 
         cv::Mat mat(height, width, CV_8UC3, (char*)map.data);
+        
+        QVector<int> wdata;
+        {
+            QMutexLocker locker(&m_coord->mutex);
+            wdata = m_coord->width_data;
+            // qDebug() << "[VideoThread] 받은 width_data:" << wdata;
+        }
+        
+
+        QVector<int> angles;
+        {
+            QMutexLocker locker(&m_coord->mutex);
+            angles = m_coord->angle_data;
+        }
+        
+        if (angles.isEmpty()) 
+        {
+            // qDebug() << "[VideoThread] angle_data가 비어있음, 하이라이팅 생략";
+            continue;
+        }
+
+        int angle = angles.last();
+
+        int angle_px = (angle * mat.cols) / 360;
+        cv::line(mat, cv::Point(angle_px, 0), cv::Point(angle_px, mat.rows), cv::Scalar(0, 0, 255), 5);
+
+        // draw each box onto the raw OpenCV frame
+        for (size_t k = 0; k + 3 < wdata.size(); k += 4) {
+            int cx = wdata[k];
+            int cy = wdata[k + 1];
+            int w = wdata[k + 2];
+            int h = wdata[k + 3];
+
+            cv::rectangle(mat,
+                            cv::Point(cx - w/2, cy - h/2),
+                            cv::Point(cx + w/2, cy + h/2),
+                            cv::Scalar(0, 255, 0), 2);
+        }
+
         cv::Mat undistorted_frames[3];
         for (size_t i = 0; i < 3; ++i) 
         {
-            cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_LINEAR);
-            // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_NEAREST);
+            if (cv::ocl::haveOpenCL()) {
+                cv::ocl::setUseOpenCL(true); // 명시적으로 OpenCL 사용 설정
+                
+                qDebug() << "[VideoThread] OpenCL 사용 가능, GPU로 remap 수행";
+                
+                cv::UMat srcU, dstU, map1U, map2U;
+                mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).copyTo(srcU);
+                maps[i].first.copyTo(map1U);
+                maps[i].second.copyTo(map2U);
 
-            // undistorted_frames[i] = mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).clone();
+                // remap 수행 (GPU 가속)
+                cv::remap(srcU, dstU, map1U, map2U, cv::INTER_LINEAR);
+                    
+                // 다시 Mat으로 복사
+                dstU.copyTo(undistorted_frames[i]);
+            }
+            else{
+                qDebug() << "[VideoThread] OpenCL 사용 불가, CPU로 remap 수행";
+                // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_LINEAR);
+                // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_NEAREST);
+                
+                undistorted_frames[i] = mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).clone();
+            }
+
         }
 
         cv::Mat copy;
@@ -158,12 +217,7 @@ void VideoThread::run() {
         int fullW=fullPix.width();
         int fullH=fullPix.height();
 
-        QVector<int> wdata;
-        {
-            QMutexLocker locker(&m_coord->mutex);
-            wdata = m_coord->width_data;
-            // qDebug() << "[VideoThread] 받은 width_data:" << wdata;
-        }
+
 
         // ’wdata’ 크기가 4의 배수인지 확인
         int rectCount = wdata.size() / 4;
@@ -205,21 +259,7 @@ void VideoThread::run() {
 //             }
 // //여기까지
             // 하이라이팅 조건 검사
-            QVector<int> angles;
-            {
-                QMutexLocker locker(&m_coord->mutex);
-                angles = m_coord->angle_data;
-            }
-            
-            if (angles.isEmpty()) 
-            {
-                // qDebug() << "[VideoThread] angle_data가 비어있음, 하이라이팅 생략";
-                continue;
-            }
 
-            int angle = angles.last();
-
-            int angle_px = (angle * fullW) / 360;
 
             int dx = std::abs(cx - angle_px);
             if (dx > fullW/2) dx = fullW - dx;

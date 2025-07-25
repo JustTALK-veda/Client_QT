@@ -8,7 +8,7 @@ class TcpThread : public QThread {
     Q_OBJECT
 
 public:
-    TcpThread(Coordinate* coord, const QString& ip, int port);
+    TcpThread(Coordinate* coord, const QString ip, int port);
     void run() override;
 
 private:
