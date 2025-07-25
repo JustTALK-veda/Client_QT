@@ -92,5 +92,5 @@ compile_commands.json
 build/
 config/
 CMakeLists.txt.user
-
+.vscode/
 # End of https://www.toptal.com/developers/gitignore/api/qtcreator,qt
