@@ -5,6 +5,7 @@
 #include <QMetaObject>
 #include <QDebug>
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/ocl.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include "Coordinate.h"
@@ -73,19 +74,43 @@ void VideoThread::run() {
     const int THRESHOLD = 5;
 
     std::vector<std::pair<cv::Mat,cv::Mat>> maps(3);
+    std::vector<std::pair<cv::UMat, cv::UMat>> umaps(3);
     std::vector<QString> paths = {"config/fisheye_calibration_L.yml",
                                  "config/fisheye_calibration_C.yml",
                                  "config/fisheye_calibration_R.yml"};
-
-    for (size_t i=0; i<maps.size(); i++)
+    
+    int undistorted_w = 0, undistorted_h = 0;
+    if(cv::ocl::haveOpenCL())
+    // if(false)
     {
-        cv::Mat& map1 = maps[i].first;
-        cv::Mat& map2 = maps[i].second;
-        getUndistortionMap_fisheye(map1, map2, cam_W, cam_H, paths[i]);
-    }
+        qDebug() << "[VideoThread] OpenCL 사용 가능";
+        cv::ocl::Device dev = cv::ocl::Device::getDefault();
+        qDebug() << "Default OpenCL device:" << dev.name() << dev.type();
 
-    int undistorted_w = static_cast<int>(maps[0].first.cols);
-    int undistorted_h = static_cast<int>(maps[0].first.rows);
+        cv::ocl::setUseOpenCL(true);
+        for (size_t i = 0; i < umaps.size(); i++)
+        {
+            cv::Mat map1, map2;
+            getUndistortionMap_fisheye(map1, map2, cam_W, cam_H, paths[i]);
+
+            umaps[i].first = map1.getUMat(cv::ACCESS_READ);
+            umaps[i].second = map2.getUMat(cv::ACCESS_READ);
+        }
+        undistorted_w = static_cast<int>(umaps[0].first.cols);
+        undistorted_h = static_cast<int>(umaps[0].first.rows);
+    }
+    else
+    {
+        qDebug() << "[VideoThread] OpenCL 사용 불가";
+        for (size_t i=0; i<maps.size(); i++)
+        {
+            cv::Mat& map1 = maps[i].first;
+            cv::Mat& map2 = maps[i].second;
+            getUndistortionMap_fisheye(map1, map2, cam_W, cam_H, paths[i]);
+        }
+        undistorted_w = static_cast<int>(maps[0].first.cols);
+        undistorted_h = static_cast<int>(maps[0].first.rows);
+    }
 
     while (!m_stop)
     {
@@ -159,30 +184,26 @@ void VideoThread::run() {
         cv::Mat undistorted_frames[3];
         for (size_t i = 0; i < 3; ++i) 
         {
+            // if (false) {
             if (cv::ocl::haveOpenCL()) {
-                cv::ocl::setUseOpenCL(true); // 명시적으로 OpenCL 사용 설정
+
                 
-                qDebug() << "[VideoThread] OpenCL 사용 가능, GPU로 remap 수행";
-                
-                cv::UMat srcU, dstU, map1U, map2U;
+                cv::UMat srcU, dstU;
                 mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).copyTo(srcU);
-                maps[i].first.copyTo(map1U);
-                maps[i].second.copyTo(map2U);
 
                 // remap 수행 (GPU 가속)
-                cv::remap(srcU, dstU, map1U, map2U, cv::INTER_LINEAR);
-                    
+                cv::remap(srcU, dstU, umaps[i].first, umaps[i].second, cv::INTER_LINEAR);
+
                 // 다시 Mat으로 복사
                 dstU.copyTo(undistorted_frames[i]);
             }
-            else{
-                qDebug() << "[VideoThread] OpenCL 사용 불가, CPU로 remap 수행";
-                // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_LINEAR);
+            else
+            {
+                cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_LINEAR);
                 // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_NEAREST);
-                
-                undistorted_frames[i] = mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).clone();
-            }
 
+                // undistorted_frames[i] = mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).clone();
+            }
         }
 
         cv::Mat copy;
