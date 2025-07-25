@@ -17,6 +17,7 @@ public:
     ~Start();
 signals:
     void enterRemotePageRequested();
+    void enterLocalPageRequested();
 private:
     Ui::Start *ui;
 

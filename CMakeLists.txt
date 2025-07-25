@@ -116,6 +116,8 @@ qt_add_executable(JustTalk
     stackpage.h stackpage.cpp
     pagewidget.h pagewidget.cpp
     start.h start.cpp start.ui
+    meetinglocal.h meetinglocal.cpp meetinglocal.ui
+
 
 
 

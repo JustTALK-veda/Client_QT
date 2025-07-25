@@ -7,6 +7,7 @@ Start::Start(QWidget *parent)
 {
     ui->setupUi(this);
     connect(ui->remoteUserButton, &QPushButton::clicked, this, &Start::enterRemotePageRequested);
+    connect(ui->localUserButton, &QPushButton::clicked, this, &Start::enterLocalPageRequested);
 }
 
 Start::~Start()
