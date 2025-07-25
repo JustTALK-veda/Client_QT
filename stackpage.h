@@ -1,7 +1,7 @@
 #ifndef STACKPAGE_H
 #define STACKPAGE_H
 
-#include "PageWidget.h"
+#include "pagewidget.h"
 #include <QStackedWidget>
 
 class Stackpage : public QStackedWidget
