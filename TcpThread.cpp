@@ -9,7 +9,7 @@
 #include <QtCore/qpoint.h>
 
 
-TcpThread::TcpThread(Coordinate* coord, const QString& ip, int port)
+TcpThread::TcpThread(Coordinate* coord, const QString ip, int port)
     : m_coord(coord), m_ip(ip), m_port(port) {}
 
 void TcpThread::run() {
@@ -58,7 +58,7 @@ void TcpThread::run() {
 
             std::vector<int> parsedWidths;
 
-            //  std::vector<int> parsedAngles;
+            std::vector<int> parsedAngles;
 
             if (obj.contains("parsing width") && obj["parsing width"].isArray()) {
                 QJsonArray arr = obj["parsing width"].toArray();
@@ -68,19 +68,19 @@ void TcpThread::run() {
                 }
             }
 
-            // if (obj.contains("angle")) {
-            //     const QJsonValue& val = obj["angle"];
-            //     if (val.isArray()) {
-            //         QJsonArray arr = val.toArray();
-            //         parsedAngles.reserve(arr.size());
-            //         for (const QJsonValue& v : arr) {
-            //             parsedAngles.push_back(v.toInt());
-            //         }
-            //     } else if (val.isDouble()) {
-            //         // 단일 값도 받아서 벡터에 하나만 넣기
-            //         parsedAngles.push_back(val.toInt());
-            //     }
-            // }
+            if (obj.contains("angle")) {
+                const QJsonValue& val = obj["angle"];
+                if (val.isArray()) {
+                    QJsonArray arr = val.toArray();
+                    parsedAngles.reserve(arr.size());
+                    for (const QJsonValue& v : arr) {
+                        parsedAngles.push_back(v.toInt());
+                    }
+                } else if (val.isDouble()) {
+                    // 단일 값도 받아서 벡터에 하나만 넣기
+                    parsedAngles.push_back(val.toInt());
+                }
+            }
 
 
             //공유 구조체에 저장 (뮤텍스 잠금)
@@ -91,10 +91,10 @@ void TcpThread::run() {
                 for (int w : parsedWidths) qWidths.append(w);
                 m_coord->width_data = qWidths;
 
-                // QVector<int> qAngles;
-                // qAngles.reserve(parsedAngles.size());
-                // for (int a : parsedAngles) qAngles.append(a);
-                // m_coord->angle_data = qAngles;
+                QVector<int> qAngles;
+                qAngles.reserve(parsedAngles.size());
+                for (int a : parsedAngles) qAngles.append(a);
+                m_coord->angle_data = qAngles;
 
             }
 
