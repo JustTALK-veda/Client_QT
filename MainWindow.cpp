@@ -62,14 +62,16 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+
 {
     ui.setupUi(this);
 
+/*
     //stackwidget이 부모 레이아웃에서 남는 공간
     ui.stackedWidget->setSizePolicy(
         QSizePolicy::Expanding,
         QSizePolicy::Expanding
-    );
+    );*/
     
     // 5) 페이지 생성 및 stackedWidget에 추가
     meetingLocal *meetingLocalPage = new meetingLocal(this);
@@ -79,6 +81,15 @@ MainWindow::MainWindow(QWidget *parent)
     meetingPage->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui.stackedWidget->addWidget(meetingLocalPage);
+=======
+
+    Start *startPage = new Start(this);
+    Lobby *lobbyPage = new Lobby(this);
+    meeting *meetingPage = new meeting(this);
+
+
+
+   
     ui.stackedWidget->addWidget(startPage);
     ui.stackedWidget->addWidget(lobbyPage);
     ui.stackedWidget->addWidget(meetingPage);

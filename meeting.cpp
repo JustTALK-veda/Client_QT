@@ -19,10 +19,14 @@ meeting::meeting(QWidget *parent)
     , ui(new Ui::meetingForm)
 {
     ui->setupUi(this);
+
+
+
     shared_frame_ptr = new cv::Mat();
     // 4) Next 버튼을 눌렀을 때 페이지 전환하도록 연결
     connect(ui->nextButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToNextPage);
     connect(ui->prevButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToPreviousPage);
+    connect(ui->exitButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::close);
 
     QString ip;
     int rtspPort, tcpPort;
@@ -31,11 +35,11 @@ meeting::meeting(QWidget *parent)
     // }
 
     //meta data 수신 스레드
-    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
+    tcpThread = new TcpThread(coord, "192.168.0.85", 12345);
 
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
+    QString rtspUrl = QString("rtsps://192.168.0.85:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
     // bool ok = connect(videoThread, &VideoThread::fullFrame,
