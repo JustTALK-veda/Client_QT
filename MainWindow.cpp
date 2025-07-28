@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "grid.h"
 #include "meeting.h"
 #include "start.h"
 #include "lobby.h"

@@ -1,6 +1,5 @@
 #ifndef CAMERA_WIDGET_H
 #define CAMERA_WIDGET_H
-#include "ui_CameraWidget.h"
 #include <QWidget>
 #include <QTimer>
 #include <QLabel>
@@ -16,6 +15,9 @@ public:
     explicit CameraWidget(QWidget *parent = nullptr, QSize targetSize = QSize());
     ~CameraWidget();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 public slots:
     void startCam();
     void stopCam();
@@ -25,14 +27,13 @@ public slots:
 
 private:
     void initCamoffImage();
-    void resizeEvent(QResizeEvent *event);
+    //void resizeEvent(QResizeEvent *event);
 
 private:
-    Ui::cameraWidgetForm *ui;
     QSize targetSize;
     QImage camoffImage;
     QImage fallbackImage;
-    QLabel* displayLabel;
+    QLabel* webcamLabel;
     QTimer timer;
     cv::VideoCapture cap;
     cv::Mat latest_frame;
