@@ -131,8 +131,8 @@ void Lobby::updateVideoPreview()
                 "font-weight: bold; "
             "}"
         );
-        ui->videoPreview->setText("WebcamPreview appear here");
-        ui->videoPreview->setAlignment(Qt::AlignCenter);
+        //ui->videoPreview->setText("WebcamPreview appear here");
+        //ui->videoPreview->setAlignment(Qt::AlignCenter);
     } else {
         // ui->videoStatusLabel->setText("카메라가 꺼져있습니다");
         ui->videoPreview->setStyleSheet(
@@ -141,8 +141,8 @@ void Lobby::updateVideoPreview()
                 "color: #9CA3AF; "
             "}"
         );
-        ui->videoPreview->setText("📷 camera off"); // Camera off icon
-        ui->videoPreview->setAlignment(Qt::AlignCenter);
+        //ui->videoPreview->setText("📷 camera off"); // Camera off icon
+        //ui->videoPreview->setAlignment(Qt::AlignCenter);
     }
 }
 

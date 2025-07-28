@@ -5,6 +5,14 @@
   <property name="enabled">
    <bool>true</bool>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1054</width>
+    <height>676</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>1</horstretch>
@@ -168,6 +176,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>500</width>
+            <height>0</height>
+           </size>
+          </property>
           <layout class="QVBoxLayout" name="videoLayout">
            <property name="leftMargin">
             <number>16</number>
@@ -182,26 +196,7 @@
             <number>16</number>
            </property>
            <item>
-            <widget class="QLabel" name="videoPreview">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>600</width>
-               <height>400</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Webcam Preview</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
-            </widget>
+            <widget class="CameraWidget" name="videoPreview" native="true"/>
            </item>
           </layout>
          </widget>
@@ -471,6 +466,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CameraWidget</class>
+   <extends>QWidget</extends>
+   <header>CameraWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
