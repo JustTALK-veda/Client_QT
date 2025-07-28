@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QScreen>
 #include <QDebug>
+#include <QSizePolicy>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,13 +20,18 @@ MainWindow::MainWindow(QWidget *parent)
    // , audioEnabled(true)
 {
     ui.setupUi(this);
+    this->resize(1920, 1080);
+    this->setMinimumSize(800, 600);
+
     Start *startPage = new Start(this);
     Lobby *lobbyPage = new Lobby(this);
     meeting *meetingPage = new meeting(this);
 
+    QVBoxLayout* layout = new QVBoxLayout(ui.centralwidget);
+    layout->addWidget(ui.stackedWidget);
 
+    setCentralWidget(ui.stackedWidget);
     ui.stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
 
     ui.stackedWidget->addWidget(startPage);
     ui.stackedWidget->addWidget(lobbyPage);
