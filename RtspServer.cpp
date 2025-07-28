@@ -97,39 +97,6 @@ void start_rtsp_server() {
         "! volume name=mic_vol volume=1.0 mute=false "
         "! avenc_aac bitrate=128000 ! aacparse ! rtpmp4apay name=pay1 pt=97 )";
     gst_rtsp_media_factory_set_launch(factory, launch_pipeline.c_str());
-
-
-
-    // std::string launch_pipeline =
-    //     "( appsrc name=mysrc is-live=true block=true format=TIME "
-    //     "caps=video/x-raw,format=BGR,width=640,height=480,framerate=30/1 "
-    //     "! queue ! videoconvert ! video/x-raw,format=I420 "
-    //     "! x264enc tune=zerolatency bitrate=500 speed-preset=ultrafast key-int-max=30 "
-    //     "! rtph264pay name=pay0 pt=96 ) ( " +
-    //     std::string(audio_src) +
-    //     "! queue "
-    //     "! audioconvert ! audioresample "
-    //     "! audio/x-raw,rate=48000,channels=1 "
-    //     "! volume name=mic_vol volume=1.0 mute=false "
-    //     "! avenc_aac bitrate=128000 ! aacparse ! rtpmp4apay name=pay1 pt=97 )";
-    // gst_rtsp_media_factory_set_launch(factory, launch_pipeline.c_str());
-
-    // gst_rtsp_media_factory_set_launch(factory,
-    //                                   "( appsrc name=mysrc is-live=true block=true format=TIME "
-    //                                   "caps=video/x-raw,format=BGR,width=640,height=480,framerate=30/1 "
-    //                                   "! queue "
-    //                                   "! videoconvert ! video/x-raw,format=I420 "
-    //                                   "! x264enc tune=zerolatency bitrate=500 speed-preset=ultrafast key-int-max=30 "
-    //                                   "! rtph264pay name=pay0 pt=96 ) "
-    //                                   "( wasapisrc low-latency=true "
-    //                                   "! queue "
-    //                                   "! audioconvert ! audioresample "
-    //                                   "! audio/x-raw,rate=48000,channels=2 "
-    //                                   "! volume name=mic_vol volume=1.0 mute=false "
-    //                                   "! avenc_aac bitrate=128000 "
-    //                                   "! aacparse "
-    //                                   "! rtpmp4apay name=pay1 pt=97 )"
-    //                                   );
     gst_rtsp_media_factory_set_shared(factory, TRUE);
     g_signal_connect(factory, "media-configure", G_CALLBACK(on_media_configure), nullptr);
 
