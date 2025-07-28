@@ -120,6 +120,7 @@ qt_add_executable(JustTalk
     Resources.qrc
     grid.cpp grid.h grid.ui
     meeting.h meeting.cpp meeting.ui
+    lobby_origin.ui
 
 
 

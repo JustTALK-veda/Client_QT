@@ -2,25 +2,44 @@
 #define LOBBY_H
 
 #include <QWidget>
-#include "CameraWidget.h"
+#include <QTimer>
 
-namespace Ui {
-class Lobby;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class Lobby; }
+QT_END_NAMESPACE
 
 class Lobby : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Lobby(QWidget *parent = nullptr);
+    Lobby(QWidget *parent = nullptr);
     ~Lobby();
-
-private:
-    Ui::Lobby *ui;
 
 signals:
     void enterMeetingRequested();
+    void goBackRequested();
+
+private slots:
+    void setVideoEnabled(bool enabled);
+    void setAudioEnabled(bool enabled);
+    void updateTime();
+    void handleJoinMeeting();
+    void toggleMeetingStatus();
+    void showSettings();
+
+private:
+    void updateVideoPreview();
+    void updateMeetingStatus();
+    void updateJoinButton();
+
+    Ui::Lobby *ui;
+    QTimer *timeTimer;
+    
+    bool videoEnabled;
+    bool audioEnabled;
+    bool isConnecting;
+    bool meetingInProgress;
 };
 
 #endif // LOBBY_H

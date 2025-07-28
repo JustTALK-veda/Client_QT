@@ -8,7 +8,6 @@ meeting::meeting(QWidget *parent)
 {
     ui->setupUi(this);
     grid* gridPage = new grid(this);
-
     // 페이지 등록
     ui->stackedWidget->addWidget(gridPage);
 }
