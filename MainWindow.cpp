@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     // 중앙 위젯 설정
     QWidget* central = new QWidget(this);
+    central->setStyleSheet("background-color: #101828;");
     this->setCentralWidget(central);
 
     // 전체 레이아웃

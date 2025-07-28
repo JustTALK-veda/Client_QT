@@ -35,11 +35,11 @@ meeting::meeting(QWidget *parent)
     // }
 
     //meta data 수신 스레드
-    tcpThread = new TcpThread(coord, "192.168.0.60", 12345);
+    tcpThread = new TcpThread(coord, "192.168.0.85", 12345);
 
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
+    QString rtspUrl = QString("rtsps://192.168.0.85:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
