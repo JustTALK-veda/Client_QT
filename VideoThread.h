@@ -18,6 +18,7 @@ class VideoThread : public QThread {
 signals:
     void cropped(int index,const QPixmap& pixmap); //Index 번째 크롭된 이미지를 전달
     void fullFrame(const QPixmap &pix);//전체 프레임용 시그널
+    void highlightIndexChanged(const int index);
 
 
 
