@@ -19,9 +19,9 @@ set(PROJECT_SOURCES
 
         VideoThread.h
         VideoThread.cpp
-        meeting.ui
-        meeting.h
-        meeting.cpp
+        grid.ui
+        grid.h
+        grid.cpp
         # Coordinate.h
         # TcpThread.h
         # TcpThread.cpp
@@ -111,13 +111,15 @@ qt_add_executable(JustTalk
     RtspServer.h RtspServer.cpp
     audio_control.h audio_control.cpp
     CameraWidget.h CameraWidget.cpp
-    CameraWidget.ui
+
     lobby.h lobby.cpp lobby.ui
     stackpage.h stackpage.cpp
     pagewidget.h pagewidget.cpp
     start.h start.cpp start.ui
     meetinglocal.h meetinglocal.cpp meetinglocal.ui
     Resources.qrc
+    grid.cpp grid.h grid.ui
+    meeting.h meeting.cpp meeting.ui
 
 
 

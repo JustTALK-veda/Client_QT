@@ -47,7 +47,7 @@ void Stackpage::setLabel(int globalIndex, const QPixmap& pix) {
 
     while (pageIndex >= pages.size()) {
         PageWidget* page = new PageWidget(this);
-        page->setMinimumSize(2*480 + 10, 2*360 + 100);
+        page->setMinimumSize(2*480, 2*360);
         this->addWidget(page);
         pages.push_back(page);
     }
