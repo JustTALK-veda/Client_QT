@@ -35,19 +35,15 @@ meeting::meeting(QWidget *parent)
     // }
 
     //meta data 수신 스레드
-    tcpThread = new TcpThread(coord, "192.168.219.132", 12345);
+    tcpThread = new TcpThread(coord, "192.168.0.60", 12345);
 
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://192.168.219.132:8555/test");
+    QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
-    // bool ok = connect(videoThread, &VideoThread::fullFrame,
-    //                   this, &meeting::updatePano,
-    //                   Qt::QueuedConnection);
-    // qDebug() << "VideoThread::fullFrame connected?" << ok;
-    //connect(videoThread, &VideoThread::cropped, this, &meeting::onCropped, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
+    connect(videoThread, &VideoThread::highlightIndexChanged, ui->stackedWidget, &Stackpage::highlightLabel);
     videoThread->start();
 
     // 웹캠 다이얼로그 추가
@@ -56,7 +52,7 @@ meeting::meeting(QWidget *parent)
     camDialog->resize(240, 180);
     camerawidget = new CameraWidget(camDialog, QSize(320, 240));
     camDialog->show();
-    std::thread(start_rtsp_server).detach();
+    //std::thread(start_rtsp_server).detach();
 }
 
 meeting::~meeting() {
@@ -67,67 +63,13 @@ meeting::~meeting() {
     delete tcpThread;
     delete coord;
 }
-/*
-void meeting::setupPages() {
-    const int cols = 2;
-    const int total = (labels.size() + perPage - 1) / perPage;
-
-    // 첫 페이지(ui->page)는 Designer에서 만든 gridLayout을 그대로 사용
-    QGridLayout *g = ui->gridLayout;
-    g->setContentsMargins(0, 0, 0, 0);
-    g->setSpacing(5);
-
-    // 기존 첫 페이지에 참여자(라벨) 추가
-    for (int i = 0; i < perPage && i < labels.size(); ++i) {
-        g->addWidget(labels[i], i / cols, i % cols);
-    }
-
-    // 2번째 페이지부터 동적으로 생성
-    for (int p = 1; p < total; ++p) {
-        QWidget *page = new QWidget(ui->stackedWidget);
-        QGridLayout *grid = new QGridLayout(page);
-        grid->setContentsMargins(0, 0, 0, 0);
-        grid->setSpacing(5);
-
-        for (int i = 0; i < perPage; ++i) {
-            int idx = p * perPage + i;
-            if (idx >= labels.size()) break;
-            grid->addWidget(labels[idx], i / cols, i % cols);
-        }
-        ui->stackedWidget->addWidget(page);
-    }
-}*/
-
 
 void meeting::updatePano(const QPixmap &pix) {
-    qDebug() << "pano size =";
-
-        //ui->pano->size();  // ← 확인
     ui->pano->setPixmap(pix.scaled(
         ui->pano->size(),
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation));
 }
-/*
-void meeting::onCropped(int index, const QPixmap &pix) {
-
-    QLabel *target = labels[index];
-
-    if (pix.isNull()) {
-        target->hide();
-    } else {
-        target->show();
-        target->setPixmap(pix);
-    }
-
-    // 현재 index 이후 레이블은 보이지 않게
-    for (int i = index + 1; i < labels.size(); ++i) {
-        labels[i]->hide();
-    }
-    if (index < labels.size()) {
-        labels[index]->setPixmap(pix);  // 해당 크롭된 이미지를 QLabel에 설정
-    }
-}*/
 
 bool meeting::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
     QFile file("config/rpi_ip.json");

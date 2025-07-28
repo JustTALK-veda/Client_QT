@@ -25,19 +25,19 @@ void VideoThread::run() {
     QString pipelineStr;
 
 #ifdef _WIN32
-    // pipelineStr = QString(
-    //                   "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-    //                   "decodebin ! "
-    //                   "videoconvert ! "
-    //                   "video/x-raw,format=RGB ! "
-    //                   "appsink name=mysink"
-    //                   ).arg(m_url);
-    //audio
     pipelineStr = QString(
-                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
-                      "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
-                      "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
+                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                      "decodebin ! "
+                      "videoconvert ! "
+                      "video/x-raw,format=RGB ! "
+                      "appsink name=mysink"
                       ).arg(m_url);
+    //audio
+    // pipelineStr = QString(
+    //                   "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
+    //                   "src. ! application/x-rtp,media=video ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
+    //                   "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
+    //                   ).arg(m_url);
 #elif __APPLE__
     pipelineStr = QString(
                         "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
@@ -56,35 +56,6 @@ void VideoThread::run() {
     //                   "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
     //                   ).arg(m_url);
 #endif
-    //Mac
-    //QString pipelineStr = QString(
-                              //window ver.
-                              // QString pipelineStr = QString(
-                              //                           "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                              //                           "decodebin ! "
-                              //                           "videoconvert ! "
-                              //                           "video/x-raw,format=RGB ! "
-                              //                           "appsink name=mysink"
-                              //                           ).arg(m_url);
-                              // "rtspsrc name = src location=%1 latency=100 !" //인증서 검증 건너뛴다.
-                              // "application/x-rtp,media=video,encoding-name=H264 ! "
-                              // "rtph264depay ! "
-                              // "h264parse ! "
-                              // "vtdec ! "             // ← 여기서 하드웨어 디코딩
-                              // "videoconvert ! "
-                              // "video/x-raw,format=RGB ! "
-                              // "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
-                              // ).arg(m_url);
-                              // "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                              // "application/x-rtp,media=video,encoding-name=H264 ! "
-                              // "rtph264depay ! "
-                              // "h264parse ! "
-                              // "vtdec ! "             // ← 여기서 하드웨어 디코딩
-                              // "videoconvert ! "
-                              // "video/x-raw,format=RGB ! "
-                              // "appsink name=mysink"  // ← Qt에서 프레임을 가져오기 위한 sink
-                              // ).arg(m_url);
-
 
     qDebug() << "[VideoThread] pipeline =" << pipelineStr;
 
@@ -117,7 +88,6 @@ void VideoThread::run() {
     constexpr int W = 480, H = 360;
     const int THRESHOLD = 5;
 
-
     while (!m_stop)
     {
         qDebug() << "[VideoThread] sample 수신 대기 중";
@@ -148,40 +118,40 @@ void VideoThread::run() {
         qDebug() << "[VideoThread] width =" << width << ", height =" << height;
 
         cv::Mat mat(height, width, CV_8UC3, (char*)map.data);
-        cv::Mat copy = mat.clone();
+        //cv::Mat copy = mat.clone();
 
-        gst_buffer_unmap(buffer, &map);
-        gst_sample_unref(sample);
+        // gst_buffer_unmap(buffer, &map);
+        // gst_sample_unref(sample);
 
-        QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
+        // QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
 
-        if (fullImg.isNull())
-        {
-            qDebug() << "[VideoThread] QImage 생성 실패";
-            continue;
-        }
-        qDebug() << "[VideoThread] QImage 생성 성공";
-        //fps계산( 풀 프레임 기준 )
+        // if (fullImg.isNull())
+        // {
+        //     qDebug() << "[VideoThread] QImage 생성 실패";
+        //     continue;
+        // }
+        // qDebug() << "[VideoThread] QImage 생성 성공";
+        // //fps계산( 풀 프레임 기준 )
 
-        fpsTimer.start();
+        // fpsTimer.start();
 
-        fpsFrameCount = 0;
+        // fpsFrameCount = 0;
 
-        fpsFrameCount++;
+        // fpsFrameCount++;
 
-        if (fpsTimer.elapsed() >= 1000) {
-            double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
-            qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
-            fpsTimer.restart();
-            fpsFrameCount = 0;
-        }
+        // if (fpsTimer.elapsed() >= 1000) {
+        //     double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
+        //     qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
+        //     fpsTimer.restart();
+        //     fpsFrameCount = 0;
+        // }
 
-        QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
+        // QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
 
-        qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
-        emit fullFrame(fullPix);
-        int fullW=fullPix.width();
-        int fullH=fullPix.height();
+        // qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
+        // emit fullFrame(fullPix);
+        // int fullW=fullPix.width();
+        // int fullH=fullPix.height();
 
         QVector<int> wdata;
 
@@ -222,6 +192,38 @@ void VideoThread::run() {
                           cv::Scalar(0, 255, 0), 2);
         }
 
+        /*하이라이팅 테스트하려고 밑으로 내렸음*/
+        cv::Mat copy = mat.clone();
+
+        gst_buffer_unmap(buffer, &map);
+        gst_sample_unref(sample);
+
+        QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
+
+        if (fullImg.isNull())
+        {
+            // qDebug() << "[VideoThread] QImage 생성 실패";
+            continue;
+        }
+        //  qDebug() << "[VideoThread] QImage 생성 성공";
+        //fps계산( 풀 프레임 기준 )
+
+        fpsFrameCount++;
+
+        if (fpsTimer.elapsed() >= 1000) {
+            double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
+            qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
+            fpsTimer.restart();
+            fpsFrameCount = 0;
+        }
+
+        QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
+
+        // qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
+        emit fullFrame(fullPix);
+        int fullW=fullPix.width();
+        int fullH=fullPix.height();
+        /*하이라이팅 테스트하려고 밑으로 내렸음*/
 
         // ’wdata’ 크기가 4의 배수인지 확인
         int rectCount = wdata.size() / 4;
@@ -238,6 +240,7 @@ void VideoThread::run() {
 
         int highlighted_rect_index = -1; // 하이라이팅할 인덱스
         int min_distance = fullW;
+        QColor myColor(237, 107, 6);
 
         for (int i = 0; i < rectCount; ++i) {
             int cx = wdata[4*i + 0];
@@ -263,14 +266,17 @@ void VideoThread::run() {
             }
 
             if (highlighted_rect_index != -1) {
-
-
                 QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
                 QPainter painter(&highlighted_pix);
-                painter.setPen(QPen(Qt::yellow, 5));
-                painter.setBrush(Qt::NoBrush);
-                painter.drawRect(0, 0, W + 10, H + 10);
+                int radius = 5;
+                int margin = 10;
+                int center_x = highlighted_pix.width() - radius - margin;
+                int center_y = radius + margin;
+                painter.setBrush(myColor);
+                painter.setPen(Qt::NoPen);
+                painter.drawEllipse(QPoint(center_x, center_y), radius, radius);
                 painter.end();
+                emit highlightIndexChanged(highlighted_rect_index);
 
             }
             else {

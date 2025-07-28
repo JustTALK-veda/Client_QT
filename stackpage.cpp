@@ -47,15 +47,30 @@ void Stackpage::setLabel(int globalIndex, const QPixmap& pix) {
 
     while (pageIndex >= pages.size()) {
         PageWidget* page = new PageWidget(this);
+        page->setMinimumSize(2*480 + 10, 2*360 + 100);
         this->addWidget(page);
         pages.push_back(page);
     }
-
     QLabel* lbl = pages[pageIndex]->labelAt(labelIndex);
     if (lbl) {
         lbl->setPixmap(pix);
         lbl->show();
     }
+}
 
-    //setCurrentIndex(pageIndex);  // 해당 페이지로 자동 전환 (선택)
+void Stackpage::highlightLabel(int globalIndex) {
+    int pageIndex = globalIndex / perPage;
+    int labelIndex = globalIndex % perPage;
+
+    // 모든 페이지의 모든 라벨 초기화
+    for (auto* page : pages) {
+        page->clearHighlights();
+    }
+
+    // 강조할 라벨 하나만 처리
+    if (pageIndex < pages.size()) {
+        pages[pageIndex]->highlightLabel(labelIndex);
+    } else {
+        qDebug() << "[Stackpage] highlight index out of bounds:" << globalIndex;
+    }
 }

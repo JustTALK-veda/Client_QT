@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QLabel>
-#include <vector>
 
 class PageWidget : public QWidget {
     Q_OBJECT
@@ -18,6 +17,9 @@ public:
 private:
     QGridLayout* layout;
     std::vector<QLabel*> labels;
+public slots:
+    void highlightLabel(int index);
+    void clearHighlights();
 };
 
 #endif // PAGEWIDGET_H
