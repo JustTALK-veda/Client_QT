@@ -1,5 +1,4 @@
 #include "MainWindow.h"
-#include "ui_MainWindow.h"
 #include "meeting.h"
 #include "start.h"
 #include "lobby.h"
@@ -15,28 +14,41 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    //, webcamTimer(new QTimer(this))
-   // , audioEnabled(true)
 {
-    ui.setupUi(this);
-    Start *startPage = new Start(this);
-    Lobby *lobbyPage = new Lobby(this);
-    meeting *meetingPage = new meeting(this);
+    // 중앙 위젯 설정
+    QWidget* central = new QWidget(this);
+    this->setCentralWidget(central);
 
+    // 전체 레이아웃
+    QVBoxLayout* mainLayout = new QVBoxLayout(central);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
 
-    ui.stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // QStackedWidget 생성 및 추가
+    stackedWidget = new QStackedWidget(this);
+    stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mainLayout->addWidget(stackedWidget);
 
+    // 페이지 생성
+    Start* startPage = new Start(this);
+    Lobby* lobbyPage = new Lobby(this);
+    meeting* meetingPage = new meeting(this);
 
-    ui.stackedWidget->addWidget(startPage);
-    ui.stackedWidget->addWidget(lobbyPage);
-    ui.stackedWidget->addWidget(meetingPage);
+    // 페이지 등록
+    stackedWidget->addWidget(startPage);
+    stackedWidget->addWidget(lobbyPage);
+    stackedWidget->addWidget(meetingPage);
 
-    ui.stackedWidget->setCurrentWidget(startPage);
-    connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=](){
-        ui.stackedWidget->setCurrentWidget(meetingPage);
+    // 초기 페이지 설정
+    stackedWidget->setCurrentWidget(startPage);
+
+    // 페이지 전환 연결
+    connect(startPage, &Start::enterRemotePageRequested, this, [=]() {
+        stackedWidget->setCurrentWidget(lobbyPage);
     });
-    connect(startPage, &Start::enterRemotePageRequested, this, [=](){
-        ui.stackedWidget->setCurrentWidget(lobbyPage);
+
+    connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
+        stackedWidget->setCurrentWidget(meetingPage);
     });
 }
 MainWindow::~MainWindow(){}

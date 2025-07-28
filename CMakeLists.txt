@@ -16,7 +16,7 @@ set(PROJECT_SOURCES
         main.cpp
         MainWindow.cpp
         MainWindow.h
-        MainWindow.ui
+
         VideoThread.h
         VideoThread.cpp
         meeting.ui
