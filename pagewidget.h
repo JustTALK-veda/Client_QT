@@ -17,9 +17,6 @@ public:
 private:
     QGridLayout* layout;
     std::vector<QLabel*> labels;
-public slots:
-    void highlightLabel(int index);
-    void clearHighlights();
 };
 
 #endif // PAGEWIDGET_H
