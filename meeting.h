@@ -2,46 +2,21 @@
 #define MEETING_H
 
 #include <QWidget>
-#include "ui_Meeting.h"
-#include "stackpage.h"
-#include "VideoThread.h"
-#include "Coordinate.h"
-#include "TcpThread.h"
-#include "RtspServer.h"
-#include "audio_control.h"
-#include "CameraWidget.h"
+
+namespace Ui {
+class meeting;
+}
 
 class meeting : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit meeting(QWidget *parent = nullptr);
     ~meeting();
 
 private:
-    Ui::meetingForm *ui;
-    QDialog *camDialog = nullptr;
-    CameraWidget *camerawidget = nullptr;
-
-    //QLabel* pano = nullptr;
-    QVector<QLabel*> labels;
-    const int perPage=4;
-
-    VideoThread *videoThread;
-    TcpThread   *tcpThread;
-    Coordinate  *coord;
-    // QTimer      *webcamTimer;
-    // bool         audioEnabled;
-    // QWidget *container;
-
-    void setupPages();
-    bool loadConfigFromJson(QString &ip,int &rtspPort,int &tcpPort);
-
-signals:
-
-private slots:
-    //void onCropped(int index, const QPixmap &pix);
-    void updatePano(const QPixmap &pix);
+    Ui::meeting *ui;
 };
 
 #endif // MEETING_H
