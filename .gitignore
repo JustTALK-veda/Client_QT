@@ -10,3 +10,5 @@ CMakeLists.txt.user
 
 .DS_Store
 Info.plist
+
+.vscode/
