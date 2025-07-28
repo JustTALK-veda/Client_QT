@@ -15,15 +15,20 @@ Lobby::Lobby(QWidget *parent)
     , meetingInProgress(true)
 {
     ui->setupUi(this);
-    this->setFixedSize(this->sizeHint());
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // this->setFixedSize(this->sizeHint());
+    // this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    ui->contentLayout->insertStretch(0,1);
-    ui->contentLayout->addStretch(1);
+    // ui->contentLayout->insertStretch(0,1);
+    // ui->contentLayout->addStretch(1);
+
+    // ui->contentLayout->setAlignment(Qt::AlignCenter);
+    // this->adjustSize();
 
     // Set dark theme colors
     setStyleSheet(
         "QWidget#Lobby { background-color: #101828; }"
+        "QWidget#content { background-color: #101828; }"
+
         "QLabel { color: white; }"
         "QPushButton { "
             "background-color: #ED6B06; "
@@ -116,7 +121,7 @@ void Lobby::updateTime()
 void Lobby::updateVideoPreview()
 {
     if (videoEnabled) {
-        ui->videoStatusLabel->setText("카메라 미리보기");
+        // ui->videoStatusLabel->setText("카메라 미리보기");
         ui->videoPreview->setStyleSheet(
             "QLabel { "
                 "background-color: #1E2939; "
@@ -126,17 +131,17 @@ void Lobby::updateVideoPreview()
                 "font-weight: bold; "
             "}"
         );
-        ui->videoPreview->setText("U"); // First letter of username
+        ui->videoPreview->setText("WebcamPreview appear here");
         ui->videoPreview->setAlignment(Qt::AlignCenter);
     } else {
-        ui->videoStatusLabel->setText("카메라가 꺼져있습니다");
+        // ui->videoStatusLabel->setText("카메라가 꺼져있습니다");
         ui->videoPreview->setStyleSheet(
             "QLabel { "
                 "background-color: #1E2939; "
                 "color: #9CA3AF; "
             "}"
         );
-        ui->videoPreview->setText("📷"); // Camera off icon
+        ui->videoPreview->setText("📷 camera off"); // Camera off icon
         ui->videoPreview->setAlignment(Qt::AlignCenter);
     }
 }

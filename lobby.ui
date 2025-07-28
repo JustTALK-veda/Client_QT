@@ -2,22 +2,23 @@
 <ui version="4.0">
  <class>Lobby</class>
  <widget class="QWidget" name="Lobby">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1200</width>
-    <height>800</height>
-   </rect>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>1</horstretch>
+    <verstretch>1</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>JustTALK - 대기실</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout">
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0">
    <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
     <number>0</number>
    </property>
    <property name="topMargin">
@@ -30,8 +31,13 @@
     <number>0</number>
    </property>
    <item>
-    <!-- Header -->
     <widget class="QFrame" name="headerFrame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -44,7 +50,7 @@
        <height>80</height>
       </size>
      </property>
-     <layout class="QHBoxLayout" name="headerLayout">
+     <layout class="QHBoxLayout" name="headerLayout" stretch="1,1,1,1">
       <property name="leftMargin">
        <number>32</number>
       </property>
@@ -53,18 +59,18 @@
       </property>
       <item>
        <widget class="QLabel" name="logoLabel">
-        <property name="text">
-         <string>🔶 JustTALK</string>
-        </property>
         <property name="styleSheet">
          <string>font-size: 18px; font-weight: bold; color: white;</string>
+        </property>
+        <property name="text">
+         <string>🔶 JustTALK</string>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="headerSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -76,19 +82,16 @@
       </item>
       <item>
        <widget class="QLabel" name="timeLabel">
-        <property name="text">
-         <string>00:00</string>
-        </property>
         <property name="styleSheet">
          <string>color: white; font-size: 14px;</string>
+        </property>
+        <property name="text">
+         <string>00:00</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="backButton">
-        <property name="text">
-         <string>뒤로가기</string>
-        </property>
         <property name="styleSheet">
          <string>
           QPushButton {
@@ -103,169 +106,166 @@
           }
          </string>
         </property>
+        <property name="text">
+         <string>뒤로가기</string>
+        </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <!-- Main Content -->
-    <widget class="QWidget" name="contentWidget">
-     <layout class="QHBoxLayout" name="contentLayout">
-      <property name="leftMargin">
-       <number>32</number>
-      </property>
-      <property name="rightMargin">
-       <number>32</number>
-      </property>
-      <property name="topMargin">
-       <number>32</number>
-      </property>
-      <property name="bottomMargin">
-       <number>32</number>
-      </property>
+    <widget class="QWidget" name="content" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <!-- Video Preview Section -->
-       <widget class="QFrame" name="videoFrame">
-        <property name="minimumSize">
+       <spacer name="contentSpacer_top">
+        <property name="orientation">
+         <enum>Qt::Orientation::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>600</width>
-          <height>400</height>
+          <width>20</width>
+          <height>40</height>
          </size>
         </property>
-        <layout class="QVBoxLayout" name="videoLayout">
-         <property name="leftMargin">
-          <number>16</number>
-         </property>
-         <property name="rightMargin">
-          <number>16</number>
-         </property>
-         <property name="topMargin">
-          <number>16</number>
-         </property>
-         <property name="bottomMargin">
-          <number>16</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="videoPreview">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>100</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>U</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="videoStatusLabel">
-           <property name="text">
-            <string>카메라 미리보기</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="styleSheet">
-            <string>color: white; font-size: 16px;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="userNameLabel">
-           <property name="text">
-            <string>사용자 (나)</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="styleSheet">
-            <string>
-             background-color: #030213;
-             color: white;
-             padding: 4px 12px;
-             border-radius: 4px;
-             font-size: 12px;
-            </string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+       </spacer>
       </item>
       <item>
-       <!-- Controls Section -->
-       <widget class="QWidget" name="controlsWidget">
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>0</height>
-         </size>
+       <layout class="QHBoxLayout" name="contentLayout" stretch="0,2,0,0">
+        <property name="spacing">
+         <number>0</number>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>300</width>
-          <height>16777215</height>
-         </size>
+        <property name="leftMargin">
+         <number>32</number>
         </property>
-        <layout class="QVBoxLayout" name="controlsLayout">
-         <item>
-          <!-- Device Controls -->
-          <widget class="QFrame" name="controlsFrame">
-           <layout class="QVBoxLayout" name="deviceLayout">
-            <property name="leftMargin">
-             <number>16</number>
-            </property>
-            <property name="rightMargin">
-             <number>16</number>
-            </property>
-            <property name="topMargin">
-             <number>16</number>
-            </property>
-            <property name="bottomMargin">
-             <number>16</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="deviceLabel">
-              <property name="text">
-               <string>장치 설정</string>
-              </property>
-              <property name="styleSheet">
-               <string>color: white; font-size: 16px; font-weight: bold;</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="videoToggle">
-              <property name="text">
-               <string>📹 카메라</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="audioToggle">
-              <property name="text">
-               <string>🎤 마이크</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="settingsButton">
-              <property name="text">
-               <string>⚙️ 고급 설정</string>
-              </property>
-              <property name="styleSheet">
-               <string>
+        <property name="topMargin">
+         <number>32</number>
+        </property>
+        <property name="rightMargin">
+         <number>32</number>
+        </property>
+        <property name="bottomMargin">
+         <number>32</number>
+        </property>
+        <item>
+         <spacer name="horizontalSpacer_left">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QFrame" name="videoFrame">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QVBoxLayout" name="videoLayout">
+           <property name="leftMargin">
+            <number>16</number>
+           </property>
+           <property name="topMargin">
+            <number>16</number>
+           </property>
+           <property name="rightMargin">
+            <number>16</number>
+           </property>
+           <property name="bottomMargin">
+            <number>16</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="videoPreview">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>600</width>
+               <height>400</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Webcam Preview</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="controlWidget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QVBoxLayout" name="controlsLayout">
+             <item>
+              <widget class="QFrame" name="controlsFrame">
+               <layout class="QVBoxLayout" name="deviceLayout">
+                <property name="leftMargin">
+                 <number>16</number>
+                </property>
+                <property name="topMargin">
+                 <number>16</number>
+                </property>
+                <property name="rightMargin">
+                 <number>16</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>16</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="deviceLabel">
+                  <property name="styleSheet">
+                   <string>color: white; font-size: 16px; font-weight: bold;</string>
+                  </property>
+                  <property name="text">
+                   <string>장치 설정</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="videoToggle">
+                  <property name="text">
+                   <string>📹 카메라</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="audioToggle">
+                  <property name="text">
+                   <string>🎤 마이크</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="settingsButton">
+                  <property name="styleSheet">
+                   <string>
                 QPushButton {
                  background-color: transparent;
                  border: 1px solid #4A5972;
@@ -277,110 +277,109 @@
                  background-color: #4A5972;
                 }
                </string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <!-- Meeting Status -->
-          <widget class="QFrame" name="statusFrame">
-           <property name="styleSheet">
-            <string>
+                  </property>
+                  <property name="text">
+                   <string>⚙️ 고급 설정</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="statusFrame">
+               <property name="styleSheet">
+                <string>
              QFrame {
               background-color: #364153;
               border: 1px solid #4A5972;
               border-radius: 8px;
              }
             </string>
-           </property>
-           <layout class="QVBoxLayout" name="statusLayout">
-            <property name="leftMargin">
-             <number>16</number>
-            </property>
-            <property name="rightMargin">
-             <number>16</number>
-            </property>
-            <property name="topMargin">
-             <number>16</number>
-            </property>
-            <property name="bottomMargin">
-             <number>16</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="statusTitleLabel">
-              <property name="text">
-               <string>회의 상태</string>
-              </property>
-              <property name="styleSheet">
-               <string>color: white; font-size: 16px; font-weight: bold;</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="statusIndicatorLayout">
-              <item>
-               <widget class="QLabel" name="meetingStatusIndicator">
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+               </property>
+               <layout class="QVBoxLayout" name="statusLayout">
+                <property name="leftMargin">
+                 <number>16</number>
                 </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+                <property name="topMargin">
+                 <number>16</number>
                 </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="meetingStatusLabel">
-                <property name="text">
-                 <string>회의중</string>
+                <property name="rightMargin">
+                 <number>16</number>
                 </property>
-                <property name="styleSheet">
-                 <string>color: white; font-size: 14px;</string>
+                <property name="bottomMargin">
+                 <number>16</number>
                 </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="statusSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="meetingDescLabel">
-              <property name="text">
-               <string>현재 회의가 진행 중입니다. 참가할 수 있습니다.</string>
-              </property>
-              <property name="styleSheet">
-               <string>color: #9CA3AF; font-size: 12px;</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="statusToggleButton">
-              <property name="text">
-               <string>상태 변경 (데모용)</string>
-              </property>
-              <property name="styleSheet">
-               <string>
+                <item>
+                 <widget class="QLabel" name="statusTitleLabel">
+                  <property name="styleSheet">
+                   <string>color: white; font-size: 16px; font-weight: bold;</string>
+                  </property>
+                  <property name="text">
+                   <string>회의 상태</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="statusIndicatorLayout">
+                  <item>
+                   <widget class="QLabel" name="meetingStatusIndicator">
+                    <property name="minimumSize">
+                     <size>
+                      <width>16</width>
+                      <height>16</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16</width>
+                      <height>16</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="meetingStatusLabel">
+                    <property name="styleSheet">
+                     <string>color: white; font-size: 14px;</string>
+                    </property>
+                    <property name="text">
+                     <string>회의중</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="statusSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="meetingDescLabel">
+                  <property name="styleSheet">
+                   <string>color: #9CA3AF; font-size: 12px;</string>
+                  </property>
+                  <property name="text">
+                   <string>현재 회의가 진행 중입니다. 참가할 수 있습니다.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="statusToggleButton">
+                  <property name="styleSheet">
+                   <string>
                 QPushButton {
                  background-color: transparent;
                  border: 1px solid #4A5972;
@@ -393,118 +392,76 @@
                  background-color: #4A5972;
                 }
                </string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <spacer name="controlsSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <!-- Join Button -->
-          <widget class="QPushButton" name="enterButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>48</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>회의 참가</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="connectionStatusLabel">
-           <property name="text">
-            <string></string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="styleSheet">
-            <string>color: #9CA3AF; font-size: 12px;</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-           <property name="visible">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+                  </property>
+                  <property name="text">
+                   <string>상태 변경 (데모용)</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="enterButton">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>48</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>회의 참가</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="connectionStatusLabel">
+               <property name="visible">
+                <bool>false</bool>
+               </property>
+               <property name="styleSheet">
+                <string>color: #9CA3AF; font-size: 12px;</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_right">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <!-- Ready Status Footer -->
-    <widget class="QWidget" name="footerWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>60</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>60</height>
-      </size>
-     </property>
-     <layout class="QHBoxLayout" name="footerLayout">
       <item>
-       <spacer name="footerLeftSpacer">
+       <spacer name="contentSpacer_bottom">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="readyStatusLabel">
-        <property name="text">
-         <string>🟠 준비 완료</string>
-        </property>
-        <property name="styleSheet">
-         <string>
-          background-color: #364153;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 16px;
-          font-size: 12px;
-         </string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="footerRightSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
+          <width>20</width>
+          <height>40</height>
          </size>
         </property>
        </spacer>
