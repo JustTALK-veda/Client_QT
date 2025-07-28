@@ -1,6 +1,5 @@
 #include "CameraWidget.h"
 #include "RtspServer.h"
-#include "ui_CameraWidget.h"
 #include "audio_control.h"
 
 #include <QVBoxLayout>
@@ -9,23 +8,18 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-CameraWidget::CameraWidget(QWidget *parent, QSize targetSize) : QWidget(parent), targetSize(targetSize), ui(new Ui::cameraWidgetForm) {
-    ui->setupUi(this);
-    connect(ui->CamButton, &QPushButton::clicked, this, &CameraWidget::onCamButtonClicked);
-    connect(ui->MicButton, &QPushButton::clicked, this, &CameraWidget::onMicButtonClicked);
+CameraWidget::CameraWidget(QWidget *parent, QSize targetSize) : QWidget(parent), targetSize(targetSize) {
+    webcamLabel = new QLabel(this);
+    webcamLabel->setAlignment(Qt::AlignCenter);
+    webcamLabel->setScaledContents(false);
+    webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     if (targetSize.isValid()) {
-        ui->webcam->setMinimumSize(targetSize);   // 최소 크기만 설정
-        ui->webcam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    } else {
-        ui->webcam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        webcamLabel->setMinimumSize(targetSize);   // 최소 크기만 설정
     }
 
-    ui->webcam->setAlignment(Qt::AlignCenter);
-    ui->webcam->setScaledContents(false);  // 우리가 scaled()를 직접 적용할 것임
-
     initCamoffImage();  // ← camoff 초기화
-    ui->webcam->setPixmap(QPixmap::fromImage(fallbackImage));
+    webcamLabel->setPixmap(QPixmap::fromImage(fallbackImage));
 
     connect(&timer, &QTimer::timeout, this, &CameraWidget::captureFrame);
 }
@@ -66,7 +60,7 @@ void CameraWidget::startCam() {
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
 
     if (!cap.isOpened()) {
-        ui->webcam->setText("cannot open cam");
+        webcamLabel->setText("cannot open cam");
         return;
     }
     timer.start(30);
@@ -77,7 +71,7 @@ void CameraWidget::stopCam() {
     if (cap.isOpened()) {
         cap.release();
     }
-    ui->webcam->setPixmap(QPixmap::fromImage(fallbackImage));
+    webcamLabel->setPixmap(QPixmap::fromImage(fallbackImage));
     std::lock_guard<std::mutex> lock(frame_mutex);
     if (shared_frame_ptr)
         shared_frame_ptr->release();
@@ -96,13 +90,13 @@ void CameraWidget::captureFrame() {
     }
     QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_BGR888);
 
-    QSize displaySize = ui->webcam->contentsRect().size();
+    QSize displaySize = webcamLabel->contentsRect().size();
     QPixmap scaledPix = QPixmap::fromImage(img).scaled(
         displaySize,
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation);
 
-    ui->webcam->setPixmap(scaledPix);
+    webcamLabel->setPixmap(scaledPix);
 }
 
 // 마이크 버튼 토글
@@ -110,7 +104,6 @@ void CameraWidget::onMicButtonClicked()
 {
     micEnabled = !micEnabled;
     set_mic_enabled(micEnabled);
-    ui->MicButton->setText(micEnabled ? "마이크 ON" : "마이크 OFF");
 }
 
 // 웹캠 버튼 토글
@@ -120,11 +113,9 @@ void CameraWidget::onCamButtonClicked()
     if (camEnabled) {
         enable_streaming(true);
         startCam();
-        ui->CamButton->setText("웹캠 ON");
     } else {
         enable_streaming(false);
         stopCam();
-        ui->CamButton->setText("웹캠 OFF");
     }
 }
 
@@ -133,11 +124,11 @@ void CameraWidget::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
     if (!latest_frame.empty()) {
         QImage img(latest_frame.data, latest_frame.cols, latest_frame.rows, latest_frame.step, QImage::Format_BGR888);
-        QSize displaySize = ui->webcam->contentsRect().size();  // 실제 그려지는 영역
+        QSize displaySize = webcamLabel->contentsRect().size();  // 실제 그려지는 영역
         QPixmap scaledPix = QPixmap::fromImage(img).scaled(
             displaySize,
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
-        ui->webcam->setPixmap(scaledPix);
+        webcamLabel->setPixmap(scaledPix);
     }
 }
