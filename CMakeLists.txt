@@ -118,6 +118,7 @@ qt_add_executable(JustTalk
     start.h start.cpp start.ui
     meetinglocal.h meetinglocal.cpp meetinglocal.ui
     Resources.qrc
+    lobby_origin.ui
 
 
 

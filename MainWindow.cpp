@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QScreen>
 #include <QDebug>
+#include <QSizePolicy>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
