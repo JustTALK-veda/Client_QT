@@ -19,8 +19,8 @@ Lobby::Lobby(QWidget *parent)
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation
         ));
-    connect(ui->cam_checkBox, &QCheckBox::toggled, ui->cameraWidget, &CameraWidget::setCamEnabled);
-    connect(ui->cam_checkBox, &QCheckBox::toggled, ui->cameraWidget, &CameraWidget::setMicEnabled);
+    // connect(ui->cam_checkBox, &QCheckBox::toggled, ui->cameraWidget, &CameraWidget::setCamEnabled);
+    // connect(ui->cam_checkBox, &QCheckBox::toggled, ui->cameraWidget, &CameraWidget::setMicEnabled);
     connect(ui->enterButton, &QPushButton::clicked, this, &Lobby::enterMeetingRequested);
 }
 
