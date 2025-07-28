@@ -10,6 +10,7 @@ PageWidget::PageWidget(QWidget* parent) : QWidget(parent) {
         QLabel* lbl = new QLabel(this);
         lbl->setFixedSize(480, 360);
         lbl->setAlignment(Qt::AlignCenter);
+        lbl->setStyleSheet("border-radius: 10px;");
         //lbl->setScaledContents(true);
         labels.push_back(lbl);
         layout->addWidget(lbl, i / 2, i % 2);
@@ -19,26 +20,4 @@ PageWidget::PageWidget(QWidget* parent) : QWidget(parent) {
 QLabel* PageWidget::labelAt(int index) {
     if (index >= 0 && index < labels.size()) return labels[index];
     return nullptr;
-}
-
-void PageWidget::highlightLabel(int index) {
-    const int radius = 6;
-    const int margin = 10;
-
-    for (int i = 0; i < labels.size(); ++i) {
-        QLabel* lbl = labels[i];
-        qDebug() << "label size:" << labels[i]->size();
-
-        if (i == index) {
-            lbl->setStyleSheet("border: 3px solid rgb(237, 107, 6);");
-        } else {
-            lbl->setStyleSheet("border: none;");
-        }
-    }
-}
-
-void PageWidget::clearHighlights() {
-    for (int i = 0; i < labels.size(); ++i) {
-        labels[i]->setStyleSheet("border: none;");
-    }
 }

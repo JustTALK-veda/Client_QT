@@ -18,17 +18,11 @@ class VideoThread : public QThread {
 signals:
     void cropped(int index,const QPixmap& pixmap); //Index 번째 크롭된 이미지를 전달
     void fullFrame(const QPixmap &pix);//전체 프레임용 시그널
-    void highlightIndexChanged(const int index);
-
-
 
 public:
     VideoThread(const QString& url, QLabel* label, Coordinate* coord);
     void run() override;
     void stop();
-    //void startRecording
-
-
 
 private:
     QString m_url;
@@ -38,7 +32,8 @@ private:
     QElapsedTimer fpsTimer;   // FPS 측정용 타이머
     int fpsFrameCount = 0;    // 프레임 카운터
     QVector<int>prevX;
-    //RtspConfig rtsp_config;
+    QPixmap roundedPixmap(const QPixmap& src, int radius);
+    void drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius);
 };
 
 #endif // VIDEOTHREAD_H

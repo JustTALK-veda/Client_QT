@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include "ui_MainWindow.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -12,7 +11,6 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow ui;
     QStackedWidget *stackedWidget;
 
 

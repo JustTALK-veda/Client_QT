@@ -1,6 +1,7 @@
 #include "VideoThread.h"
 #include <QImage>
 #include <QPixmap>
+#include <QPainterPath>
 #include <QDebug>
 #include <opencv2/opencv.hpp>
 #include <gst/gst.h>
@@ -253,6 +254,7 @@ void VideoThread::run() {
 
             QRect roi(x0, y0, W, H);
             QPixmap pix = fullPix.copy(roi);
+            pix = roundedPixmap(pix, 10);
 
             qDebug() << "[VideoThread] crop" << i << ": roi =" << roi << ", isNull =" << pix.isNull();
 
@@ -263,25 +265,16 @@ void VideoThread::run() {
                 highlighted_rect_index = i;
             }
             crops.emplace_back(x0, std::move(pix));
-            }
+        }
 
-            if (highlighted_rect_index != -1) {
-                QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
-                QPainter painter(&highlighted_pix);
-                int radius = 5;
-                int margin = 10;
-                int center_x = highlighted_pix.width() - radius - margin;
-                int center_y = radius + margin;
-                painter.setBrush(myColor);
-                painter.setPen(Qt::NoPen);
-                painter.drawEllipse(QPoint(center_x, center_y), radius, radius);
-                painter.end();
-                emit highlightIndexChanged(highlighted_rect_index);
-
-            }
-            else {
-                qDebug() << "[VideoThread] highlighted index가 -1, 하이라이팅 없음";
-            }
+        if (highlighted_rect_index != -1) {
+            QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
+            drawHighlightOverlay(highlighted_pix, myColor, 5, 10);
+            highlighted_pix = roundedPixmap(highlighted_pix, 10);
+        }
+        else {
+            qDebug() << "[VideoThread] highlighted index가 -1, 하이라이팅 없음";
+        }
 
 
         // 4) x0 기준 정렬 & emit
@@ -301,6 +294,42 @@ void VideoThread::run() {
 
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);
+}
+
+QPixmap VideoThread::roundedPixmap(const QPixmap& src, int radius) {
+    QPixmap dest(src.size());
+    dest.fill(Qt::transparent);
+
+    QPainter painter(&dest);
+    painter.setRenderHint(QPainter::Antialiasing);
+    QPainterPath path;
+    path.addRoundedRect(src.rect(), radius, radius);
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, src);
+    return dest;
+}
+
+void VideoThread::drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius) {
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    // 원형 점
+    int margin = 10;
+    int center_x = pixmap.width() - dotRadius - margin;
+    int center_y = dotRadius + margin;
+    painter.setBrush(color);
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(QPoint(center_x, center_y), dotRadius, dotRadius);
+
+    // 모서리 둥근 테두리
+    QRect borderRect(0, 0, pixmap.width(), pixmap.height());
+    QPainterPath roundedRect;
+    roundedRect.addRoundedRect(borderRect, cornerRadius, cornerRadius);
+
+    QPen borderPen(color, 6);
+    painter.setPen(borderPen);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawPath(roundedRect);
 }
 
 // //*/ // //복호화 추가해서 수정한 ver.

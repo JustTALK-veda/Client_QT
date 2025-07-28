@@ -43,7 +43,6 @@ meeting::meeting(QWidget *parent)
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &meeting::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
-    connect(videoThread, &VideoThread::highlightIndexChanged, ui->stackedWidget, &Stackpage::highlightLabel);
     videoThread->start();
 
     // 웹캠 다이얼로그 추가

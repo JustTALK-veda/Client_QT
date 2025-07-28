@@ -16,8 +16,6 @@ public:
     void goToPreviousPage();
     void goToNextPage();
     void setLabel(int globalIndex, const QPixmap& pix);
-public slots:
-    void highlightLabel(int globalIndex);
 
 private:
     int perPage = 4;
