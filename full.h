@@ -24,6 +24,8 @@ private:
     bool isFullServerReady = false;
 private slots:
     void onFrameReady(const QImage&);
+public slots:
+    void onFullPageActive();
 };
 
 #endif // FULL_H

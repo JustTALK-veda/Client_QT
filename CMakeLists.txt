@@ -51,10 +51,10 @@ if(APPLE)
 elseif(WIN32)
     message(STATUS "Windows용 설정")
 
-    # Windows용 OpenSSL
-    set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
-    set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-    set(OPENSSL_LIBRARIES "${OPENSSL_ROOT_DIR}/lib/libssl.lib" "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
+    # # Windows용 OpenSSL
+    # set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
+    # set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+    # set(OPENSSL_LIBRARIES "${OPENSSL_ROOT_DIR}/lib/libssl.lib" "${OPENSSL_ROOT_DIR}/lib/libcrypto.lib")
 
     # Windows용 OpenCV 경로(맞춰서 설치)
     set(OpenCV_DIR "C:/opencv/build")
@@ -62,8 +62,8 @@ endif()
 
 # 공용
 
-find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
+# find_package(OpenSSL REQUIRED)
+# include_directories(${OPENSSL_INCLUDE_DIR})
 
 find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia MultimediaWidgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
@@ -121,20 +121,10 @@ qt_add_executable(JustTalk
     grid.cpp grid.h grid.ui
     meeting.h meeting.cpp meeting.ui
     lobby_origin.ui
+    forlocal.h forlocal.cpp forlocal.ui
+    VideoThreadWebcam.h VideoThreadWebcam.cpp
     HanwhaThread.h HanwhaThread.cpp
     full.h full.cpp
-
-
-
-
-
-
-
-
-
-
-
-
     # client_tls.h client_tls.c
     # mypage.h mypage.cpp
 )

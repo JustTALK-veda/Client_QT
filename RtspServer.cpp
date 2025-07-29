@@ -106,7 +106,7 @@ void start_rtsp_server() {
 
     const gchar* address = gst_rtsp_server_get_address(server);   // 기본값: 0.0.0.0
     const gchar* port = gst_rtsp_server_get_service(server);      // 기본값: 8554
-    g_print("RTSP server ready: rtsp://%s:%s/test\n", address, port);
+    g_print("Web cam RTSP server ready: rtsp://%s:%s/test\n", address, port);
 
     GMainLoop* loop = g_main_loop_new(nullptr, FALSE);
     g_main_loop_run(loop);

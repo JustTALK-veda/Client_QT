@@ -56,22 +56,25 @@ grid::grid(QWidget *parent)
 
     QString ip;
     int rtspPort, tcpPort;
-    // if (!loadConfigFromJson(ip, rtspPort, tcpPort)) {
-    //     ip = "192.168.0.50"; rtspPort = 8555; tcpPort = 12345;
-    // }
+    if (!loadConfigFromJson(ip, rtspPort, tcpPort)) {
+        ip = "192.168.0.50"; rtspPort = 8555; tcpPort = 12345;
+    }
 
     //meta data 수신 스레드
     tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
 
-    tcpThread->start();
+
+
 
     QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
+
+   // QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &grid::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
-    videoThread->start();
 
-    // 웹캠 다이얼로그 추가
+    // 웹캠 다이얼로그 추가 // meeting에서 진행할 예정
     camDialog = new QDialog(this, Qt::Window);
     camDialog->setWindowTitle("나");
     camDialog->resize(240, 180);
@@ -106,6 +109,13 @@ void grid::resizeEvent(QResizeEvent* event) {
         int y = panoMarginTop;  // 원하는 만큼 마진
         panoLabel->move(x, y);
     }
+}
+
+void grid::onGridPageActive()
+{
+    tcpThread->start();
+    videoThread->start();
+
 }
 
 bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {

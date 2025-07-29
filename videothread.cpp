@@ -201,6 +201,8 @@ void VideoThread::run() {
 
         QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
 
+
+
         if (fullImg.isNull())
         {
             // qDebug() << "[VideoThread] QImage 생성 실패";
@@ -219,11 +221,27 @@ void VideoThread::run() {
         }
 
         QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
-
-        // qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
-        emit fullFrame(fullPix);
+        
+        // make panorama
         int fullW=fullPix.width();
         int fullH=fullPix.height();
+        
+        cv::Mat pano(fullH, fullW, CV_8UC3, (char*)map.data);
+        cv::cvtColor(pano, pano, cv::COLOR_BGR2RGB);
+        cv::Mat left(pano, cv::Rect(0, 0, fullW / 3, fullH));
+        cv::Mat right(pano, cv::Rect(fullW * 2 / 3, 0, fullW / 3, fullH));
+        cv::Mat center(pano, cv::Rect(fullW / 3, 0, fullW / 3, fullH));
+        double overlap = 0.3; // 30% 오버랩
+        // concatenate three regions horizontally
+        std::vector<cv::Mat> mats;
+        mats.emplace_back(left(cv::Rect(0, 0, static_cast<int>(left.cols * (1 - overlap)), fullH)));
+        mats.emplace_back(center);
+        mats.emplace_back(right(cv::Rect(static_cast<int>(right.cols * overlap), 0, static_cast<int>(right.cols * (1 - overlap)), fullH)));
+        cv::hconcat(mats, pano);
+
+        // qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
+        emit fullFrame(QPixmap::fromImage(QImage((const uchar*)pano.data, pano.cols, pano.rows, pano.step[0], QImage::Format_BGR888)));
+
         /*하이라이팅 테스트하려고 밑으로 내렸음*/
 
         // ’wdata’ 크기가 4의 배수인지 확인
