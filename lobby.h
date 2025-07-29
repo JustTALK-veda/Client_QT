@@ -23,8 +23,6 @@ signals:
     void goBackRequested();
 
 private slots:
-    void setVideoEnabled(bool enabled);
-    void setAudioEnabled(bool enabled);
     void updateTime();
     void handleJoinMeeting();
     void toggleMeetingStatus();
