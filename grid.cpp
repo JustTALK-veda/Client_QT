@@ -62,11 +62,14 @@ grid::grid(QWidget *parent)
 
     //meta data 수신 스레드
     tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
-    // tcpThread = new TcpThread(coord, ip, tcpPort);
 
 
-    // QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
-    QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+
+
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
+
+   // QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &grid::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);

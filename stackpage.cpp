@@ -54,8 +54,17 @@ void Stackpage::setLabel(int globalIndex, const QPixmap& pix) {
         pages.push_back(page);
     }
     QLabel* lbl = pages[pageIndex]->labelAt(labelIndex);
+//     if (lbl) {
+//         lbl->setPixmap(pix);
+//         lbl->show();
+//     }
     if (lbl) {
-        lbl->setPixmap(pix);
-        lbl->show();
+        if (pix.isNull()) {
+            lbl->clear();   // 이미지 제거
+            lbl->hide();    // 화면에서 숨기기
+        } else {
+            lbl->setPixmap(pix);
+            lbl->show();    // 다시 표시
+        }
     }
 }
