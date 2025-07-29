@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
         stackedWidget->setCurrentWidget(meetingPage);
+        emit meetingPage->gridPageActive();
     });
 }
 MainWindow::~MainWindow(){}

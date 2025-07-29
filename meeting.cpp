@@ -38,12 +38,18 @@ meeting::meeting(QWidget *parent)
             ui->fullButton->setIcon(QIcon(":/Image/config/full_black.png"));
     });
 
+    connect(this, &meeting::gridPageActive, gridPage, &grid::onGridPageActive);
+    connect(this, &meeting::fullPageActive, fullPage, &Full::onFullPageActive);
+
     // 페이지 전환
     connect(ui->gridButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(gridPage);
+        emit gridPageActive();
+
     });
     connect(ui->fullButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(fullPage);
+        emit fullPageActive();
     });
 }
 

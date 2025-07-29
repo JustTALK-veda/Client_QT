@@ -17,6 +17,10 @@ public:
 
 private:
     Ui::meeting *ui;
+
+signals:
+    void gridPageActive();
+    void fullPageActive();
 };
 
 #endif // MEETING_H

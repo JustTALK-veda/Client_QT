@@ -25,7 +25,6 @@ Full::Full(QWidget *parent)
     /* Create Streaming Thread */
     m_thread = new HanwhaThread("rtsp://admin:veda333%21@192.168.0.12/profile2/media.smp", this);
     connect(m_thread, &HanwhaThread::frameReady, this, &Full::onFrameReady, Qt::QueuedConnection );
-    m_thread->start();
 }
 
 Full::~Full()
@@ -69,4 +68,9 @@ void Full::onFrameReady(const QImage& img)
 
     // m_label->setPixmap(pixmap);
     // m_label->setStyleSheet("border: none;");  // border는 필요 없을 수도 있음
+}
+
+void Full::onFullPageActive()
+{
+    m_thread->start();
 }

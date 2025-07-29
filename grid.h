@@ -45,6 +45,8 @@ signals:
 private slots:
     //void onCropped(int index, const QPixmap &pix);
     void updatePano(const QPixmap &pix);
+public slots:
+    void onGridPageActive();
 };
 
 #endif // GRID_H
