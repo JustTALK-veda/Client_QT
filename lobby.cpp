@@ -126,8 +126,27 @@ Lobby::Lobby(QWidget *parent)
     // Connect signals
     connect(ui->enterButton, &QPushButton::clicked, this, &Lobby::handleJoinMeeting);
     connect(ui->backButton, &QPushButton::clicked, this, &Lobby::goBackRequested);
-    connect(ui->videoToggle, &QCheckBox::toggled, this, &Lobby::setVideoEnabled);
-    connect(ui->audioToggle, &QCheckBox::toggled, this, &Lobby::setAudioEnabled);
+    connect(ui->cameraToggleButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked){
+            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_on.png"));
+            cameraWidget->onCamButtonClicked();
+        }
+        else{
+            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_off.png"));
+            cameraWidget->onCamButtonClicked();
+        }
+    });
+
+    connect(ui->micToggleButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked){
+            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_on.png"));
+            cameraWidget->onMicButtonClicked();
+        }
+        else{
+            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_off.png"));
+            cameraWidget->onMicButtonClicked();
+        }
+    });
     connect(ui->settingsButton, &QPushButton::clicked, this, &Lobby::showSettings);
     //connect(ui->statusToggleButton, &QPushButton::clicked, this, &Lobby::toggleMeetingStatus);
     
@@ -140,29 +159,6 @@ Lobby::Lobby(QWidget *parent)
 Lobby::~Lobby()
 {
     delete ui;
-}
-
-void Lobby::setVideoEnabled(bool enabled)
-{
-    videoEnabled = enabled;
-    updateVideoPreview();
-
-    if(enabled){
-        cameraWidget->startCam();
-        //enable_streaming(true); 나중에 서버에서 호출
-    }
-    else{
-        cameraWidget->stopCam();
-       // enable_streaming(false); 나중에 서버에서 호출
-    }
-}
-
-void Lobby::setAudioEnabled(bool enabled)
-{
-    audioEnabled = enabled;
-    // Update audio icon or indicator as needed
-    set_mic_enabled(enabled);
-    qDebug() << "[Lobby] setAudioEnabled called, enabled =" << enabled;
 }
 
 void Lobby::updateTime()

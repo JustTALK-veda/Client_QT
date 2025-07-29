@@ -3,6 +3,7 @@
 #include "meeting.h"
 #include "start.h"
 #include "lobby.h"
+#include "forlocal.h"
 #include <QAudioSource>
 #include <QMediaDevices>
 #include <QAudioFormat>
@@ -36,11 +37,13 @@ MainWindow::MainWindow(QWidget *parent)
     Start* startPage = new Start(this);
     Lobby* lobbyPage = new Lobby(this);
     meeting* meetingPage = new meeting(this);
+    ForLocal* forLocalPage = new ForLocal(this, "Room1");
 
     // 페이지 등록
     stackedWidget->addWidget(startPage);
     stackedWidget->addWidget(lobbyPage);
     stackedWidget->addWidget(meetingPage);
+    stackedWidget->addWidget(forLocalPage);
 
     // 초기 페이지 설정
     stackedWidget->setCurrentWidget(startPage);
@@ -50,10 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
         stackedWidget->setCurrentWidget(lobbyPage);
     });
 
+    connect(startPage, &Start::enterLocalPageRequested, this, [=]() {
+        stackedWidget->setCurrentWidget(forLocalPage);
+    });
+
     connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
         stackedWidget->setCurrentWidget(meetingPage);
         emit meetingPage->gridPageActive();
     });
+
+    // 통화 종료
+    connect(meetingPage, &meeting::exitRequested, this, &MainWindow::close);
 }
 MainWindow::~MainWindow(){}
 

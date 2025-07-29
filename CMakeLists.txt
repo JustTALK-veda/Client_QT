@@ -121,20 +121,10 @@ qt_add_executable(JustTalk
     grid.cpp grid.h grid.ui
     meeting.h meeting.cpp meeting.ui
     lobby_origin.ui
+    forlocal.h forlocal.cpp forlocal.ui
+    VideoThreadWebcam.h VideoThreadWebcam.cpp
     HanwhaThread.h HanwhaThread.cpp
     full.h full.cpp
-
-
-
-
-
-
-
-
-
-
-
-
     # client_tls.h client_tls.c
     # mypage.h mypage.cpp
 )
