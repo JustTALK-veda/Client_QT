@@ -3,6 +3,7 @@
 #include "full.h"
 #include "ui_meeting.h"
 #include <QButtonGroup>
+#include <QDialog>
 
 meeting::meeting(QWidget *parent)
     : QWidget(parent)
@@ -44,20 +45,6 @@ meeting::meeting(QWidget *parent)
     // 동적으로 변경 연결 필요
     ui->peopleCountIconLabel->setText("  4");
 
-    connect(ui->camButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked)
-            ui->camButton->setIcon(QIcon(":/Image/config/video_on.png"));
-        else
-            ui->camButton->setIcon(QIcon(":/Image/config/video_off.png"));
-    });
-
-    connect(ui->micButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked)
-            ui->micButton->setIcon(QIcon(":/Image/config/mic_on.png"));
-        else
-            ui->micButton->setIcon(QIcon(":/Image/config/mic_off.png"));
-    });
-
     // 페이지 전환
     connect(ui->gridButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(gridPage);
@@ -68,6 +55,41 @@ meeting::meeting(QWidget *parent)
     connect(ui->fullButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(fullPage);
         emit fullPageActive();
+    });
+
+    // 웹캠 다이얼로그 추가 // meeting에서 진행할 예정
+    camDialog = new QDialog(this, Qt::Window);
+    camDialog->setWindowTitle("나");
+    camDialog->resize(240, 180);
+    camerawidget = new CameraWidget(camDialog, QSize(320, 240));
+    camDialog->show();
+    std::thread(start_rtsp_server).detach();
+
+    // 카메라, 마이크 컨트롤
+    connect(ui->camButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked){
+            ui->camButton->setIcon(QIcon(":/Image/config/video_on.png"));
+            camerawidget->onCamButtonClicked();
+        }
+        else{
+            ui->camButton->setIcon(QIcon(":/Image/config/video_off.png"));
+            camerawidget->onCamButtonClicked();
+        }
+    });
+
+    connect(ui->micButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked){
+            ui->micButton->setIcon(QIcon(":/Image/config/mic_on.png"));
+            camerawidget->onMicButtonClicked();
+        }
+        else{
+            ui->micButton->setIcon(QIcon(":/Image/config/mic_off.png"));
+            camerawidget->onMicButtonClicked();
+        }
+    });
+
+    connect(ui->exitButton, &QPushButton::clicked, this, [=]() {
+        emit exitRequested();
     });
 }
 

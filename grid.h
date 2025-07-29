@@ -23,8 +23,6 @@ private:
     Ui::gridForm *ui;
     QLabel* panoLabel = nullptr;
     const int panoMarginTop = 100;
-    QDialog *camDialog = nullptr;
-    CameraWidget *camerawidget = nullptr;
 
     //QLabel* pano = nullptr;
     QVector<QLabel*> labels;

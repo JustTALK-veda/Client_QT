@@ -70,14 +70,6 @@ grid::grid(QWidget *parent)
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &grid::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
-
-    // 웹캠 다이얼로그 추가 // meeting에서 진행할 예정
-    camDialog = new QDialog(this, Qt::Window);
-    camDialog->setWindowTitle("나");
-    camDialog->resize(240, 180);
-    camerawidget = new CameraWidget(camDialog, QSize(320, 240));
-    camDialog->show();
-    std::thread(start_rtsp_server).detach();
 }
 
 grid::~grid() {

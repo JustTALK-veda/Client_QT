@@ -63,6 +63,7 @@ void CameraWidget::startCam() {
         webcamLabel->setText("cannot open cam");
         return;
     }
+    if (!shared_frame_ptr) shared_frame_ptr = new cv::Mat();
     timer.start(30);
 }
 

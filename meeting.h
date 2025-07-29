@@ -2,6 +2,7 @@
 #define MEETING_H
 
 #include <QWidget>
+#include "CameraWidget.h"
 
 namespace Ui {
 class meeting;
@@ -14,6 +15,8 @@ class meeting : public QWidget
 public:
     explicit meeting(QWidget *parent = nullptr);
     ~meeting();
+    QDialog *camDialog = nullptr;
+    CameraWidget *camerawidget = nullptr;
 
 private:
     Ui::meeting *ui;
@@ -21,6 +24,7 @@ private:
 signals:
     void gridPageActive();
     void fullPageActive();
+    void exitRequested();
 };
 
 #endif // MEETING_H

@@ -53,14 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
         stackedWidget->setCurrentWidget(lobbyPage);
     });
 
+    connect(startPage, &Start::enterLocalPageRequested, this, [=]() {
+        stackedWidget->setCurrentWidget(forLocalPage);
+    });
+
     connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
         stackedWidget->setCurrentWidget(meetingPage);
         emit meetingPage->gridPageActive();
     });
 
-    connect(startPage, &Start::enterLocalPageRequested, this, [=]() {
-        stackedWidget->setCurrentWidget(forLocalPage);
-    });
+    // 통화 종료
+    connect(meetingPage, &meeting::exitRequested, this, &MainWindow::close);
 }
 MainWindow::~MainWindow(){}
 
