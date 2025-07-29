@@ -61,7 +61,7 @@ grid::grid(QWidget *parent)
     camDialog->resize(240, 180);
     camerawidget = new CameraWidget(camDialog, QSize(320, 240));
     camDialog->show();
-    //std::thread(start_rtsp_server).detach();
+    std::thread(start_rtsp_server).detach();
 }
 
 grid::~grid() {

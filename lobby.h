@@ -3,10 +3,13 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <CameraWidget.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Lobby; }
 QT_END_NAMESPACE
+
+class CameraWidget;
 
 class Lobby : public QWidget
 {
@@ -35,6 +38,7 @@ private:
 
     Ui::Lobby *ui;
     QTimer *timeTimer;
+    CameraWidget *cameraWidget = nullptr;
     
     bool videoEnabled;
     bool audioEnabled;

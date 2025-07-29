@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QSizePolicy>
+#include "audio_control.h"
+
 
 Lobby::Lobby(QWidget *parent)
     : QWidget(parent)
@@ -13,8 +15,12 @@ Lobby::Lobby(QWidget *parent)
     , audioEnabled(true)
     , isConnecting(false)
     , meetingInProgress(true)
+    , cameraWidget(nullptr)
 {
     ui->setupUi(this);
+
+    cameraWidget=ui->videoPreview;
+
     // this->setFixedSize(this->sizeHint());
     // this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -25,55 +31,91 @@ Lobby::Lobby(QWidget *parent)
     // this->adjustSize();
 
     // Set dark theme colors
+    // setStyleSheet(
+    //     "QWidget#Lobby { background-color: #101828; }"
+    //     "QWidget#content { background-color: #101828; }"
+
+    //     "QLabel { color: white; }"
+    //     "QPushButton { "
+    //         "background-color: #ED6B06; "
+    //         "color: white; "
+    //         "border: none; "
+    //         "border-radius: 6px; "
+    //         "padding: 12px 24px; "
+    //         "font-weight: bold; "
+    //     "}"
+    //     "QPushButton:hover { background-color: #d55a05; }"
+    //     "QPushButton:disabled { "
+    //         "background-color: #4A5565; "
+    //         "color: #9CA3AF; "
+    //     "}"
+    //     "QFrame#headerFrame { "
+    //         "background-color: #1E2939; "
+    //         "border-bottom: 1px solid #304159; "
+    //     "}"
+    //     "QFrame#videoFrame { "
+    //         "background-color: #364153; "
+    //         "border: 1px solid #4A5972; "
+    //         "border-radius: 8px; "
+    //     "}"
+    //     "QFrame#controlsFrame { "
+    //         "background-color: #364153; "
+    //         "border: 1px solid #4A5972; "
+    //         "border-radius: 8px; "
+    //     "}"
+    //     "QCheckBox { color: white; }"
+    //     "QCheckBox::indicator { "
+    //         "width: 40px; "
+    //         "height: 20px; "
+    //         "border-radius: 2px; "
+    //         "background-color: #4A5972; "
+    //     "}"
+    //     "QCheckBox::indicator:checked { "
+    //         "background-color: #ED6B06; "
+    //     "}"
+    //     "QCheckBox::indicator::handle { "
+    //         "width: 16px; "
+    //         "height: 16px; "
+    //         "border-radius: 8px; "
+    //         "background-color: white; "
+    //     "}"
+    // );
     setStyleSheet(
         "QWidget#Lobby { background-color: #101828; }"
         "QWidget#content { background-color: #101828; }"
 
         "QLabel { color: white; }"
         "QPushButton { "
-            "background-color: #ED6B06; "
-            "color: white; "
-            "border: none; "
-            "border-radius: 6px; "
-            "padding: 12px 24px; "
-            "font-weight: bold; "
+        "background-color: #ED6B06; "
+        "color: white; "
+        "border: none; "
+        "border-radius: 6px; "
+        "padding: 12px 24px; "
+        "font-weight: bold; "
         "}"
         "QPushButton:hover { background-color: #d55a05; }"
         "QPushButton:disabled { "
-            "background-color: #4A5565; "
-            "color: #9CA3AF; "
+        "background-color: #4A5565; "
+        "color: #9CA3AF; "
         "}"
         "QFrame#headerFrame { "
-            "background-color: #1E2939; "
-            "border-bottom: 1px solid #304159; "
+        "background-color: #1E2939; "
+        "border-bottom: 1px solid #304159; "
         "}"
         "QFrame#videoFrame { "
-            "background-color: #364153; "
-            "border: 1px solid #4A5972; "
-            "border-radius: 8px; "
+        "background-color: #364153; "
+        "border: 1px solid #4A5972; "
+        "border-radius: 8px; "
         "}"
         "QFrame#controlsFrame { "
-            "background-color: #364153; "
-            "border: 1px solid #4A5972; "
-            "border-radius: 8px; "
+        "background-color: #364153; "
+        "border: 1px solid #4A5972; "
+        "border-radius: 8px; "
         "}"
         "QCheckBox { color: white; }"
-        "QCheckBox::indicator { "
-            "width: 40px; "
-            "height: 20px; "
-            "border-radius: 10px; "
-            "background-color: #4A5972; "
-        "}"
-        "QCheckBox::indicator:checked { "
-            "background-color: #ED6B06; "
-        "}"
-        "QCheckBox::indicator::handle { "
-            "width: 16px; "
-            "height: 16px; "
-            "border-radius: 8px; "
-            "background-color: white; "
-        "}"
-    );
+        );
+
+
     
     // Setup timer for clock
     timeTimer = new QTimer(this);
@@ -87,7 +129,7 @@ Lobby::Lobby(QWidget *parent)
     connect(ui->videoToggle, &QCheckBox::toggled, this, &Lobby::setVideoEnabled);
     connect(ui->audioToggle, &QCheckBox::toggled, this, &Lobby::setAudioEnabled);
     connect(ui->settingsButton, &QPushButton::clicked, this, &Lobby::showSettings);
-    connect(ui->statusToggleButton, &QPushButton::clicked, this, &Lobby::toggleMeetingStatus);
+    //connect(ui->statusToggleButton, &QPushButton::clicked, this, &Lobby::toggleMeetingStatus);
     
     // Initialize UI state
     updateVideoPreview();
@@ -104,12 +146,23 @@ void Lobby::setVideoEnabled(bool enabled)
 {
     videoEnabled = enabled;
     updateVideoPreview();
+
+    if(enabled){
+        cameraWidget->startCam();
+        //enable_streaming(true); 나중에 서버에서 호출
+    }
+    else{
+        cameraWidget->stopCam();
+       // enable_streaming(false); 나중에 서버에서 호출
+    }
 }
 
 void Lobby::setAudioEnabled(bool enabled)
 {
     audioEnabled = enabled;
     // Update audio icon or indicator as needed
+    set_mic_enabled(enabled);
+    qDebug() << "[Lobby] setAudioEnabled called, enabled =" << enabled;
 }
 
 void Lobby::updateTime()
@@ -121,16 +174,16 @@ void Lobby::updateTime()
 void Lobby::updateVideoPreview()
 {
     if (videoEnabled) {
-        // ui->videoStatusLabel->setText("카메라 미리보기");
-        ui->videoPreview->setStyleSheet(
-            "QLabel { "
-                "background-color: #1E2939; "
-                "border-radius: 50px; "
-                "color: white; "
-                "font-size: 24px; "
-                "font-weight: bold; "
-            "}"
-        );
+        // ui->videoStatusLabel->setText("카메라 미리보기"); //이거 살리면 웹캠 안됨
+        // ui->videoPreview->setStyleSheet(
+        //     "QLabel { "
+        //         "background-color: #1E2939; "
+        //         "border-radius: 50px; "
+        //         "color: white; "
+        //         "font-size: 24px; "
+        //         "font-weight: bold; "
+        //     "}"
+        // );
         //ui->videoPreview->setText("WebcamPreview appear here");
         //ui->videoPreview->setAlignment(Qt::AlignCenter);
     } else {
