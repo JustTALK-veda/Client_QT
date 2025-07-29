@@ -195,9 +195,6 @@
            <property name="bottomMargin">
             <number>16</number>
            </property>
-           <item>
-            <widget class="CameraWidget" name="videoPreview" native="true"/>
-           </item>
           </layout>
          </widget>
         </item>
@@ -455,14 +452,6 @@ background: transparent; border: none;</string>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>CameraWidget</class>
-   <extends>QWidget</extends>
-   <header>CameraWidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>

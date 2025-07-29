@@ -13,13 +13,13 @@ class meeting : public QWidget
     Q_OBJECT
 
 public:
-    explicit meeting(QWidget *parent = nullptr);
+    explicit meeting(QWidget *parent = nullptr, CameraWidget* webcamFrame = nullptr);
     ~meeting();
     QDialog *camDialog = nullptr;
-    CameraWidget *camerawidget = nullptr;
 
 private:
     Ui::meeting *ui;
+    CameraWidget *cameraWidget;
 
 signals:
     void gridPageActive();

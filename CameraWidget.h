@@ -14,6 +14,8 @@ class CameraWidget : public QWidget {
 public:
     explicit CameraWidget(QWidget *parent = nullptr, QSize targetSize = QSize());
     ~CameraWidget();
+    bool isMicEnabled() const;
+    bool isCamEnabled() const;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -22,8 +24,8 @@ public slots:
     void startCam();
     void stopCam();
     void captureFrame();
-    void onMicButtonClicked();
-    void onCamButtonClicked();
+    void setMicEnabled(bool enable);
+    void setCamEnabled(bool enable);
 
 private:
     void initCamoffImage();

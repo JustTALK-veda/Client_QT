@@ -8,14 +8,12 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Lobby; }
 QT_END_NAMESPACE
 
-class CameraWidget;
-
 class Lobby : public QWidget
 {
     Q_OBJECT
 
 public:
-    Lobby(QWidget *parent = nullptr);
+    Lobby(QWidget *parent = nullptr, CameraWidget* webcamFrame = nullptr);
     ~Lobby();
 
 signals:
@@ -35,10 +33,8 @@ private:
 
     Ui::Lobby *ui;
     QTimer *timeTimer;
-    CameraWidget *cameraWidget = nullptr;
-    
-    bool videoEnabled;
-    bool audioEnabled;
+    CameraWidget *cameraWidget;
+
     bool isConnecting;
     bool meetingInProgress;
 };

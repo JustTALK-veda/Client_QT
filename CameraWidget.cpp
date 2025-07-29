@@ -101,23 +101,35 @@ void CameraWidget::captureFrame() {
 }
 
 // 마이크 버튼 토글
-void CameraWidget::onMicButtonClicked()
-{
-    micEnabled = !micEnabled;
-    set_mic_enabled(micEnabled);
+void CameraWidget::setMicEnabled(bool enable) {
+    if (micEnabled == enable)
+        return;
+
+    micEnabled = enable;
+    set_mic_enabled(enable);
 }
 
 // 웹캠 버튼 토글
-void CameraWidget::onCamButtonClicked()
-{
-    camEnabled = !camEnabled;
-    if (camEnabled) {
+void CameraWidget::setCamEnabled(bool enable) {
+    if (camEnabled == enable)
+        return;
+
+    camEnabled = enable;
+    if (enable) {
         enable_streaming(true);
         startCam();
     } else {
         enable_streaming(false);
         stopCam();
     }
+}
+
+bool CameraWidget::isMicEnabled() const {
+    return this->micEnabled;
+}
+
+bool CameraWidget::isCamEnabled() const {
+    return this->camEnabled;
 }
 
 void CameraWidget::resizeEvent(QResizeEvent *event)

@@ -5,8 +5,9 @@
 #include <QButtonGroup>
 #include <QDialog>
 
-meeting::meeting(QWidget *parent)
+meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
     : QWidget(parent)
+    , cameraWidget(webcamFrame)
     , ui(new Ui::meeting)
 {
     ui->setupUi(this);
@@ -27,16 +28,10 @@ meeting::meeting(QWidget *parent)
     ui->fullButton->setIcon(QIcon(":/Image/config/full_black.png"));
 
     connect(ui->gridButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked)
-            ui->gridButton->setIcon(QIcon(":/Image/config/grid_white.png"));
-        else
-            ui->gridButton->setIcon(QIcon(":/Image/config/grid_black.png"));
+        ui->gridButton->setIcon(QIcon(checked ? ":/Image/config/grid_white.png" : ":/Image/config/grid_black.png"));
     });
     connect(ui->fullButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked)
-            ui->fullButton->setIcon(QIcon(":/Image/config/full_white.png"));
-        else
-            ui->fullButton->setIcon(QIcon(":/Image/config/full_black.png"));
+        ui->fullButton->setIcon(QIcon(checked ? ":/Image/config/full_white.png" : ":/Image/config/full_black.png"));
     });
 
     connect(this, &meeting::gridPageActive, gridPage, &grid::onGridPageActive);
@@ -61,31 +56,26 @@ meeting::meeting(QWidget *parent)
     camDialog = new QDialog(this, Qt::Window);
     camDialog->setWindowTitle("나");
     camDialog->resize(240, 180);
-    camerawidget = new CameraWidget(camDialog, QSize(320, 240));
+    QVBoxLayout* layout = new QVBoxLayout(camDialog);
+    layout->setContentsMargins(0, 0, 0, 0);  // (선택) 여백 제거
+    layout->addWidget(cameraWidget);        // cameraWidget 추가
     camDialog->show();
     std::thread(start_rtsp_server).detach();
 
+    ui->camButton->setChecked(cameraWidget->isCamEnabled() ? true : false);
+    ui->camButton->setIcon(QIcon(cameraWidget->isCamEnabled() ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
+    ui->micButton->setChecked(cameraWidget->isMicEnabled() ? true : false);
+    ui->micButton->setIcon(QIcon(cameraWidget->isMicEnabled() ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
+
     // 카메라, 마이크 컨트롤
     connect(ui->camButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->camButton->setIcon(QIcon(":/Image/config/video_on.png"));
-            camerawidget->onCamButtonClicked();
-        }
-        else{
-            ui->camButton->setIcon(QIcon(":/Image/config/video_off.png"));
-            camerawidget->onCamButtonClicked();
-        }
+        ui->camButton->setIcon(QIcon(checked ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
+        cameraWidget->setCamEnabled(checked);
     });
 
     connect(ui->micButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->micButton->setIcon(QIcon(":/Image/config/mic_on.png"));
-            camerawidget->onMicButtonClicked();
-        }
-        else{
-            ui->micButton->setIcon(QIcon(":/Image/config/mic_off.png"));
-            camerawidget->onMicButtonClicked();
-        }
+        ui->micButton->setIcon(QIcon(checked ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
+        cameraWidget->setMicEnabled(checked);
     });
 
     connect(ui->exitButton, &QPushButton::clicked, this, [=]() {

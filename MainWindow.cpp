@@ -1,18 +1,4 @@
 #include "MainWindow.h"
-#include "grid.h"
-#include "meeting.h"
-#include "start.h"
-#include "lobby.h"
-#include "forlocal.h"
-#include <QAudioSource>
-#include <QMediaDevices>
-#include <QAudioFormat>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QFile>
-#include <QScreen>
-#include <QDebug>
 #include <QSizePolicy>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -32,38 +18,46 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->addWidget(stackedWidget);
-
+    
+    // 공유 카메라 위젯 생성
+    webcamFrame = new CameraWidget(this);
+    
     // 페이지 생성
     Start* startPage = new Start(this);
-    Lobby* lobbyPage = new Lobby(this);
-    meeting* meetingPage = new meeting(this);
-    ForLocal* forLocalPage = new ForLocal(this, "Room1");
 
     // 페이지 등록
     stackedWidget->addWidget(startPage);
-    stackedWidget->addWidget(lobbyPage);
-    stackedWidget->addWidget(meetingPage);
-    stackedWidget->addWidget(forLocalPage);
 
     // 초기 페이지 설정
     stackedWidget->setCurrentWidget(startPage);
 
     // 페이지 전환 연결
     connect(startPage, &Start::enterRemotePageRequested, this, [=]() {
+        if (!lobbyPage) {
+            lobbyPage = new Lobby(this, webcamFrame);
+            stackedWidget->addWidget(lobbyPage);
+
+            connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
+                if (!meetingPage) {
+                    meetingPage = new meeting(this, webcamFrame);
+                    stackedWidget->addWidget(meetingPage);
+                    // 통화 종료
+                    connect(meetingPage, &meeting::exitRequested, this, &MainWindow::close);
+                }
+                stackedWidget->setCurrentWidget(meetingPage);
+                emit meetingPage->gridPageActive();
+            });
+        }
         stackedWidget->setCurrentWidget(lobbyPage);
     });
 
     connect(startPage, &Start::enterLocalPageRequested, this, [=]() {
+        if (!lobbyPage) {
+            forLocalPage = new ForLocal(this, "Room1");
+            stackedWidget->addWidget(forLocalPage);
+        }
         stackedWidget->setCurrentWidget(forLocalPage);
-    });
-
-    connect(lobbyPage, &Lobby::enterMeetingRequested, this, [=]() {
-        stackedWidget->setCurrentWidget(meetingPage);
-        emit meetingPage->gridPageActive();
-    });
-
-    // 통화 종료
-    connect(meetingPage, &meeting::exitRequested, this, &MainWindow::close);
+    });    
 }
 MainWindow::~MainWindow(){}
 

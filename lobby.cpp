@@ -8,18 +8,17 @@
 #include "audio_control.h"
 
 
-Lobby::Lobby(QWidget *parent)
+Lobby::Lobby(QWidget *parent, CameraWidget* webcamFrame)
     : QWidget(parent)
     , ui(new Ui::Lobby)
-    , videoEnabled(true)
-    , audioEnabled(true)
     , isConnecting(false)
     , meetingInProgress(true)
-    , cameraWidget(nullptr)
+    , cameraWidget(webcamFrame)
 {
     ui->setupUi(this);
 
-    cameraWidget=ui->videoPreview;
+    //camerawidget 배치
+    ui->videoFrame->layout()->addWidget(cameraWidget);
 
     // this->setFixedSize(this->sizeHint());
     // this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -127,31 +126,18 @@ Lobby::Lobby(QWidget *parent)
     connect(ui->enterButton, &QPushButton::clicked, this, &Lobby::handleJoinMeeting);
     connect(ui->backButton, &QPushButton::clicked, this, &Lobby::goBackRequested);
     connect(ui->cameraToggleButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_on.png"));
-            cameraWidget->onCamButtonClicked();
-        }
-        else{
-            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_off.png"));
-            cameraWidget->onCamButtonClicked();
-        }
+        ui->cameraToggleButton->setIcon(QIcon(checked ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
+        cameraWidget->setCamEnabled(checked);
     });
 
     connect(ui->micToggleButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_on.png"));
-            cameraWidget->onMicButtonClicked();
-        }
-        else{
-            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_off.png"));
-            cameraWidget->onMicButtonClicked();
-        }
+        ui->micToggleButton->setIcon(QIcon(checked ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
+        cameraWidget->setMicEnabled(checked);
     });
     connect(ui->settingsButton, &QPushButton::clicked, this, &Lobby::showSettings);
     //connect(ui->statusToggleButton, &QPushButton::clicked, this, &Lobby::toggleMeetingStatus);
     
     // Initialize UI state
-    updateVideoPreview();
     updateMeetingStatus();
     updateJoinButton();
 }
@@ -165,34 +151,6 @@ void Lobby::updateTime()
 {
     QString currentTime = QDateTime::currentDateTime().toString("hh:mm");
     ui->timeLabel->setText(currentTime);
-}
-
-void Lobby::updateVideoPreview()
-{
-    if (videoEnabled) {
-        // ui->videoStatusLabel->setText("카메라 미리보기"); //이거 살리면 웹캠 안됨
-        // ui->videoPreview->setStyleSheet(
-        //     "QLabel { "
-        //         "background-color: #1E2939; "
-        //         "border-radius: 50px; "
-        //         "color: white; "
-        //         "font-size: 24px; "
-        //         "font-weight: bold; "
-        //     "}"
-        // );
-        //ui->videoPreview->setText("WebcamPreview appear here");
-        //ui->videoPreview->setAlignment(Qt::AlignCenter);
-    } else {
-        // ui->videoStatusLabel->setText("카메라가 꺼져있습니다");
-        ui->videoPreview->setStyleSheet(
-            "QLabel { "
-                "background-color: #1E2939; "
-                "color: #9CA3AF; "
-            "}"
-        );
-        //ui->videoPreview->setText("📷 camera off"); // Camera off icon
-        //ui->videoPreview->setAlignment(Qt::AlignCenter);
-    }
 }
 
 void Lobby::updateMeetingStatus()
