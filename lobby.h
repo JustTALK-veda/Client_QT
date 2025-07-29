@@ -1,9 +1,8 @@
 #ifndef LOBBY_H
 #define LOBBY_H
-
+#include "CameraWidget.h"
 #include <QWidget>
 #include <QTimer>
-#include <CameraWidget.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Lobby; }
