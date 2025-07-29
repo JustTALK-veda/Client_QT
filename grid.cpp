@@ -19,22 +19,38 @@ grid::grid(QWidget *parent)
     , ui(new Ui::gridForm)
 {
     ui->setupUi(this);
-    QIcon nextDisableIcon(QPixmap(":/Image/config/chevron_right_gray.png").scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    QIcon prevDisableIcon(QPixmap(":/Image/config/chevron_left_gray.png").scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    QIcon nextEnableIcon(QPixmap(":/Image/config/chevron_right_white.png").scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    QIcon prevEnableIcon(QPixmap(":/Image/config/chevron_left_white.png").scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    ui->nextButton->setIconSize(QSize(50, 50));
-    ui->prevButton->setIconSize(QSize(50, 50));
-    if (ui->stackedWidget->isLastPage()) {
-        ui->nextButton->setIcon(nextDisableIcon);
-    } else {
-        ui->nextButton->setIcon(nextEnableIcon);
-    }
-    if (ui->stackedWidget->isFirstPage()) {
-        ui->prevButton->setIcon(prevDisableIcon);
-    } else {
-        ui->prevButton->setIcon(prevEnableIcon);
-    }
+    panoLabel = new QLabel(this);
+    panoLabel->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    panoLabel->setFixedSize(1000, 400);
+    panoLabel->setStyleSheet("background-color: rgba(0, 0, 0, 180); border: 1px solid #4A5972; border-radius: 10px;");
+    panoLabel->hide();
+
+    // 버튼 스타일 변경
+    connect(ui->panoButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked){
+            ui->panoButton->setIcon(QIcon(":/Image/config/panorama_black.png"));
+            panoLabel->show();
+        }
+        else{
+            ui->panoButton->setIcon(QIcon(":/Image/config/panorama_white.png"));
+            panoLabel->hide();
+        }
+    });
+
+    connect(ui->stackedWidget, &Stackpage::pageChanged, this, [=]() {
+        if (ui->stackedWidget->isLastPage()) {
+            ui->nextButton->setIcon(QIcon(":/Image/config/chevron_right_gray.png"));
+        } else {
+            ui->nextButton->setIcon(QIcon(":/Image/config/chevron_right_white.png"));
+        }
+
+        if (ui->stackedWidget->isFirstPage()) {
+            ui->prevButton->setIcon(QIcon(":/Image/config/chevron_left_gray.png"));
+        } else {
+            ui->prevButton->setIcon(QIcon(":/Image/config/chevron_left_white.png"));
+        }
+    });
+    // 페이지 이동
     connect(ui->nextButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToNextPage);
     connect(ui->prevButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToPreviousPage);
 
@@ -74,10 +90,22 @@ grid::~grid() {
 }
 
 void grid::updatePano(const QPixmap &pix) {
-    ui->pano->setPixmap(pix.scaled(
-        ui->pano->size(),
-        Qt::KeepAspectRatio,
-        Qt::SmoothTransformation));
+    // ui->pano->setPixmap(pix.scaled(
+    //     ui->pano->size(),
+    //     Qt::KeepAspectRatio,
+    //     Qt::SmoothTransformation));
+    if (panoLabel)
+        panoLabel->setPixmap(pix.scaled(panoLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void grid::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);  // 부모 클래스 호출
+
+    if (panoLabel) {
+        int x = (this->width() - panoLabel->width()) / 2;
+        int y = panoMarginTop;  // 원하는 만큼 마진
+        panoLabel->move(x, y);
+    }
 }
 
 bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
