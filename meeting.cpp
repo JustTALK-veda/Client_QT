@@ -63,9 +63,12 @@ meeting::meeting(QWidget *parent)
 
     // 웹캠 다이얼로그 추가 // meeting에서 진행할 예정
     camDialog = new QDialog(this, Qt::Window);
+    QVBoxLayout* camLayout = new QVBoxLayout(camDialog);
     camDialog->setWindowTitle("나");
-    camDialog->resize(240, 180);
-    camerawidget = new CameraWidget(camDialog, QSize(320, 240));
+    //camDialog->resize(240, 180);
+    camerawidget = new CameraWidget(nullptr, QSize(320, 240));
+    camLayout->addWidget(camerawidget);
+
     camDialog->show();
     std::thread(start_rtsp_server).detach();
 

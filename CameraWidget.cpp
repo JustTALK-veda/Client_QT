@@ -9,18 +9,25 @@
 #include <QCoreApplication>
 
 CameraWidget::CameraWidget(QWidget *parent, QSize targetSize) : QWidget(parent), targetSize(targetSize) {
+    QVBoxLayout* layout = new QVBoxLayout(this);
     webcamLabel = new QLabel(this);
+
+    layout->setAlignment(Qt::AlignCenter);
+    layout->addWidget(webcamLabel);
+
     webcamLabel->setAlignment(Qt::AlignCenter);
-    webcamLabel->setScaledContents(false);
+    //webcamLabel->setScaledContents(true);
     webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    if (targetSize.isValid()) {
-        webcamLabel->setMinimumSize(targetSize);   // 최소 크기만 설정
-    }
+
+    // if (targetSize.isValid()) {
+    //     webcamLabel->setMinimumSize(targetSize);   // 최소 크기만 설정
+    // }
 
     initCamoffImage();  // ← camoff 초기화
     webcamLabel->setPixmap(QPixmap::fromImage(fallbackImage));
-
+    webcamLabel->setMinimumSize(0, 0);
+    this->setMinimumSize(0, 0);
     connect(&timer, &QTimer::timeout, this, &CameraWidget::captureFrame);
 }
 
@@ -50,14 +57,15 @@ void CameraWidget::initCamoffImage() {
     // QImage → cv::Mat 변환 후 전역 img_camoff에 복사
     img_camoff = cv::Mat(camoffImage.height(), camoffImage.width(), CV_8UC3,
                          const_cast<uchar*>(camoffImage.bits())).clone();
+    //latest_frame = img_camoff.clone();
 }
 
 void CameraWidget::startCam() {
     if (cap.isOpened()) return;
 
     cap.open(0);  // 또는 GStreamer 파이프라인
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    //cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    //cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
 
     if (!cap.isOpened()) {
         webcamLabel->setText("cannot open cam");
