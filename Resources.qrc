@@ -3,21 +3,21 @@
         <file>config/camoff.png</file>
         <file>config/local_user.png</file>
         <file>config/remote_user.png</file>
+        <file>config/full_black.png</file>
+        <file>config/full_white.png</file>
+        <file>config/grid_black.png</file>
+        <file>config/grid_white.png</file>
+        <file>config/panorama_white.png</file>
+        <file>config/panorama_black.png</file>
+        <file>config/chevron_left_gray.png</file>
+        <file>config/chevron_left_white.png</file>
+        <file>config/chevron_right_gray.png</file>
+        <file>config/chevron_right_white.png</file>
         <file>config/mic_off.png</file>
         <file>config/mic_on.png</file>
         <file>config/phone_off.png</file>
         <file>config/users.png</file>
         <file>config/video_off.png</file>
         <file>config/video_on.png</file>
-        <file>config/full_black.png</file>
-        <file>config/full_white.png</file>
-        <file>config/grid_black.png</file>
-        <file>config/grid_white.png</file>
-        <file>config/chevron_left_gray.png</file>
-        <file>config/chevron_right_gray.png</file>
-        <file>config/chevron_left_white.png</file>
-        <file>config/chevron_right_white.png</file>
-        <file>config/panorama_white.png</file>
-        <file>config/panorama_black.png</file>
     </qresource>
 </RCC>
