@@ -47,6 +47,7 @@ meeting::meeting(QWidget *parent)
         emit gridPageActive();
 
     });
+
     connect(ui->fullButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(fullPage);
         emit fullPageActive();

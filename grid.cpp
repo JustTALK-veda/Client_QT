@@ -110,6 +110,7 @@ void grid::onGridPageActive()
 {
     tcpThread->start();
     videoThread->start();
+
 }
 
 bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
