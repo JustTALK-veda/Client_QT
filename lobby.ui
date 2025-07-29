@@ -238,22 +238,30 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="videoToggle">
+                 <widget class="QPushButton" name="cameraToggleButton">
                   <property name="text">
-                   <string>📹 카메라</string>
+                   <string>카메라</string>
                   </property>
-                  <property name="checked">
-                   <bool>false</bool>
+                  <property name="icon">
+                   <iconset resource="Resources.qrc">
+                    <normaloff>:/Image/config/video_off.png</normaloff>:/Image/config/video_off.png</iconset>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="audioToggle">
+                 <widget class="QPushButton" name="micToggleButton">
                   <property name="text">
-                   <string>🎤 마이크</string>
+                   <string>마이크</string>
                   </property>
-                  <property name="checked">
-                   <bool>false</bool>
+                  <property name="icon">
+                   <iconset resource="Resources.qrc">
+                    <normaloff>:/Image/config/mic_off.png</normaloff>:/Image/config/mic_off.png</iconset>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -455,6 +463,8 @@ background: transparent; border: none;</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
