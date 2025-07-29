@@ -41,6 +41,23 @@ meeting::meeting(QWidget *parent)
     connect(this, &meeting::gridPageActive, gridPage, &grid::onGridPageActive);
     connect(this, &meeting::fullPageActive, fullPage, &Full::onFullPageActive);
 
+    // 동적으로 변경 연결 필요
+    ui->peopleCountIconLabel->setText("  4");
+
+    connect(ui->camButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked)
+            ui->camButton->setIcon(QIcon(":/Image/config/video_on.png"));
+        else
+            ui->camButton->setIcon(QIcon(":/Image/config/video_off.png"));
+    });
+
+    connect(ui->micButton, &QPushButton::toggled, this, [=](bool checked) {
+        if (checked)
+            ui->micButton->setIcon(QIcon(":/Image/config/mic_on.png"));
+        else
+            ui->micButton->setIcon(QIcon(":/Image/config/mic_off.png"));
+    });
+
     // 페이지 전환
     connect(ui->gridButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(gridPage);
