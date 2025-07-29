@@ -10,7 +10,7 @@ PageWidget::PageWidget(QWidget* parent) : QWidget(parent) {
         QLabel* lbl = new QLabel(this);
         lbl->setFixedSize(480, 360);
         lbl->setAlignment(Qt::AlignCenter);
-        lbl->setStyleSheet("border-radius: 10px;");
+        lbl->setStyleSheet("border: 1px solid #4A5972; border-radius: 10px;");
         //lbl->setScaledContents(true);
         labels.push_back(lbl);
         layout->addWidget(lbl, i / 2, i % 2);

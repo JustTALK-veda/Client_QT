@@ -3,7 +3,6 @@ build/
 CMakeFiles/
 JustTalk_autogen/
 .vscode/
-config/
 
 cmake_install.cmake
 CMakeLists.txt.user

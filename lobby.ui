@@ -243,7 +243,7 @@
                    <string>📹 카메라</string>
                   </property>
                   <property name="checked">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -253,7 +253,7 @@
                    <string>🎤 마이크</string>
                   </property>
                   <property name="checked">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -308,7 +308,8 @@
                 <item>
                  <widget class="QLabel" name="statusTitleLabel">
                   <property name="styleSheet">
-                   <string>color: white; font-size: 16px; font-weight: bold;</string>
+                   <string notr="true">color: white; font-size: 16px; font-weight: bold;
+background: transparent; border: none;</string>
                   </property>
                   <property name="text">
                    <string>회의 상태</string>
@@ -336,7 +337,8 @@
                   <item>
                    <widget class="QLabel" name="meetingStatusLabel">
                     <property name="styleSheet">
-                     <string>color: white; font-size: 14px;</string>
+                     <string notr="true">color: white; font-size: 14px;
+background: transparent; border: none;</string>
                     </property>
                     <property name="text">
                      <string>회의중</string>
@@ -361,35 +363,14 @@
                 <item>
                  <widget class="QLabel" name="meetingDescLabel">
                   <property name="styleSheet">
-                   <string>color: #9CA3AF; font-size: 12px;</string>
+                   <string notr="true">color: #9CA3AF; font-size: 12px;
+background: transparent; border: none;</string>
                   </property>
                   <property name="text">
                    <string>현재 회의가 진행 중입니다. 참가할 수 있습니다.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="statusToggleButton">
-                  <property name="styleSheet">
-                   <string>
-                QPushButton {
-                 background-color: transparent;
-                 border: 1px solid #4A5972;
-                 color: #9CA3AF;
-                 padding: 4px 8px;
-                 border-radius: 4px;
-                 font-size: 10px;
-                }
-                QPushButton:hover {
-                 background-color: #4A5972;
-                }
-               </string>
-                  </property>
-                  <property name="text">
-                   <string>상태 변경 (데모용)</string>
                   </property>
                  </widget>
                 </item>

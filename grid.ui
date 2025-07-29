@@ -33,24 +33,34 @@
     <number>2</number>
    </property>
    <item>
-    <widget class="QLabel" name="pano">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>120</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>120</height>
-      </size>
+    <widget class="QPushButton" name="panoButton">
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+}
+
+QPushButton:hover {
+    background-color: transparent;
+}
+</string>
      </property>
      <property name="text">
-      <string>Panorama</string>
+      <string/>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+     <property name="icon">
+      <iconset resource="Resources.qrc">
+       <normaloff>:/Image/config/panorama_white.png</normaloff>:/Image/config/panorama_white.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -66,16 +76,28 @@
        </property>
        <property name="styleSheet">
         <string notr="true">QPushButton {
-        background-color: transparent;
-        border: none;
-        padding: 0px;
-    }
-    QPushButton:pressed {
-        background-color: transparent;
-    }</string>
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+}
+
+QPushButton:hover {
+    background-color: transparent;
+}
+</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Image/config/chevron_left_gray.png</normaloff>:/Image/config/chevron_left_gray.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -88,18 +110,36 @@
      </item>
      <item>
       <widget class="QPushButton" name="nextButton">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPushButton {
-        background-color: transparent;
-        border: none;
-        padding: 0px;
-    }
-    QPushButton:pressed {
-        background-color: transparent;
-    }</string>
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+}
+
+QPushButton:hover {
+    background-color: transparent;
+}
+</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Resources.qrc">
+         <normaloff>:/Image/config/chevron_right_gray.png</normaloff>:/Image/config/chevron_right_gray.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -115,6 +155,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

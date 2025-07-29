@@ -16,7 +16,8 @@ public:
     void goToPreviousPage();
     void goToNextPage();
     void setLabel(int globalIndex, const QPixmap& pix);
-
+signals:
+    void pageChanged();
 private:
     int perPage = 4;
     std::vector<PageWidget*> pages;

@@ -17,9 +17,12 @@ class grid : public QWidget
 public:
     explicit grid(QWidget *parent = nullptr);
     ~grid();
-
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 private:
     Ui::gridForm *ui;
+    QLabel* panoLabel = nullptr;
+    const int panoMarginTop = 100;
     QDialog *camDialog = nullptr;
     CameraWidget *camerawidget = nullptr;
 
@@ -42,6 +45,8 @@ signals:
 private slots:
     //void onCropped(int index, const QPixmap &pix);
     void updatePano(const QPixmap &pix);
+public slots:
+    void onGridPageActive();
 };
 
 #endif // GRID_H

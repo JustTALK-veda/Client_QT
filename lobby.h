@@ -1,12 +1,14 @@
 #ifndef LOBBY_H
 #define LOBBY_H
-
+#include "CameraWidget.h"
 #include <QWidget>
 #include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Lobby; }
 QT_END_NAMESPACE
+
+class CameraWidget;
 
 class Lobby : public QWidget
 {
@@ -35,6 +37,7 @@ private:
 
     Ui::Lobby *ui;
     QTimer *timeTimer;
+    CameraWidget *cameraWidget = nullptr;
     
     bool videoEnabled;
     bool audioEnabled;

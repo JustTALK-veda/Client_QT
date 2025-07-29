@@ -31,6 +31,7 @@ void Stackpage::goToPreviousPage() {
     // 이전 페이지로 전환 (첫 번째 페이지보다 작은 인덱스일 때는 넘어가지 않도록 처리)
     if (!isFirstPage()) {
         this->setCurrentIndex(this->currentIndex() - 1);  // 이전 페이지로 설정
+        emit pageChanged();
     }
 }
 
@@ -38,6 +39,7 @@ void Stackpage::goToNextPage() {
     // 다음 페이지가 존재할 경우에만 이동
     if (!isLastPage()) {
         this->setCurrentIndex(this->currentIndex() + 1);  // 다음 페이지로 이동
+        emit pageChanged();
     }
 }
 
