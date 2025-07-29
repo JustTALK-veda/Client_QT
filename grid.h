@@ -47,6 +47,7 @@ private slots:
     void updatePano(const QPixmap &pix);
 public slots:
     void onGridPageActive();
+    // void onGridPageStop();
 };
 
 #endif // GRID_H

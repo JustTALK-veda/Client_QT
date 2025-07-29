@@ -39,7 +39,11 @@ meeting::meeting(QWidget *parent)
     });
 
     connect(this, &meeting::gridPageActive, gridPage, &grid::onGridPageActive);
+    //connect(this, &meeting::gridPageActive, fullPage, &Full::onFullPageStop);
+
     connect(this, &meeting::fullPageActive, fullPage, &Full::onFullPageActive);
+    //connect(this, &meeting::fullPageActive, gridPage, &grid::onGridPageStop);
+
 
     // 페이지 전환
     connect(ui->gridButton, &QPushButton::clicked, this, [=]() {

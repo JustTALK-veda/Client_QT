@@ -74,3 +74,7 @@ void Full::onFullPageActive()
 {
     m_thread->start();
 }
+// void Full::onFullPageStop()
+// {
+//     m_thread->stop();
+// }

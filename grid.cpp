@@ -113,6 +113,13 @@ void grid::onGridPageActive()
 
 }
 
+// void grid::onGridPageStop()
+// {
+//     tcpThread->requestInterruption();
+//     videoThread->stop();
+
+// }
+
 bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
     QFile file("config/rpi_ip.json");
 

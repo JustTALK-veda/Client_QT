@@ -26,6 +26,7 @@ private slots:
     void onFrameReady(const QImage&);
 public slots:
     void onFullPageActive();
+    // void onFullPageStop();
 };
 
 #endif // FULL_H
