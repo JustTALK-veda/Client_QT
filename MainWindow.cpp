@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 0; i < rowCount; ++i) {
         for (int j = 0; j < colCount; ++j) {
             QLabel *lbl = new QLabel(container);
-            lbl->setFixedSize(300, 220);
+            lbl->setFixedSize(480, 360);
             lbl->setAlignment(Qt::AlignCenter);
             lbl->setStyleSheet("background-color: #F0F0F0;");
             layout->addWidget(lbl, i, j);
@@ -149,10 +149,14 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     //Metadata 수신 스레드 먼저 시작
-    tcpThread = new TcpThread(coord, ip, tcpPort);
+    // tcpThread = new TcpThread(coord, ip, tcpPort);
+    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
+
     tcpThread->start();
 
-    QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+    // QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
+
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame,
             this,       &MainWindow::updatePano,
@@ -200,7 +204,7 @@ void MainWindow::onCropped(int index, const QPixmap &pix) {
          auto *lbl = new QLabel(container);
          lbl->setStyleSheet("background-color: rgba(169, 169, 169, 0.5);");
          lbl->setAlignment(Qt::AlignCenter);
-         lbl->setFixedSize(300, 220);
+         lbl->setFixedSize(480, 360);
          int row = index / 2;
          int col = index % 2;
          layout->addWidget(lbl, row, col);
