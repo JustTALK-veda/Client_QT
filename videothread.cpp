@@ -4,6 +4,7 @@
 #include <QPainterPath>
 #include <QDebug>
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/ocl.hpp>
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include "Coordinate.h"
@@ -88,7 +89,47 @@ void VideoThread::run() {
     //크롭 사이즈 고정하기
     constexpr int W = 480, H = 360;
     const int THRESHOLD = 5;
+    std::vector<std::pair<cv::Mat,cv::Mat>> maps(3);
+    std::vector<std::pair<cv::UMat, cv::UMat>> umaps(3);
+    int cam_W = 640, cam_H = 480;
+    int undistorted_w;
+    int undistorted_h;
+    cv::Mat undistorted_frames[3];
+    cv::UMat srcU, dstU;
+    
+    int angle = 0;
+    QVector<int> wdata;
 
+    if(cv::ocl::haveOpenCL())
+    {
+        cv::ocl::setUseOpenCL(true);
+        qDebug() << "[VideoThread] OpenCL 사용 가능:" << cv::ocl::Device::getDefault().name();
+        
+        cv::Mat transform_map_x, transform_map_y;
+        getUndistortionMap_hemi(transform_map_x, transform_map_y, cam_W, cam_H);
+        
+        for (auto& um : umaps)
+        {
+            qDebug() << "[VideoThread] OpenCL 사용 시도";
+            transform_map_x.copyTo(um.first);
+            transform_map_y.copyTo(um.second);
+        }
+
+        undistorted_w = static_cast<int>(umaps[0].first.cols);
+        undistorted_h = static_cast<int>(umaps[0].first.rows);
+    }
+    else
+    {
+        qDebug() << "[VideoThread] OpenCL 사용 불가, CPU 모드로 실행";
+        for (auto& m : maps)
+            getUndistortionMap_hemi(m.first, m.second, cam_W, cam_H);
+
+        undistorted_w = static_cast<int>(maps[0].first.cols);
+        undistorted_h = static_cast<int>(maps[0].first.rows);
+    }
+    
+    qDebug() << "[VideoThread] undistorted_w =" << undistorted_w << ", undistorted_h =" << undistorted_h;
+    
     while (!m_stop)
     {
         qDebug() << "[VideoThread] sample 수신 대기 중";
@@ -118,111 +159,79 @@ void VideoThread::run() {
 
         qDebug() << "[VideoThread] width =" << width << ", height =" << height;
 
-        cv::Mat mat(height, width, CV_8UC3, (char*)map.data);
-        //cv::Mat copy = mat.clone();
+        cv::Mat received_full_frames(height, width, CV_8UC3, (char*)map.data);
+        for (size_t i = 0; i < 3; ++i) 
+        {
+            // if (false) {
+            if (cv::ocl::haveOpenCL()) {
+                received_full_frames(cv::Rect(i*cam_W, 0, cam_W, cam_H)).copyTo(srcU);
+                // remap 수행 (GPU 가속)
+                cv::remap(srcU, dstU, umaps[i].first, umaps[i].second, cv::INTER_LINEAR);
+                // 다시 Mat으로 복사
+                dstU.copyTo(undistorted_frames[i]);
+            }
+            else
+            {
+                cv::remap(received_full_frames(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_LINEAR);
+                // cv::remap(mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)), undistorted_frames[i], maps[i].first, maps[i].second, cv::INTER_NEAREST);
+                // undistorted_frames[i] = mat(cv::Rect(i*cam_W, 0, cam_W, cam_H)).clone();
+            }
+        }
 
-        // gst_buffer_unmap(buffer, &map);
-        // gst_sample_unref(sample);
-
-        // QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
-
-        // if (fullImg.isNull())
-        // {
-        //     qDebug() << "[VideoThread] QImage 생성 실패";
-        //     continue;
-        // }
-        // qDebug() << "[VideoThread] QImage 생성 성공";
-        // //fps계산( 풀 프레임 기준 )
-
-        // fpsTimer.start();
-
-        // fpsFrameCount = 0;
-
-        // fpsFrameCount++;
-
-        // if (fpsTimer.elapsed() >= 1000) {
-        //     double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
-        //     qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
-        //     fpsTimer.restart();
-        //     fpsFrameCount = 0;
-        // }
-
-        // QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
-
-        // qDebug() << "[VideoThread] fullPix size:" << fullPix.size() << " isNull:" << fullPix.isNull();
-        // emit fullFrame(fullPix);
-        // int fullW=fullPix.width();
-        // int fullH=fullPix.height();
-
-        QVector<int> wdata;
+        cv::Mat concatenated_undistorted;
+        cv::hconcat(undistorted_frames, 3, concatenated_undistorted);        
 
         {
             QMutexLocker locker(&m_coord->mutex);
             wdata = m_coord->width_data;
             qDebug() << "[VideoThread] 받은 width_data:" << wdata;
-
         }
 
-        QVector<int> angles;
         {
             QMutexLocker locker(&m_coord->mutex);
-            angles = m_coord->angle_data;
+            if(!m_coord->angle_data.isEmpty())
+            {
+                angle = m_coord->angle_data.last();
+                qDebug() << "[VideoThread] 받은 angle_data:" << angle;
+            }
+            else
+            {
+                qDebug() << "[VideoThread] angle_data가 비어있음, 기본값 사용";
+                // 기본값 설정
+                angle = 0; 
+            }
         }
 
-        if (angles.isEmpty())
-        {
-            // qDebug() << "[VideoThread] angle_data가 비어있음, 하이라이팅 생략";
-            continue;
-        }
-
-        int angle = angles.last();
-
-        int angle_px = (angle * mat.cols) / 360;
-        cv::line(mat, cv::Point(angle_px, 0), cv::Point(angle_px, mat.rows), cv::Scalar(0, 0, 255), 5);
+        int angle_px = (angle * concatenated_undistorted.cols) / 360;
+        cv::line(concatenated_undistorted, cv::Point(angle_px, 0), cv::Point(angle_px, concatenated_undistorted.rows), cv::Scalar(0, 0, 255), 5);
 
         // draw each box onto the raw OpenCV frame
-        for (size_t k = 0; k + 3 < wdata.size(); k += 4) {
+        for (size_t k = 0; k + 3 < wdata.size(); k += 4) 
+        {
             int cx = wdata[k];
             int cy = wdata[k + 1];
             int w = wdata[k + 2];
             int h = wdata[k + 3];
 
-            cv::rectangle(mat,
+            cv::rectangle(concatenated_undistorted,
                           cv::Point(cx - w/2, cy - h/2),
                           cv::Point(cx + w/2, cy + h/2),
                           cv::Scalar(0, 255, 0), 2);
         }
 
-        /*하이라이팅 테스트하려고 밑으로 내렸음*/
-        cv::Mat copy = mat.clone();
-
         gst_buffer_unmap(buffer, &map);
         gst_sample_unref(sample);
 
-        QImage fullImg(copy.data, copy.cols, copy.rows, copy.step, QImage::Format_BGR888);
-
-
-
-        if (fullImg.isNull())
-        {
-            // qDebug() << "[VideoThread] QImage 생성 실패";
-            continue;
-        }
-        //  qDebug() << "[VideoThread] QImage 생성 성공";
-        //fps계산( 풀 프레임 기준 )
-
-        fpsFrameCount++;
-
-        if (fpsTimer.elapsed() >= 1000) {
-            double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
-            qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
-            fpsTimer.restart();
-            fpsFrameCount = 0;
-        }
-
-        QPixmap fullPix = QPixmap::fromImage(fullImg.rgbSwapped());
+        QPixmap fullPix = QPixmap::fromImage(
+            QImage(concatenated_undistorted.data,
+                   concatenated_undistorted.cols,
+                   concatenated_undistorted.rows,
+                   concatenated_undistorted.step,
+                   QImage::Format_BGR888
+            ).rgbSwapped()
+        );
         
-        // make panorama
+        // make panorama by removing overlapped areas
         int fullW=fullPix.width();
         int fullH=fullPix.height();
         
@@ -231,8 +240,9 @@ void VideoThread::run() {
         cv::Mat left(pano, cv::Rect(0, 0, fullW / 3, fullH));
         cv::Mat right(pano, cv::Rect(fullW * 2 / 3, 0, fullW / 3, fullH));
         cv::Mat center(pano, cv::Rect(fullW / 3, 0, fullW / 3, fullH));
-        double overlap = 0.3; // 30% 오버랩
+        
         // concatenate three regions horizontally
+        double overlap = 0.3; // 30% 오버랩
         std::vector<cv::Mat> mats;
         mats.emplace_back(left(cv::Rect(0, 0, static_cast<int>(left.cols * (1 - overlap)), fullH)));
         mats.emplace_back(center);
@@ -297,7 +307,6 @@ void VideoThread::run() {
             qDebug() << "[VideoThread] highlighted index가 -1, 하이라이팅 없음";
         }
 
-
         // 4) x0 기준 정렬 & emit
         std::sort(crops.begin(), crops.end(),
                   [](auto &a, auto &b){ return a.first < b.first; });
@@ -306,9 +315,15 @@ void VideoThread::run() {
             emit cropped(i, crops[i].second);
         }
 
+        //fps계산
+        fpsFrameCount++;
 
-
-
+        if (fpsTimer.elapsed() >= 1000) {
+            double fps = fpsFrameCount * 1000.0 / fpsTimer.elapsed();
+            qDebug() << "[VideoThread] 현재 FPS ≈" << fps;
+            fpsTimer.restart();
+            fpsFrameCount = 0;
+        }
     }
 
     qDebug() << "[VideoThread] 스레드 종료 요청됨";
@@ -351,6 +366,44 @@ void VideoThread::drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int
     painter.setPen(borderPen);
     painter.setBrush(Qt::NoBrush);
     painter.drawPath(roundedRect);
+}
+
+int VideoThread::getUndistortionMap_hemi(cv::Mat& transform_map_x, cv::Mat& transform_map_y, int n_width, int n_height)
+{
+    transform_map_x.create(n_height, n_width, CV_32F);
+    transform_map_y.create(n_height, n_width, CV_32F);
+    
+    // distortion parameters
+    int Cx = n_width / 2; 
+    int Cy = n_height / 2;
+    double F = (double)n_width / CV_PI;
+    
+    for (int v = 0; v < n_height; v++) 
+    {
+        for (int u = 0; u < n_width; u++) 
+        {
+            // implement hemi-cylinder target model
+            double xt = double(u);
+            double yt = double(v - Cy);
+
+            double r = (double)n_width / CV_PI;
+            double alpha = double(n_width - xt) / r;
+            double xp = r * cos(alpha);
+            double yp = /*((double)nWidth / (double)nHeight) **/ yt;
+            double zp = r * fabs(sin(alpha));
+
+            double rp = sqrt(xp * xp + yp * yp);
+            double theta = atan(rp / zp);
+
+            double x1 = F * theta * xp / rp;
+            double y1 = F * theta * yp / rp;
+
+            transform_map_x.at<float>(v, u) = (float)x1 + (float)Cx;
+            transform_map_y.at<float>(v, u) = (float)y1 + (float)Cy;
+        }
+    }
+
+    return 0;
 }
 
 // //*/ // //복호화 추가해서 수정한 ver.
