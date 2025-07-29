@@ -231,7 +231,8 @@ void VideoThread::run() {
         if (rectCount == 0) {
             qDebug() << "[VideoThread] 크롭 정보 없음 — 전체 프레임으로 대체";
             // 크롭 정보가 없으면 (0,0)부터 W×H 자르기
-            emit cropped(0, fullPix.copy(0, 0, W, H));
+            emit cropped(0,QPixmap());
+            //emit cropped(0, fullPix.copy(0, 0, W, H));
             continue;
         }
 
@@ -265,7 +266,9 @@ void VideoThread::run() {
                 highlighted_rect_index = i;
             }
             crops.emplace_back(x0, std::move(pix));
+
         }
+        emit peoplecount(crops.size());
 
         if (highlighted_rect_index != -1) {
             QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
