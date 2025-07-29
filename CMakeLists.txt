@@ -121,6 +121,8 @@ qt_add_executable(JustTalk
     grid.cpp grid.h grid.ui
     meeting.h meeting.cpp meeting.ui
     lobby_origin.ui
+    forlocal.h forlocal.cpp forlocal.ui
+    VideoThreadWebcam.h VideoThreadWebcam.cpp
 
 
 
