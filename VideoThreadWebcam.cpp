@@ -30,7 +30,7 @@ void VideoThreadWebcam::run() {
         );
 #elif __APPLE__
     pipelineStr = QString(
-                        "rtspsrc location=rtsp://127.0.0.1:8554/test latency=100 tls-validation-flags=0 ! "
+                        "rtspsrc location=rtsp://192.168.0.27:8554/test latency=100 tls-validation-flags=0 ! "
                         "application/x-rtp,media=video,encoding-name=H264 ! "
                         "rtph264depay ! "
                         "h264parse ! "

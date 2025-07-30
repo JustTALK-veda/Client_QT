@@ -113,4 +113,125 @@ void TcpThread::run() {
     qDebug() << "[TcpThread] 종료";
 }
 
+// #include "TcpThread.h"
+// #include <QSslSocket>
+// #include <QJsonDocument>
+// #include <QJsonObject>
+// #include <QJsonArray>
+// #include <QDebug>
+// #include "Coordinate.h"
+// #include <QVector>
+// #include <QtCore/qpoint.h>
+// #include <QCryptographicHash>  // for digest
 
+// TcpThread::TcpThread(Coordinate* coord, const QString ip, int port)
+//     : m_coord(coord), m_ip(ip), m_port(port) {}
+
+// void TcpThread::run() {
+//     // 1) QSslSocket을 힙에 생성
+//     QSslSocket* socket = new QSslSocket(this);
+
+//     // 2) TLS 연결 시도
+//     socket->connectToHostEncrypted(m_ip, m_port);
+//     // waitForEncrypted: 핸드셰이크까지 완료됐는지 확인
+//     if (!socket->waitForEncrypted(5000)) {
+//         qDebug() << "[TcpThread] TLS 핸드셰이크 실패:" << socket->errorString();
+//         socket->deleteLater();
+//         return;
+//     }
+//     qDebug() << "[TcpThread] TLS 채널 수립 완료";
+
+//     // 3) 인증서 핀(pin) 검증
+//     {
+//         // 서버가 제시한 인증서
+//         QSslCertificate peerCert = socket->peerCertificate();
+//         // 리소스(.qrc)에 포함된 “내 기준” 서버 공개 인증서
+//         QSslCertificate localCert =
+//             QSslCertificate::fromPath(":/certs/tcp_server.crt", QSsl::Pem).first();
+
+//         // SHA-256 지문 비교
+//         QByteArray peerDigest  = peerCert.digest(QCryptographicHash::Sha256);
+//         QByteArray localDigest = localCert.digest(QCryptographicHash::Sha256);
+//         if (peerDigest != localDigest) {
+//             qDebug() << "[TcpThread] 인증서 핀 검증 실패! 연결 종료";
+//             socket->disconnectFromHost();
+//             socket->deleteLater();
+//             return;
+//         }
+//         qDebug() << "[TcpThread] 인증서 핀 검증 성공 ✔ 안전한 서버입니다.";
+//     }
+
+//     // 4) 서버가 끊어지면 스레드 중단
+//     connect(socket, &QSslSocket::disconnected, this, [this]() {
+//         requestInterruption();
+//     }, Qt::DirectConnection);
+
+//     // 5) JSON 수신 루프
+//     while (!isInterruptionRequested() &&
+//            socket->state() == QAbstractSocket::ConnectedState)
+//     {
+//         if (socket->waitForReadyRead(1000)) {
+//             QByteArray data = socket->readAll();
+//             QJsonParseError parseError;
+//             QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
+
+//             if (parseError.error != QJsonParseError::NoError) {
+//                 qDebug() << "[TcpThread] JSON 파싱 실패:" << parseError.errorString();
+//                 continue;
+//             }
+//             if (!doc.isObject()) {
+//                 qDebug() << "[TcpThread] JSON이 객체 형식이 아님";
+//                 continue;
+//             }
+
+//             QJsonObject obj = doc.object();
+//             qDebug() << "[TcpThread] obj['angle'] 내용:" << obj["angle"];
+
+//             std::vector<int> parsedWidths;
+//             std::vector<int> parsedAngles;
+
+//             if (obj.contains("parsing width") && obj["parsing width"].isArray()) {
+//                 for (const QJsonValue& v : obj["parsing width"].toArray())
+//                     parsedWidths.push_back(v.toInt());
+//             }
+//             if (obj.contains("angle")) {
+//                 const QJsonValue& val = obj["angle"];
+//                 if (val.isArray()) {
+//                     for (const QJsonValue& v : val.toArray())
+//                         parsedAngles.push_back(v.toInt());
+//                 } else if (val.isDouble()) {
+//                     parsedAngles.push_back(val.toInt());
+//                 }
+//             }
+
+//             // 공유 구조체에 저장 (뮤텍스 잠금)
+//             {
+//                 QMutexLocker locker(&m_coord->mutex);
+
+//                 QVector<int> qWidths;
+//                 qWidths.reserve(parsedWidths.size());
+//                 for (int w : parsedWidths)
+//                     qWidths.append(w);
+//                 m_coord->width_data = qWidths;
+
+//                 QVector<int> qAngles;
+//                 qAngles.reserve(parsedAngles.size());
+//                 for (int a : parsedAngles)
+//                     qAngles.append(a);
+//                 m_coord->angle_data = qAngles;
+//             }
+
+
+//             qDebug() << "[TcpThread] updated width_data:" << m_coord->width_data
+//                      << "angle 값" << m_coord->angle_data;
+//         }
+
+//         if (isInterruptionRequested())
+//             break;
+//     }
+
+//     // 6) 연결 종료
+//     socket->disconnectFromHost();
+//     socket->deleteLater();
+//     qDebug() << "[TcpThread] 종료";
+// }
