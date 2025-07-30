@@ -17,7 +17,8 @@ class meeting : public QWidget
 public:
     explicit meeting(QWidget *parent = nullptr, CameraWidget* webcamFrame = nullptr);
     ~meeting();
-
+protected:
+    void showEvent(QShowEvent *event) override;
 private:
     Ui::meeting *ui;
     CameraWidget* camerawidget;

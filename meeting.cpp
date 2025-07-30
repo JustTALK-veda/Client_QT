@@ -84,6 +84,19 @@ meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
     });
 }
 
+void meeting::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+
+    // 여기서 PipWidget 위치 조정
+    QSize parentSize = this->size();
+    QSize pipSize = pip->size();
+
+    int x = parentSize.width() - pipSize.width() - 20;
+    int y = parentSize.height() - pipSize.height() - 20;
+    pip->move(x, y);
+}
+
 void meeting::updateTime(){
     QString currentTime = QDateTime::currentDateTime().toString("AP hh:mm");
     ui->currentTimeLabel->setText(currentTime);
