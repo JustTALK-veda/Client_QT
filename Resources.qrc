@@ -19,5 +19,6 @@
         <file>config/users.png</file>
         <file>config/video_off.png</file>
         <file>config/video_on.png</file>
+        <file>config/clock.png</file>
     </qresource>
 </RCC>
