@@ -29,7 +29,7 @@ CameraWidget::~CameraWidget() {
 }
 
 void CameraWidget::initCamoffImage() {
-    QString imagePath = QCoreApplication::applicationDirPath() + "/config/camoff.png";
+    QString imagePath = QCoreApplication::applicationDirPath() + "/config/camoff_mac.png";
     camoffImage = QImage(imagePath);
 
     if (camoffImage.isNull()) {
@@ -56,8 +56,8 @@ void CameraWidget::startCam() {
     if (cap.isOpened()) return;
 
     cap.open(0);  // 또는 GStreamer 파이프라인
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
 
     if (!cap.isOpened()) {
         webcamLabel->setText("cannot open cam");
