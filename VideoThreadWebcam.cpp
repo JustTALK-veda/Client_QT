@@ -24,9 +24,9 @@ void VideoThreadWebcam::run() {
 
 #ifdef _WIN32
     pipelineStr = QString(
-          "rtspsrc location=rtsp://127.0.0.1:8554/test latency=0 name=src protocols=tcp "
-  "src. ! queue ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw,format=BGR ! appsink name=video_sink "
-  "src. ! queue ! rtpmp4adepay ! aacparse ! avdec_aac ! audioconvert ! audioresample ! audio/x-raw,format=S16LE ! appsink name=audio_sink"
+          "rtspsrc location=rtsp://192.168.0.6:8554/test latency=0 name=src protocols=tcp "
+          "src. ! queue ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=video_sink "
+          "src. ! queue ! rtpmp4adepay ! aacparse ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
         );
 #elif __APPLE__
     pipelineStr = QString(
@@ -36,7 +36,7 @@ void VideoThreadWebcam::run() {
                         "h264parse ! "
                         "vtdec ! "
                         "videoconvert ! "
-                        "video/x-raw,format=RGB ! "
+                        "video/x-raw,format=BGR ! "
                         "appsink name=video_sink"
                         ).arg(m_url);
     // audio
