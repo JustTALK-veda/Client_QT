@@ -10,17 +10,17 @@
 
 CameraWidget::CameraWidget(QWidget *parent, QSize targetSize) : QWidget(parent), targetSize(targetSize) {
     webcamLabel = new QLabel(this);
-    webcamLabel->setAlignment(Qt::AlignCenter);
-    webcamLabel->setScaledContents(false);
-    webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setAlignment(Qt::AlignCenter);
+    layout->addWidget(webcamLabel);
 
-    if (targetSize.isValid()) {
-        webcamLabel->setMinimumSize(targetSize);   // 최소 크기만 설정
-    }
+    webcamLabel->setAlignment(Qt::AlignCenter);
+    webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     initCamoffImage();  // ← camoff 초기화
     webcamLabel->setPixmap(QPixmap::fromImage(fallbackImage));
-
+    webcamLabel->setMinimumSize(0, 0);
+    this->setMinimumSize(0, 0);
     connect(&timer, &QTimer::timeout, this, &CameraWidget::captureFrame);
 }
 

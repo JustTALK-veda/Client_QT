@@ -68,6 +68,7 @@ endif()
 find_package(Qt6 6.9.1 REQUIRED COMPONENTS Widgets Core Network Multimedia MultimediaWidgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(PkgConfig REQUIRED)
 
 #Gstreamer/Glib/GIO설정
@@ -119,11 +120,12 @@ qt_add_executable(JustTalk
     Resources.qrc
     grid.cpp grid.h grid.ui
     meeting.h meeting.cpp meeting.ui
-    lobby_origin.ui
+
     forlocal.h forlocal.cpp forlocal.ui
     VideoThreadWebcam.h VideoThreadWebcam.cpp
     HanwhaThread.h HanwhaThread.cpp
     full.h full.cpp
+    pipwidget.h pipwidget.cpp
     # client_tls.h client_tls.c
     # mypage.h mypage.cpp
 )
@@ -143,6 +145,7 @@ target_link_libraries(JustTalk PRIVATE
     ${OPENSSL_LIBRARIES}
     ${GST_RTSP_SERVER_LIBRARIES}
 )
+target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 target_link_libraries(JustTalk PRIVATE Qt6::Widgets)
 

@@ -4,10 +4,10 @@
 #include "ui_meeting.h"
 #include <QButtonGroup>
 #include <QDialog>
+#include <QDateTime>
 
 meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
-    : QWidget(parent)
-    , cameraWidget(webcamFrame)
+    : QWidget(parent), camerawidget(webcamFrame)
     , ui(new Ui::meeting)
 {
     ui->setupUi(this);
@@ -17,6 +17,12 @@ meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
     ui->stackedWidget->addWidget(fullPage);
 
     // footbar
+    // Setup timer for clock
+    timeTimer = new QTimer(this);
+    connect(timeTimer, &QTimer::timeout, this, &meeting::updateTime);
+    timeTimer->start(1000);
+    updateTime();
+
     QButtonGroup* viewModeGroup = new QButtonGroup(this);
     viewModeGroup->addButton(ui->gridButton);
     viewModeGroup->addButton(ui->fullButton);
@@ -37,9 +43,6 @@ meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
     connect(this, &meeting::gridPageActive, gridPage, &grid::onGridPageActive);
     connect(this, &meeting::fullPageActive, fullPage, &Full::onFullPageActive);
 
-    // 동적으로 변경 연결 필요
-    ui->peopleCountIconLabel->setText("  4");
-
     // 페이지 전환
     connect(ui->gridButton, &QPushButton::clicked, this, [=]() {
         ui->stackedWidget->setCurrentWidget(gridPage);
@@ -52,35 +55,44 @@ meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
         emit fullPageActive();
     });
 
-    // 웹캠 다이얼로그 추가 // meeting에서 진행할 예정
-    camDialog = new QDialog(this, Qt::Window);
-    camDialog->setWindowTitle("나");
-    camDialog->resize(240, 180);
-    QVBoxLayout* layout = new QVBoxLayout(camDialog);
-    layout->setContentsMargins(0, 0, 0, 0);  // (선택) 여백 제거
-    layout->addWidget(cameraWidget);        // cameraWidget 추가
-    camDialog->show();
+    connect(gridPage->videoThread, &VideoThread::peoplecount, this, &meeting::updatePeopleCount);
+
+    // 웹캠 
+    pip = new PipWidget(this, camerawidget);
+    pip->show();
+    
     std::thread(start_rtsp_server).detach();
 
-    ui->camButton->setChecked(cameraWidget->isCamEnabled() ? true : false);
-    ui->camButton->setIcon(QIcon(cameraWidget->isCamEnabled() ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
-    ui->micButton->setChecked(cameraWidget->isMicEnabled() ? true : false);
-    ui->micButton->setIcon(QIcon(cameraWidget->isMicEnabled() ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
+    ui->camButton->setChecked(pip->webcam->isCamEnabled() ? true : false);
+    ui->camButton->setIcon(QIcon(pip->webcam->isCamEnabled() ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
+    ui->micButton->setChecked(pip->webcam->isMicEnabled() ? true : false);
+    ui->micButton->setIcon(QIcon(pip->webcam->isMicEnabled() ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
 
     // 카메라, 마이크 컨트롤
     connect(ui->camButton, &QPushButton::toggled, this, [=](bool checked) {
         ui->camButton->setIcon(QIcon(checked ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
-        cameraWidget->setCamEnabled(checked);
+        pip->webcam->setCamEnabled(checked);
     });
 
     connect(ui->micButton, &QPushButton::toggled, this, [=](bool checked) {
         ui->micButton->setIcon(QIcon(checked ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
-        cameraWidget->setMicEnabled(checked);
+        pip->webcam->setMicEnabled(checked);
     });
 
     connect(ui->exitButton, &QPushButton::clicked, this, [=]() {
         emit exitRequested();
     });
+}
+
+void meeting::updateTime(){
+    QString currentTime = QDateTime::currentDateTime().toString("AP hh:mm");
+    ui->currentTimeLabel->setText(currentTime);
+}
+
+void meeting::updatePeopleCount(int count)
+{
+    ui->peopleCountIconLabel->setText(QString("  %1").arg(count));
+    qDebug()<<"count update";
 }
 
 meeting::~meeting()
