@@ -93,8 +93,8 @@ void Lobby::updateTime()
 
 void Lobby::checkRtspServer() {
     QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
-    videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true);
-    connect(videoThread, &VideoThread::serverReady, this, &Lobby::onServerReady);
+    // videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true);
+    // connect(videoThread, &VideoThread::serverReady, this, &Lobby::onServerReady);
     videoThread->start();
 }
 
