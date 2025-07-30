@@ -81,7 +81,7 @@ void start_rtsp_server() {
     const gchar* audio_src = "wasapisrc low-latency=true ";
 #elif __APPLE__
     const gchar* vedio_convert_format = "format=NV12 ";
-    const gchar* audio_src = "osxaudiosrc device=100 ";
+    const gchar* audio_src = "osxaudiosrc ";
 #endif
 
     std::string launch_pipeline =
@@ -89,13 +89,15 @@ void start_rtsp_server() {
         "caps=video/x-raw,format=BGR,width=640,height=480,framerate=30/1 "
         "! queue ! videoconvert ! video/x-raw,"+ std::string(vedio_convert_format) +
         "! x264enc tune=zerolatency bitrate=1000 speed-preset=ultrafast key-int-max=30 "
-        "! rtph264pay name=pay0 pt=96 ) ( " +
+        "! rtph264pay name=pay0 pt=96 )"
+        " ( " +
         std::string(audio_src) +
         "! queue "
         "! audioconvert ! audioresample "
         "! audio/x-raw,rate=48000,channels=1 "
         "! volume name=mic_vol volume=1.0 mute=false "
-        "! avenc_aac bitrate=128000 ! aacparse ! rtpmp4apay name=pay1 pt=97 )";
+        "! avenc_aac bitrate=128000 ! aacparse ! rtpmp4apay name=pay1 pt=97 )"
+        ;
     gst_rtsp_media_factory_set_launch(factory, launch_pipeline.c_str());
     gst_rtsp_media_factory_set_shared(factory, TRUE);
     g_signal_connect(factory, "media-configure", G_CALLBACK(on_media_configure), nullptr);

@@ -10,17 +10,17 @@
 
 CameraWidget::CameraWidget(QWidget *parent, QSize targetSize) : QWidget(parent), targetSize(targetSize) {
     webcamLabel = new QLabel(this);
-    webcamLabel->setAlignment(Qt::AlignCenter);
-    webcamLabel->setScaledContents(false);
-    webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setAlignment(Qt::AlignCenter);
+    layout->addWidget(webcamLabel);
 
-    if (targetSize.isValid()) {
-        webcamLabel->setMinimumSize(targetSize);   // 최소 크기만 설정
-    }
+    webcamLabel->setAlignment(Qt::AlignCenter);
+    webcamLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     initCamoffImage();  // ← camoff 초기화
     webcamLabel->setPixmap(QPixmap::fromImage(fallbackImage));
-
+    webcamLabel->setMinimumSize(0, 0);
+    this->setMinimumSize(0, 0);
     connect(&timer, &QTimer::timeout, this, &CameraWidget::captureFrame);
 }
 
@@ -101,23 +101,35 @@ void CameraWidget::captureFrame() {
 }
 
 // 마이크 버튼 토글
-void CameraWidget::onMicButtonClicked()
-{
-    micEnabled = !micEnabled;
-    set_mic_enabled(micEnabled);
+void CameraWidget::setMicEnabled(bool enable) {
+    if (micEnabled == enable)
+        return;
+
+    micEnabled = enable;
+    set_mic_enabled(enable);
 }
 
 // 웹캠 버튼 토글
-void CameraWidget::onCamButtonClicked()
-{
-    camEnabled = !camEnabled;
-    if (camEnabled) {
+void CameraWidget::setCamEnabled(bool enable) {
+    if (camEnabled == enable)
+        return;
+
+    camEnabled = enable;
+    if (enable) {
         enable_streaming(true);
         startCam();
     } else {
         enable_streaming(false);
         stopCam();
     }
+}
+
+bool CameraWidget::isMicEnabled() const {
+    return this->micEnabled;
+}
+
+bool CameraWidget::isCamEnabled() const {
+    return this->camEnabled;
 }
 
 void CameraWidget::resizeEvent(QResizeEvent *event)

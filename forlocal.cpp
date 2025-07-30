@@ -26,7 +26,7 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
         "QWidget#ForLocal { background-color: #101828; }"
         "QFrame#headerFrame { "
         "background-color: #1E2939; "
-        "border-bottom: 1px solid #5A5D89; "
+        "border-bottom: 1px solid #304159; "
         "}"
         "QFrame#videoFrame { "
         "background-color: #364153; "
@@ -70,7 +70,7 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
         "QPushButton#layoutButton:hover { background-color: #4A5972; }"
         );
 
-    setupConnections();
+    //setupConnections();
 
     // Initialize timers
     timeTimer = new QTimer(this);
@@ -89,13 +89,13 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
 
     // Initialize UI
     updateTime();
-    updateControlButtons();
+    //updateControlButtons();
     showWaitingState();
 
     // Set room code if provided
-    if (!roomCode.isEmpty()) {
-        ui->roomCodeLabel->setText("Room: " + roomCode);
-    }
+    // if (!roomCode.isEmpty()) {
+    //     ui->roomCodeLabel->setText("Room: " + roomCode);
+    // }
 }
 
 ForLocal::~ForLocal()
@@ -105,69 +105,68 @@ ForLocal::~ForLocal()
 
 void ForLocal::setupConnections()
 {
-    connect(ui->endCallButton, &QPushButton::clicked, this, &ForLocal::onEndCallClicked);
-    connect(ui->muteButton, &QPushButton::clicked, this, &ForLocal::onMuteToggleClicked);
-    connect(ui->cameraButton, &QPushButton::clicked, this, &ForLocal::onCameraToggleClicked);
+    //connect(ui->endCallButton, &QPushButton::clicked, this, &ForLocal::onEndCallClicked);
+    //connect(ui->muteButton, &QPushButton::clicked, this, &ForLocal::onMuteToggleClicked);
+    //connect(ui->cameraButton, &QPushButton::clicked, this, &ForLocal::onCameraToggleClicked);
 }
 
 void ForLocal::updateTime()
 {
-    QString currentTime = QDateTime::currentDateTime().toString("hh:mm");
+    QString currentTime = QDateTime::currentDateTime().toString("  hh:mm  ");
     ui->timeLabel->setText(currentTime);
 }
 
 void ForLocal::updateControlButtons()
 {
     // Update mute button
-    if (isMuted) {
-        ui->muteButton->setText("🔇");
-        ui->muteButton->setProperty("muted", "true");
-        ui->muteButton->setToolTip("마이크 켜기");
-    } else {
-        ui->muteButton->setText("🎤");
-        ui->muteButton->setProperty("muted", "false");
-        ui->muteButton->setToolTip("마이크 끄기");
-    }
+    // if (isMuted) {
+    //     ui->muteButton->setText("🔇");
+    //     ui->muteButton->setProperty("muted", "true");
+    //     ui->muteButton->setToolTip("마이크 켜기");
+    // } else {
+    //     ui->muteButton->setText("🎤");
+    //     ui->muteButton->setProperty("muted", "false");
+    //     ui->muteButton->setToolTip("마이크 끄기");
+    // }
 
-    // Update camera button
-    if (!isCameraEnabled) {
-        ui->cameraButton->setText("📹❌");
-        ui->cameraButton->setProperty("disabled", "true");
-        ui->cameraButton->setToolTip("카메라 켜기");
-    } else {
-        ui->cameraButton->setText("📹");
-        ui->cameraButton->setProperty("disabled", "false");
-        ui->cameraButton->setToolTip("카메라 끄기");
-    }
+    // // Update camera button
+    // if (!isCameraEnabled) {
+    //     ui->cameraButton->setText("📹❌");
+    //     ui->cameraButton->setProperty("disabled", "true");
+    //     ui->cameraButton->setToolTip("카메라 켜기");
+    // } else {
+    //     ui->cameraButton->setText("📹");
+    //     ui->cameraButton->setProperty("disabled", "false");
+    //     ui->cameraButton->setToolTip("카메라 끄기");
+    // }
 
-    // Force style update
-    ui->muteButton->style()->unpolish(ui->muteButton);
-    ui->muteButton->style()->polish(ui->muteButton);
-    ui->cameraButton->style()->unpolish(ui->cameraButton);
-    ui->cameraButton->style()->polish(ui->cameraButton);
+    // // Force style update
+    // ui->muteButton->style()->unpolish(ui->muteButton);
+    // ui->muteButton->style()->polish(ui->muteButton);
+    // ui->cameraButton->style()->unpolish(ui->cameraButton);
+    // ui->cameraButton->style()->polish(ui->cameraButton);
 }
 
 void ForLocal::showWaitingState()
 {
     ui->videoStatusLabel->setText("원격 참가자를 기다리는 중...");
-    ui->videoStatusLabel->setVisible(true);
-    ui->participantNameLabel->setVisible(false);
+    ui->videoStatusLabel->setVisible(false);
+    //ui->participantNameLabel->setVisible(false);
 
     // Create waiting state visual
-    QPixmap waitingPixmap(800, 450);
-    waitingPixmap.fill(QColor("#364153"));
+    // QPixmap waitingPixmap(800, 450);
+    // waitingPixmap.fill(QColor("#364153"));
 
-    QPainter painter(&waitingPixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
+    // QPainter painter(&waitingPixmap);
+    // painter.setRenderHint(QPainter::Antialiasing);
 
-    // Draw waiting icon
-    QFont iconFont = painter.font();
-    iconFont.setPointSize(72);
-    painter.setFont(iconFont);
-    painter.setPen(QColor("#9CA3AF"));
-    painter.drawText(waitingPixmap.rect(), Qt::AlignCenter, "⏳");
+    // // Draw waiting icon
+    // QFont iconFont = painter.font();
+    // iconFont.setPointSize(72);
+    // painter.setFont(iconFont);
+    // painter.drawText(waitingPixmap.rect(), Qt::AlignCenter, "⏳");
 
-    ui->mainVideoLabel->setPixmap(waitingPixmap);
+    // ui->mainVideoLabel->setPixmap(waitingPixmap);
 }
 
 // void ForLocal::showParticipantVideo(QPixmap& videoPixMap)

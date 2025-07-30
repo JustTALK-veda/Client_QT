@@ -8,84 +8,24 @@
 #include "audio_control.h"
 
 
-Lobby::Lobby(QWidget *parent)
+Lobby::Lobby(QWidget *parent, CameraWidget* webcamFrame)
     : QWidget(parent)
     , ui(new Ui::Lobby)
-    , videoEnabled(true)
-    , audioEnabled(true)
     , isConnecting(false)
     , meetingInProgress(true)
-    , cameraWidget(nullptr)
+    , cameraWidget(webcamFrame)
 {
     ui->setupUi(this);
 
-    cameraWidget=ui->videoPreview;
+    //camerawidget 배치
+    ui->videoFrame->layout()->addWidget(cameraWidget);
 
-    // this->setFixedSize(this->sizeHint());
-    // this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    // ui->contentLayout->insertStretch(0,1);
-    // ui->contentLayout->addStretch(1);
-
-    // ui->contentLayout->setAlignment(Qt::AlignCenter);
-    // this->adjustSize();
-
-    // Set dark theme colors
-    // setStyleSheet(
-    //     "QWidget#Lobby { background-color: #101828; }"
-    //     "QWidget#content { background-color: #101828; }"
-
-    //     "QLabel { color: white; }"
-    //     "QPushButton { "
-    //         "background-color: #ED6B06; "
-    //         "color: white; "
-    //         "border: none; "
-    //         "border-radius: 6px; "
-    //         "padding: 12px 24px; "
-    //         "font-weight: bold; "
-    //     "}"
-    //     "QPushButton:hover { background-color: #d55a05; }"
-    //     "QPushButton:disabled { "
-    //         "background-color: #4A5565; "
-    //         "color: #9CA3AF; "
-    //     "}"
-    //     "QFrame#headerFrame { "
-    //         "background-color: #1E2939; "
-    //         "border-bottom: 1px solid #304159; "
-    //     "}"
-    //     "QFrame#videoFrame { "
-    //         "background-color: #364153; "
-    //         "border: 1px solid #4A5972; "
-    //         "border-radius: 8px; "
-    //     "}"
-    //     "QFrame#controlsFrame { "
-    //         "background-color: #364153; "
-    //         "border: 1px solid #4A5972; "
-    //         "border-radius: 8px; "
-    //     "}"
-    //     "QCheckBox { color: white; }"
-    //     "QCheckBox::indicator { "
-    //         "width: 40px; "
-    //         "height: 20px; "
-    //         "border-radius: 2px; "
-    //         "background-color: #4A5972; "
-    //     "}"
-    //     "QCheckBox::indicator:checked { "
-    //         "background-color: #ED6B06; "
-    //     "}"
-    //     "QCheckBox::indicator::handle { "
-    //         "width: 16px; "
-    //         "height: 16px; "
-    //         "border-radius: 8px; "
-    //         "background-color: white; "
-    //     "}"
-    // );
     setStyleSheet(
         "QWidget#Lobby { background-color: #101828; }"
         "QWidget#content { background-color: #101828; }"
 
         "QLabel { color: white; }"
-        "QPushButton { "
+        "QPushButton#enterButton { "
         "background-color: #ED6B06; "
         "color: white; "
         "border: none; "
@@ -93,8 +33,8 @@ Lobby::Lobby(QWidget *parent)
         "padding: 12px 24px; "
         "font-weight: bold; "
         "}"
-        "QPushButton:hover { background-color: #d55a05; }"
-        "QPushButton:disabled { "
+        "QPushButton#enterButton:hover { background-color: #d55a05; }"
+        "QPushButton#enterButton:disabled { "
         "background-color: #4A5565; "
         "color: #9CA3AF; "
         "}"
@@ -114,8 +54,6 @@ Lobby::Lobby(QWidget *parent)
         "}"
         "QCheckBox { color: white; }"
         );
-
-
     
     // Setup timer for clock
     timeTimer = new QTimer(this);
@@ -127,33 +65,19 @@ Lobby::Lobby(QWidget *parent)
     connect(ui->enterButton, &QPushButton::clicked, this, &Lobby::handleJoinMeeting);
     connect(ui->backButton, &QPushButton::clicked, this, &Lobby::goBackRequested);
     connect(ui->cameraToggleButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_on.png"));
-            cameraWidget->onCamButtonClicked();
-        }
-        else{
-            ui->cameraToggleButton->setIcon(QIcon(":/Image/config/video_off.png"));
-            cameraWidget->onCamButtonClicked();
-        }
+        ui->cameraToggleButton->setIcon(QIcon(checked ? ":/Image/config/video_on.png" : ":/Image/config/video_off.png"));
+        cameraWidget->setCamEnabled(checked);
     });
 
     connect(ui->micToggleButton, &QPushButton::toggled, this, [=](bool checked) {
-        if (checked){
-            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_on.png"));
-            cameraWidget->onMicButtonClicked();
-        }
-        else{
-            ui->micToggleButton->setIcon(QIcon(":/Image/config/mic_off.png"));
-            cameraWidget->onMicButtonClicked();
-        }
+        ui->micToggleButton->setIcon(QIcon(checked ? ":/Image/config/mic_on.png" : ":/Image/config/mic_off.png"));
+        cameraWidget->setMicEnabled(checked);
     });
-    connect(ui->settingsButton, &QPushButton::clicked, this, &Lobby::showSettings);
-    //connect(ui->statusToggleButton, &QPushButton::clicked, this, &Lobby::toggleMeetingStatus);
     
     // Initialize UI state
-    updateVideoPreview();
-    updateMeetingStatus();
-    updateJoinButton();
+    ui->connectionStatusLabel->setText("회의가 시작되면 참가할 수 있습니다.");
+    ui->connectionStatusLabel->setVisible(true);
+    //checkRtspServer();
 }
 
 Lobby::~Lobby()
@@ -163,36 +87,27 @@ Lobby::~Lobby()
 
 void Lobby::updateTime()
 {
-    QString currentTime = QDateTime::currentDateTime().toString("hh:mm");
+    QString currentTime = QDateTime::currentDateTime().toString("  hh:mm  ");
     ui->timeLabel->setText(currentTime);
 }
 
-void Lobby::updateVideoPreview()
-{
-    if (videoEnabled) {
-        // ui->videoStatusLabel->setText("카메라 미리보기"); //이거 살리면 웹캠 안됨
-        // ui->videoPreview->setStyleSheet(
-        //     "QLabel { "
-        //         "background-color: #1E2939; "
-        //         "border-radius: 50px; "
-        //         "color: white; "
-        //         "font-size: 24px; "
-        //         "font-weight: bold; "
-        //     "}"
-        // );
-        //ui->videoPreview->setText("WebcamPreview appear here");
-        //ui->videoPreview->setAlignment(Qt::AlignCenter);
+void Lobby::checkRtspServer() {
+    QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
+    videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true);
+    connect(videoThread, &VideoThread::serverReady, this, &Lobby::onServerReady);
+    videoThread->start();
+}
+
+void Lobby::onServerReady(bool success) {
+    meetingInProgress = success;
+    if (success) {
+        qDebug() << "[Lobby] RTSP 서버 작동 확인됨.";
     } else {
-        // ui->videoStatusLabel->setText("카메라가 꺼져있습니다");
-        ui->videoPreview->setStyleSheet(
-            "QLabel { "
-                "background-color: #1E2939; "
-                "color: #9CA3AF; "
-            "}"
-        );
-        //ui->videoPreview->setText("📷 camera off"); // Camera off icon
-        //ui->videoPreview->setAlignment(Qt::AlignCenter);
+        qDebug() << "[Lobby] RTSP 서버 연결 실패.";
     }
+    updateMeetingStatus();
+    updateJoinButton();
+    videoThread->deleteLater();
 }
 
 void Lobby::updateMeetingStatus()
@@ -203,9 +118,9 @@ void Lobby::updateMeetingStatus()
             "QLabel { "
                 "background-color: #ED6B06; "
                 "border: 2px solid #ED6B06; "
-                "border-radius: 8px; "
-                "min-width: 16px; "
-                "min-height: 16px; "
+                "border-radius: 7px; "
+                "min-width: 14px; "
+                "min-height: 14px; "
             "}"
         );
         ui->meetingDescLabel->setText("현재 회의가 진행 중입니다. 참가할 수 있습니다.");
@@ -215,9 +130,9 @@ void Lobby::updateMeetingStatus()
             "QLabel { "
                 "background-color: transparent; "
                 "border: 2px solid #ED6B06; "
-                "border-radius: 8px; "
-                "min-width: 16px; "
-                "min-height: 16px; "
+                "border-radius: 7px; "
+                "min-width: 14px; "
+                "min-height: 14px; "
             "}"
         );
         ui->meetingDescLabel->setText("현재 진행 중인 회의가 없습니다.");
@@ -257,14 +172,3 @@ void Lobby::handleJoinMeeting()
     });
 }
 
-void Lobby::toggleMeetingStatus()
-{
-    meetingInProgress = !meetingInProgress;
-    updateMeetingStatus();
-    updateJoinButton();
-}
-
-void Lobby::showSettings()
-{
-    // Implement settings dialog
-}

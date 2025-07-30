@@ -2,6 +2,7 @@
 #define START_H
 
 #include <QWidget>
+#include <QTimer>
 #include <QPushButton>
 
 namespace Ui {
@@ -20,6 +21,9 @@ signals:
     void enterLocalPageRequested();
 private:
     Ui::Start *ui;
+    QTimer *timeTimer;
+private slots:
+    void updateTime();
 
 
 };

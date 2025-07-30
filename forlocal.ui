@@ -59,20 +59,10 @@
       <item>
        <widget class="QLabel" name="logoLabel">
         <property name="styleSheet">
-         <string>font-size: 18px; font-weight: bold; color: white;</string>
+         <string notr="true">background-color: #1E2939; font-size: 18px; font-weight: bold; color: white;</string>
         </property>
         <property name="text">
          <string>🔶 JustTALK</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="roomCodeLabel">
-        <property name="styleSheet">
-         <string>color: #9CA3AF; font-size: 14px;</string>
-        </property>
-        <property name="text">
-         <string>Host Room</string>
         </property>
        </widget>
       </item>
@@ -90,12 +80,22 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="timeLabel">
+       <widget class="QPushButton" name="timeLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="styleSheet">
-         <string>color: white; font-size: 14px;</string>
+         <string notr="true">background-color: #1E2939; color: white; font-size: 14px; background: transparent; border: none;</string>
         </property>
         <property name="text">
-         <string>00:00</string>
+         <string>  00:00  </string>
+        </property>
+        <property name="icon">
+         <iconset resource="Resources.qrc">
+          <normaloff>:/Image/config/clock.png</normaloff>:/Image/config/clock.png</iconset>
         </property>
        </widget>
       </item>
@@ -127,25 +127,15 @@
        <widget class="QWidget" name="videoWidget" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
           <widget class="QFrame" name="videoFrame">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
            </property>
            <layout class="QVBoxLayout" name="videoLayout">
             <property name="leftMargin">
@@ -175,9 +165,9 @@
                </size>
               </property>
               <property name="styleSheet">
-               <string>QLabel {
+               <string notr="true">QLabel {
     background-color: #364153;
-    border: 2px solid #4A5972;
+    border: none;
     border-radius: 8px;
 }</string>
               </property>
@@ -192,7 +182,7 @@
             <item>
              <widget class="QLabel" name="videoStatusLabel">
               <property name="styleSheet">
-               <string>color: #9CA3AF; font-size: 16px;</string>
+               <string notr="true">background-color: #1E2939; color: #9CA3AF; font-size: 16px;</string>
               </property>
               <property name="text">
                <string>원격 참가자를 기다리는 중...</string>
@@ -202,40 +192,8 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QLabel" name="participantNameLabel">
-              <property name="visible">
-               <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string>color: white;
-background-color: rgba(3, 2, 19, 0.8);
-padding: 8px 16px;
-border-radius: 4px;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -243,144 +201,10 @@ border-radius: 4px;</string>
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QFrame" name="controlFrame">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>100</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>100</height>
-      </size>
-     </property>
-     <layout class="QHBoxLayout" name="controlLayout">
-      <property name="leftMargin">
-       <number>32</number>
-      </property>
-      <property name="rightMargin">
-       <number>32</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="timeDisplayLabel">
-        <property name="styleSheet">
-         <string>color: white; font-size: 14px;</string>
-        </property>
-        <property name="text">
-         <string>00:00</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="leftControlSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="participantCountLabel">
-        <property name="styleSheet">
-         <string>color: white; font-size: 14px;</string>
-        </property>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="cameraButton">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>카메라 끄기</string>
-        </property>
-        <property name="text">
-         <string>📹</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="muteButton">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>마이크 끄기</string>
-        </property>
-        <property name="text">
-         <string>🎤</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="endCallButton">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>통화 종료</string>
-        </property>
-        <property name="text">
-         <string>📞</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="rightControlSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

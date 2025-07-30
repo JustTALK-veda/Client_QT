@@ -14,8 +14,8 @@
 
 
 
-VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord)
-    : m_url(url), m_label(label), m_coord(coord), m_stop(false) {}
+VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord, bool checkOnly)
+    : m_url(url), m_label(label), m_coord(coord), m_checkOnly(checkOnly), m_stop(false)  {}
 
 void VideoThread::stop() {
     m_stop = true;
@@ -65,6 +65,7 @@ void VideoThread::run() {
     if (!pipeline)
     {
         qDebug() << "[VideoThread] 파이프라인 생성 실패";
+        emit serverReady(false);
         return;
     }
 
@@ -73,6 +74,7 @@ void VideoThread::run() {
     {
         qDebug() << "[VideoThread] appsink 핸들 가져오기 실패";
         gst_object_unref(pipeline);
+        emit serverReady(false);
         return;
     }
 
@@ -85,6 +87,29 @@ void VideoThread::run() {
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     qDebug() << "[VideoThread] 파이프라인 재생 시작";
+
+    if (m_checkOnly) {
+        // ✅ 확인 모드: 최대 3초 동안 한 프레임만 시도
+        bool success = false;
+        QElapsedTimer timer;
+        timer.start();
+
+        while (timer.elapsed() < 3000) {
+            GstSample* sample = gst_app_sink_try_pull_sample(GST_APP_SINK(sink), 100 * GST_MSECOND);
+            if (sample) {
+                qDebug() << "[VideoThread] 서버에서 첫 sample 수신 성공";
+                gst_sample_unref(sample);
+                success = true;
+                break;
+            }
+        }
+
+        gst_element_set_state(pipeline, GST_STATE_NULL);
+        gst_object_unref(pipeline);
+
+        emit serverReady(success);
+        return;
+    }
 
     //크롭 사이즈 고정하기
     constexpr int W = 480, H = 360;
@@ -132,15 +157,15 @@ void VideoThread::run() {
     
     while (!m_stop)
     {
-        qDebug() << "[VideoThread] sample 수신 대기 중";
+        //qDebug() << "[VideoThread] sample 수신 대기 중";
 
         GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
         if (!sample)
         {
-            qDebug() << "[VideoThread] sample 수신 실패";
+            //qDebug() << "[VideoThread] sample 수신 실패";
             continue;
         }
-        qDebug() << "[VideoThread] sample 수신 성공";
+        //qDebug() << "[VideoThread] sample 수신 성공";
 
         GstBuffer* buffer = gst_sample_get_buffer(sample);
         GstMapInfo map;
