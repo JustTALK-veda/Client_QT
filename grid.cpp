@@ -54,22 +54,18 @@ grid::grid(QWidget *parent)
     connect(ui->nextButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToNextPage);
     connect(ui->prevButton, &QPushButton::clicked, ui->stackedWidget, &Stackpage::goToPreviousPage);
 
-    QString ip;
+    QString rtsp_ip, tcp_ip;
     int rtspPort, tcpPort;
-    if (!loadConfigFromJson(ip, rtspPort, tcpPort)) {
-        ip = "192.168.0.50"; rtspPort = 8555; tcpPort = 12345;
+    if (!loadConfigFromJson(rtsp_ip, rtspPort, tcp_ip, tcpPort)) {
+        rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.30"; tcpPort = 12345;
     }
-
+    QString rtspUrl = QString("rtsps://%1:%2/test").arg(rtsp_ip).arg(rtspPort);
+    videoThread = new VideoThread(rtspUrl, nullptr, coord);
+    tcpThread = new TcpThread(coord, tcp_ip, tcpPort);
     //meta data 수신 스레드
-    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
+    // tcpThread = new TcpThread(coord, "192.168.0.60", 12345);
 
-
-
-
-    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
-
-   // QString rtspUrl = QString("rtsps://%1:%2/test").arg(ip).arg(rtspPort);
-
+    // QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &grid::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);
@@ -110,7 +106,7 @@ void grid::onGridPageActive()
 
 }
 
-bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
+bool grid::loadConfigFromJson(QString &rtsp_ip, int &rtspPort, QString &tcp_ip, int &tcpPort) {
     QFile file("config/rpi_ip.json");
 
     // 파일 열기 확인
@@ -146,18 +142,20 @@ bool grid::loadConfigFromJson(QString &ip, int &rtspPort, int &tcpPort) {
     // 첫 번째 객체에서 설정값 읽기
     QJsonObject configObj = jsonArray[0].toObject();
 
-    if (!configObj.contains("ip") || !configObj.contains("rtsp_port") || !configObj.contains("tcp_port")) {
-        qDebug() << "필수 필드가 누락되었습니다 (ip, rtsp_port, tcp_port)";
+    if (!configObj.contains("rtsp_ip") || !configObj.contains("rtsp_port") || !configObj.contains("tcp_ip") || !configObj.contains("tcp_port")) {
+        qDebug() << "필수 필드가 누락되었습니다 (rtsp_ip, rtsp_port, tcp_ip, tcp_port)";
         return false;
     }
 
-    ip = configObj["ip"].toString();
+    rtsp_ip = configObj["rtsp_ip"].toString();
     rtspPort = configObj["rtsp_port"].toInt();
+    tcp_ip = configObj["tcp_ip"].toString();
     tcpPort = configObj["tcp_port"].toInt();
 
     qDebug() << "JSON 설정 로드 성공:";
-    qDebug() << "IP:" << ip;
+    qDebug() << "RTSP IP:" << rtsp_ip;
     qDebug() << "RTSP Port:" << rtspPort;
+    qDebug() << "TCP IP:" << tcp_ip;
     qDebug() << "TCP Port:" << tcpPort;
 
     return true;

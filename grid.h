@@ -16,6 +16,7 @@ class grid : public QWidget
     Q_OBJECT
 public:
     explicit grid(QWidget *parent = nullptr);
+    VideoThread *videoThread;
     ~grid();
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -27,8 +28,6 @@ private:
     //QLabel* pano = nullptr;
     QVector<QLabel*> labels;
     const int perPage=4;
-
-    VideoThread *videoThread;
     TcpThread   *tcpThread;
     Coordinate  *coord;
     // QTimer      *webcamTimer;
@@ -36,7 +35,7 @@ private:
     // QWidget *container;
 
     void setupPages();
-    bool loadConfigFromJson(QString &ip,int &rtspPort,int &tcpPort);
+    bool loadConfigFromJson(QString &rtsp_ip,int &rtspPort,QString &tcp_ip,int &tcpPort);
 
 signals:
 
