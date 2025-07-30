@@ -29,7 +29,7 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
         "border-bottom: 1px solid #304159; "
         "}"
         "QFrame#videoFrame { "
-        "background-color: #1E2939; "
+        "background-color: #364153; "
         "border: 4px solid #ED6B06; "
         "border-radius: 8px; "
         "}"
@@ -150,7 +150,7 @@ void ForLocal::updateControlButtons()
 void ForLocal::showWaitingState()
 {
     ui->videoStatusLabel->setText("원격 참가자를 기다리는 중...");
-    ui->videoStatusLabel->setVisible(true);
+    ui->videoStatusLabel->setVisible(false);
     //ui->participantNameLabel->setVisible(false);
 
     // Create waiting state visual

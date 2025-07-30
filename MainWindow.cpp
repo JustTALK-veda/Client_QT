@@ -19,9 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->addWidget(stackedWidget);
     
-    // 공유 카메라 위젯 생성
-    webcamFrame = new CameraWidget(this);
-    
     // 페이지 생성
     Start* startPage = new Start(this);
 
@@ -34,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     // 페이지 전환 연결
     connect(startPage, &Start::enterRemotePageRequested, this, [=]() {
         if (!lobbyPage) {
+            // 공유 카메라 위젯 생성
+            webcamFrame = new CameraWidget(this);
             lobbyPage = new Lobby(this, webcamFrame);
             stackedWidget->addWidget(lobbyPage);
 

@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/Image">
-        <file>config/camoff.png</file>
         <file>config/local_user.png</file>
         <file>config/remote_user.png</file>
         <file>config/full_black.png</file>
@@ -20,6 +19,7 @@
         <file>config/video_off.png</file>
         <file>config/video_on.png</file>
         <file>config/clock.png</file>
+        <file>config/camoff.png</file>
     </qresource>
 
 <qresource prefix="/certs">
