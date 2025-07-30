@@ -1,6 +1,8 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 #include "CameraWidget.h"
+#include "VideoThread.h"
+#include "Coordinate.h"
 #include <QWidget>
 #include <QTimer>
 
@@ -23,17 +25,18 @@ signals:
 private slots:
     void updateTime();
     void handleJoinMeeting();
-    void toggleMeetingStatus();
-    void showSettings();
+    void onServerReady(bool success);
 
 private:
     void updateVideoPreview();
     void updateMeetingStatus();
     void updateJoinButton();
+    void checkRtspServer();
 
     Ui::Lobby *ui;
     QTimer *timeTimer;
     CameraWidget *cameraWidget;
+    VideoThread *videoThread;
 
     bool isConnecting;
     bool meetingInProgress;
