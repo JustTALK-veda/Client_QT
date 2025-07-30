@@ -209,8 +209,8 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>700</width>
-            <height>500</height>
+            <width>640</width>
+            <height>480</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="videoLayout">
