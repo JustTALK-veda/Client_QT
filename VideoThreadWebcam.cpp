@@ -30,14 +30,14 @@ void VideoThreadWebcam::run() {
         );
 #elif __APPLE__
     pipelineStr = QString(
-                        "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+                        "rtspsrc location=rtsp://127.0.0.1:8554/test latency=100 tls-validation-flags=0 ! "
                         "application/x-rtp,media=video,encoding-name=H264 ! "
                         "rtph264depay ! "
                         "h264parse ! "
                         "vtdec ! "
                         "videoconvert ! "
                         "video/x-raw,format=RGB ! "
-                        "appsink name=mysink"
+                        "appsink name=video_sink"
                         ).arg(m_url);
     // audio
     // pipelineStr = QString(
@@ -78,15 +78,15 @@ void VideoThreadWebcam::run() {
 
     while (!m_stop)
     {
-        qDebug() << "[VideoThreadWebcam] sample 수신 대기 중";
+        //qDebug() << "[VideoThreadWebcam] sample 수신 대기 중";
 
         GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
         if (!sample)
         {
-            qDebug() << "[VideoThreadWebcam] sample 수신 실패";
+            //qDebug() << "[VideoThreadWebcam] sample 수신 실패";
             continue;
         }
-        qDebug() << "[VideoThreadWebcam] sample 수신 성공";
+        //qDebug() << "[VideoThreadWebcam] sample 수신 성공";
 
         GstBuffer* buffer = gst_sample_get_buffer(sample);
         GstMapInfo map;
