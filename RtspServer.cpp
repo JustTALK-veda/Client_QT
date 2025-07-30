@@ -86,7 +86,7 @@ void start_rtsp_server() {
 
     std::string launch_pipeline =
         "( appsrc name=mysrc is-live=true block=true format=TIME "
-        "caps=video/x-raw,format=BGR,width=640,height=480,framerate=30/1 "
+        "caps=video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 "
         "! queue ! videoconvert ! video/x-raw,"+ std::string(vedio_convert_format) +
         "! x264enc tune=zerolatency bitrate=1000 speed-preset=ultrafast key-int-max=30 "
         "! rtph264pay name=pay0 pt=96 )"
