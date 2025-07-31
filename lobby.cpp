@@ -99,7 +99,7 @@ void Lobby::checkRtspServer() {
     if (isCheckingServer) return;
     isCheckingServer = true;
 
-    QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true); //checkonly
 
     connect(videoThread, &VideoThread::serverReady, this, &Lobby::onServerReady);
