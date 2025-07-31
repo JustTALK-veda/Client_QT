@@ -21,6 +21,7 @@
         <file>config/clock.png</file>
         <file>config/camoff.png</file>
         <file>config/camoff_mac.png</file>
+        <file>config/loading.png</file>
     </qresource>
     <qresource prefix="/certs">
         <file>certs/tcp_server.crt</file>
