@@ -30,7 +30,7 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
         "}"
         "QFrame#videoFrame { "
         "background-color: #364153; "
-        "border: 4px solid #ED6B06; "
+        "border: 1px solid #4A5972; "
         "border-radius: 8px; "
         "}"
         "QFrame#controlFrame { "

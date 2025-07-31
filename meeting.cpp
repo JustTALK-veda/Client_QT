@@ -92,8 +92,8 @@ void meeting::showEvent(QShowEvent *event)
     QSize parentSize = this->size();
     QSize pipSize = pip->size();
 
-    int x = parentSize.width() - pipSize.width() - 20;
-    int y = parentSize.height() - pipSize.height() - 20;
+    int x = parentSize.width() - pipSize.width() + 10;
+    int y = parentSize.height() - pipSize.height() - 10;
     pip->move(x, y);
 }
 
