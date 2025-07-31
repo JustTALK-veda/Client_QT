@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QFrame>
+#include <QImage>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -28,22 +29,29 @@ signals:
     void goBackRequested();
 
 private slots:
-    void onEndCallClicked();
-    void onMuteToggleClicked();
-    void onCameraToggleClicked();
+    // void onEndCallClicked();
+    // void onMuteToggleClicked();
+    // void onCameraToggleClicked();
     void updateTime();
     // void onConnected();
     // void showParticipantVideo(QPixmap&);
 
 private:
-    void setupConnections();
-    void updateControlButtons();
+    //void setupConnections();
+    //void updateControlButtons();
     void showWaitingState();
+    void checkWebcamServer();
+    void startWebcamThread();
+    void onWebcamReady(bool success);
 
     Ui::ForLocal *ui;
     QTimer *timeTimer;
     // QTimer *participantTimer;
-    VideoThreadWebcam *webcamThread;
+    QImage waitingImg;
+    QTimer* webcamRetryTimer = nullptr;
+    bool isCheckingServer = false;
+    VideoThreadWebcam* webcamCheckThread = nullptr;
+    VideoThreadWebcam* webcamStreamThread = nullptr;
 
     // State variables
     bool isMuted;
@@ -53,6 +61,7 @@ private:
     QString roomCode;
     QString hostName;
     int participantCount;
+    QString webcamUrl;
 };
 
 #endif // FORLOCAL_H

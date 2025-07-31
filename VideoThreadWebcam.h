@@ -17,8 +17,6 @@ class VideoThreadWebcam : public QThread {
 
 signals:
     void connected();
-    // void disconnected();
-    void receiveFrame(const QPixmap &pix); 
 
 public:
     VideoThreadWebcam(const QString& url, QLabel* label);

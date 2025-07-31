@@ -24,10 +24,10 @@ void VideoThreadWebcam::run() {
 
 #ifdef _WIN32
     pipelineStr = QString(
-          "rtspsrc location=rtsp://192.168.0.6:8554/test latency=0 name=src protocols=tcp "
+          "rtspsrc location=%1 latency=0 name=src protocols=tcp "
           "src. ! queue ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! video/x-raw,format=RGB ! appsink name=video_sink "
           "src. ! queue ! rtpmp4adepay ! aacparse ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
-        );
+                      ).arg(m_url);
 #elif __APPLE__
     pipelineStr = QString(
                         "rtspsrc location=rtsp://192.168.0.27:8554/test latency=100 tls-validation-flags=0 ! "
@@ -74,7 +74,7 @@ void VideoThreadWebcam::run() {
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     qDebug() << "[VideoThreadWebcam] 파이프라인 재생 시작";
     
-    emit connected(); 
+    emit connected();
 
     while (!m_stop)
     {

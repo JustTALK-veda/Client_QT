@@ -166,7 +166,7 @@
               </property>
               <property name="styleSheet">
                <string notr="true">QLabel {
-    background-color: #364153;
+    background-color: #333D4F;
     border: none;
     border-radius: 8px;
 }</string>
@@ -182,7 +182,7 @@
             <item>
              <widget class="QLabel" name="videoStatusLabel">
               <property name="styleSheet">
-               <string notr="true">background-color: #1E2939; color: #9CA3AF; font-size: 16px;</string>
+               <string notr="true">background-color: #333D4F; color: #9CA3AF; font-size: 16px;</string>
               </property>
               <property name="text">
                <string>원격 참가자를 기다리는 중...</string>
