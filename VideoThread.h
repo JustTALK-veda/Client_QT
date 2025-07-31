@@ -27,18 +27,24 @@ public:
     void stop();
 
 private:
+    typedef struct _coord{
+        int x;
+        int y;
+        int w;
+        int h;
+    } Coord;
+
     QString m_url;
     QLabel* m_label;
     Coordinate* m_coord;
     bool m_stop;
     QElapsedTimer fpsTimer;   // FPS 측정용 타이머
     int fpsFrameCount = 0;    // 프레임 카운터
-    QVector<int>prevX;
+    std::vector<Coord> prev_coords; // 이전 좌표 저장용
     QPixmap roundedPixmap(const QPixmap& src, int radius);
     void drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius);
     bool m_checkOnly = false;
     int getUndistortionMap_hemi(cv::Mat& transform_map_x, cv::Mat& transform_map_y, int n_width, int n_height);
-
 };
 
 #endif // VIDEOTHREAD_H
