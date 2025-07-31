@@ -37,6 +37,8 @@ private:
     QPixmap roundedPixmap(const QPixmap& src, int radius);
     void drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius);
     bool m_checkOnly = false;
+    int getUndistortionMap_hemi(cv::Mat& transform_map_x, cv::Mat& transform_map_y, int n_width, int n_height);
+
 };
 
 #endif // VIDEOTHREAD_H
