@@ -17,6 +17,7 @@ class VideoThreadWebcam : public QThread {
 
 signals:
     void connected();
+    void disconnected();
 
 public:
     VideoThreadWebcam(const QString& url, QLabel* label);
@@ -29,6 +30,7 @@ private:
     QLabel* m_label;
     QElapsedTimer fpsTimer;   // FPS 측정용 타이머
     int fpsFrameCount = 0;    // 프레임 카운터
+    int consecutiveFailures = 0;
 };
 
 #endif // VIDEOTHREADWEBCAM_H

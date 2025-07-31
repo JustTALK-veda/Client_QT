@@ -84,6 +84,11 @@ void VideoThreadWebcam::run() {
         if (!sample)
         {
             //qDebug() << "[VideoThreadWebcam] sample 수신 실패";
+            consecutiveFailures++;
+            if (consecutiveFailures > 10) {
+                emit disconnected();
+                break; // 루프 탈출 및 스레드 종료
+            }
             continue;
         }
         //qDebug() << "[VideoThreadWebcam] sample 수신 성공";
@@ -135,6 +140,7 @@ void VideoThreadWebcam::run() {
     }
 
     qDebug() << "[VideoThreadWebcam] 스레드 종료 요청됨";
+    emit disconnected();
 
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);

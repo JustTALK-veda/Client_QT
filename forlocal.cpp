@@ -35,7 +35,6 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
         "border-radius: 8px; "
         "}"
         );
-
     // Initialize timers
     timeTimer = new QTimer(this);
     connect(timeTimer, &QTimer::timeout, this, &ForLocal::updateTime);
@@ -49,6 +48,7 @@ ForLocal::ForLocal(QWidget *parent, const QString &roomCode)
     webcamRetryTimer = new QTimer(this);
     connect(webcamRetryTimer, &QTimer::timeout, this, &ForLocal::checkWebcamServer);
     webcamRetryTimer->start(3000);
+
 }
 
 ForLocal::~ForLocal()
@@ -123,6 +123,7 @@ void ForLocal::startWebcamThread() {
 
     connect(webcamStreamThread, &QThread::finished, webcamStreamThread, &QObject::deleteLater);
     webcamStreamThread->start();
+    connect(webcamStreamThread, &VideoThreadWebcam::disconnected, this, &ForLocal::showWaitingState);
     qDebug() << "webcamStreamThread 시작";
 }
 
