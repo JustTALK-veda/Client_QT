@@ -19,10 +19,10 @@ signals:
     void cropped(int index,const QPixmap& pixmap); //Index 번째 크롭된 이미지를 전달
     void fullFrame(const QPixmap &pix);//전체 프레임용 시그널
     void peoplecount(int count);
-
+    void serverReady(bool success);
 
 public:
-    VideoThread(const QString& url, QLabel* label, Coordinate* coord);
+    VideoThread(const QString& url, QLabel* label, Coordinate* coord = nullptr, bool checkOnly = false);
     void run() override;
     void stop();
 
@@ -36,7 +36,7 @@ private:
     QVector<int>prevX;
     QPixmap roundedPixmap(const QPixmap& src, int radius);
     void drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius);
-
+    bool m_checkOnly = false;
 };
 
 #endif // VIDEOTHREAD_H

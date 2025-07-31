@@ -44,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
                     connect(meetingPage, &meeting::exitRequested, this, &MainWindow::close);
                 }
                 stackedWidget->setCurrentWidget(meetingPage);
+                stackedWidget->removeWidget(lobbyPage);
+                lobbyPage->deleteLater();
+                lobbyPage = nullptr;
                 emit meetingPage->gridPageActive();
             });
         }
