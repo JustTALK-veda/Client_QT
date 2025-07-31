@@ -178,10 +178,10 @@ void Lobby::handleJoinMeeting()
     isConnecting = true;
     updateJoinButton();
     
-    // Simulate connection delay
-    QTimer::singleShot(2000, this, [this]() {
+    // // Simulate connection delay
+    // QTimer::singleShot(2000, this, [this]() {
         isConnecting = false;
         emit enterMeetingRequested();
-    });
+    // });
 }
 
