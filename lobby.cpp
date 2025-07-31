@@ -12,7 +12,8 @@ Lobby::Lobby(QWidget *parent, CameraWidget* webcamFrame)
     : QWidget(parent)
     , ui(new Ui::Lobby)
     , isConnecting(false)
-    , meetingInProgress(true)
+    , meetingInProgress(false)
+    , isCheckingServer(false)
     , cameraWidget(webcamFrame)
 {
     ui->setupUi(this);
@@ -78,6 +79,9 @@ Lobby::Lobby(QWidget *parent, CameraWidget* webcamFrame)
     ui->connectionStatusLabel->setText("회의가 시작되면 참가할 수 있습니다.");
     ui->connectionStatusLabel->setVisible(true);
     //checkRtspServer();
+    serverCheckTimer = new QTimer(this);
+    connect(serverCheckTimer, &QTimer::timeout, this, &Lobby::checkRtspServer);
+    serverCheckTimer->start(3000);
 }
 
 Lobby::~Lobby()
@@ -92,22 +96,31 @@ void Lobby::updateTime()
 }
 
 void Lobby::checkRtspServer() {
+    if (isCheckingServer) return;
+    isCheckingServer = true;
+
     QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
-    videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true);
+    videoThread = new VideoThread(rtspUrl, nullptr, nullptr, true); //checkonly
+
     connect(videoThread, &VideoThread::serverReady, this, &Lobby::onServerReady);
+    connect(videoThread, &QThread::finished, videoThread, &QObject::deleteLater);
+
     videoThread->start();
 }
 
 void Lobby::onServerReady(bool success) {
     meetingInProgress = success;
+
     if (success) {
         qDebug() << "[Lobby] RTSP 서버 작동 확인됨.";
     } else {
         qDebug() << "[Lobby] RTSP 서버 연결 실패.";
     }
+
     updateMeetingStatus();
     updateJoinButton();
-    videoThread->deleteLater();
+
+    isCheckingServer = false;  // 다음 체크 허용
 }
 
 void Lobby::updateMeetingStatus()
@@ -125,7 +138,7 @@ void Lobby::updateMeetingStatus()
         );
         ui->meetingDescLabel->setText("현재 회의가 진행 중입니다. 참가할 수 있습니다.");
     } else {
-        ui->meetingStatusLabel->setText("회의 없음");
+        //ui->meetingStatusLabel->setText("회의 없음");
         ui->meetingStatusIndicator->setStyleSheet(
             "QLabel { "
                 "background-color: transparent; "
@@ -135,7 +148,7 @@ void Lobby::updateMeetingStatus()
                 "min-height: 14px; "
             "}"
         );
-        ui->meetingDescLabel->setText("현재 진행 중인 회의가 없습니다.");
+        ui->meetingDescLabel->setText("회의가 시작되면 참가할 수 있습니다.");
     }
 }
 
@@ -147,7 +160,7 @@ void Lobby::updateJoinButton()
         ui->connectionStatusLabel->setText("회의실에 연결하고 있습니다...");
         ui->connectionStatusLabel->setVisible(true);
     } else if (!meetingInProgress) {
-        ui->enterButton->setText("회의 없음");
+        ui->enterButton->setText("회의 참가");
         ui->enterButton->setEnabled(false);
         ui->connectionStatusLabel->setText("회의가 시작되면 참가할 수 있습니다.");
         ui->connectionStatusLabel->setVisible(true);

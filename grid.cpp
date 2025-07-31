@@ -58,6 +58,7 @@ grid::grid(QWidget *parent)
     int rtspPort, tcpPort;
     if (!loadConfigFromJson(rtsp_ip, rtspPort, tcp_ip, tcpPort)) {
         rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.30"; tcpPort = 12345;
+        //rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.60"; tcpPort = 12345;
     }
     QString rtspUrl = QString("rtsps://%1:%2/test").arg(rtsp_ip).arg(rtspPort);
     videoThread = new VideoThread(rtspUrl, nullptr, coord);

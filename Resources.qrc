@@ -20,5 +20,9 @@
         <file>config/video_on.png</file>
         <file>config/clock.png</file>
         <file>config/camoff.png</file>
+        <file>config/camoff_mac.png</file>
+    </qresource>
+    <qresource prefix="/certs">
+        <file>certs/tcp_server.crt</file>
     </qresource>
 </RCC>

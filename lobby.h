@@ -35,9 +35,11 @@ private:
 
     Ui::Lobby *ui;
     QTimer *timeTimer;
+    QTimer *serverCheckTimer;
     CameraWidget *cameraWidget;
     VideoThread *videoThread;
 
+    bool isCheckingServer = false;
     bool isConnecting;
     bool meetingInProgress;
 };

@@ -15,7 +15,7 @@
 
 
 VideoThread::VideoThread(const QString& url, QLabel* label, Coordinate* coord, bool checkOnly)
-    : m_url(url), m_label(label), m_coord(coord), m_checkOnly(checkOnly), m_stop(false)  {}
+    : m_url(url), m_label(label), m_coord(coord), m_checkOnly(checkOnly), m_stop(false) {}
 
 void VideoThread::stop() {
     m_stop = true;
@@ -41,22 +41,22 @@ void VideoThread::run() {
     //                   "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
     //                   ).arg(m_url);
 #elif __APPLE__
-    pipelineStr = QString(
-                        "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
-                        "application/x-rtp,media=video,encoding-name=H264 ! "
-                        "rtph264depay ! "
-                        "h264parse ! "
-                        "vtdec ! "
-                        "videoconvert ! "
-                        "video/x-raw,format=RGB ! "
-                        "appsink name=mysink"
-                        ).arg(m_url);
-    // audio
     // pipelineStr = QString(
-    //                   "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
-    //                   "src. ! application/x-rtp,media=video,encoding-name=H264 ! rtph264depay ! h264parse ! vtdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
-    //                   "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! autoaudiosink sync=false"
+    //                   "rtspsrc location=%1 latency=100 tls-validation-flags=0 ! "
+    //                   "application/x-rtp,media=video,encoding-name=H264 ! "
+    //                   "rtph264depay ! "
+    //                   "h264parse ! "
+    //                   "vtdec ! "
+    //                   "videoconvert ! "
+    //                   "video/x-raw,format=RGB ! "
+    //                   "appsink name=mysink"
     //                   ).arg(m_url);
+    // audio
+    pipelineStr = QString(
+                      "rtspsrc location=%1 latency=100 tls-validation-flags=0 protocols=tcp name=src "
+                      "src. ! application/x-rtp,media=video,encoding-name=H264 ! rtph264depay ! h264parse ! vtdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=mysink "
+                      "src. ! application/x-rtp,media=audio ! rtpmp4gdepay ! avdec_aac ! audioconvert ! audioresample ! osxaudiosink sync=false"
+                      ).arg(m_url);
 #endif
 
     qDebug() << "[VideoThread] pipeline =" << pipelineStr;
@@ -157,15 +157,15 @@ void VideoThread::run() {
     
     while (!m_stop)
     {
-        //qDebug() << "[VideoThread] sample 수신 대기 중";
+        qDebug() << "[VideoThread] sample 수신 대기 중";
 
         GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
         if (!sample)
         {
-            //qDebug() << "[VideoThread] sample 수신 실패";
+            qDebug() << "[VideoThread] sample 수신 실패";
             continue;
         }
-        //qDebug() << "[VideoThread] sample 수신 성공";
+        qDebug() << "[VideoThread] sample 수신 성공";
 
         GstBuffer* buffer = gst_sample_get_buffer(sample);
         GstMapInfo map;
@@ -259,7 +259,7 @@ void VideoThread::run() {
         // make panorama by removing overlapped areas
         int fullW=fullPix.width();
         int fullH=fullPix.height();
-        
+
         cv::Mat pano(fullH, fullW, CV_8UC3, (char*)map.data);
         cv::cvtColor(pano, pano, cv::COLOR_BGR2RGB);
         cv::Mat left(pano, cv::Rect(0, 0, fullW / 3, fullH));
@@ -279,7 +279,7 @@ void VideoThread::run() {
 
         /*하이라이팅 테스트하려고 밑으로 내렸음*/
 
-        // ’wdata’ 크기가 4의 배수인지 확인
+        // 'wdata' 크기가 4의 배수인지 확인
         int rectCount = wdata.size() / 4;
         if (rectCount == 0) {
             qDebug() << "[VideoThread] 크롭 정보 없음 — 전체 프레임으로 대체";
