@@ -115,6 +115,9 @@ void TcpThread::run() {
 
 // #include "TcpThread.h"
 // #include <QSslSocket>
+// #include <QSslCertificate>
+// #include <QSslConfiguration>
+// #include <QSslSocket>
 // #include <QJsonDocument>
 // #include <QJsonObject>
 // #include <QJsonArray>
@@ -128,12 +131,26 @@ void TcpThread::run() {
 //     : m_coord(coord), m_ip(ip), m_port(port) {}
 
 // void TcpThread::run() {
-//     // 1) QSslSocket을 힙에 생성
-//     QSslSocket* socket = new QSslSocket(this);
 
-//     // 2) TLS 연결 시도
+
+//     const QString certPath = QStringLiteral(":/tls/certs/tcp_server.crt");
+//     auto certList = QSslCertificate::fromPath(certPath, QSsl::Pem);
+//     if (certList.isEmpty()) {
+//         qWarning() << "CA 인증서 로드 실패:" << certPath;
+//         return;
+//     }
+//     auto socket = new QSslSocket(this);
+//     QSslCertificate caCert = certList.first();
+
+
+//     QSslConfiguration cfg = socket->sslConfiguration();
+//     auto cas = cfg.caCertificates();
+//     cas.append(caCert);
+//     cfg.setCaCertificates(cas);
+//     socket->setSslConfiguration(cfg);
+
+
 //     socket->connectToHostEncrypted(m_ip, m_port);
-//     // waitForEncrypted: 핸드셰이크까지 완료됐는지 확인
 //     if (!socket->waitForEncrypted(5000)) {
 //         qDebug() << "[TcpThread] TLS 핸드셰이크 실패:" << socket->errorString();
 //         socket->deleteLater();
@@ -141,15 +158,16 @@ void TcpThread::run() {
 //     }
 //     qDebug() << "[TcpThread] TLS 채널 수립 완료";
 
-//     // 3) 인증서 핀(pin) 검증
-//     {
-//         // 서버가 제시한 인증서
-//         QSslCertificate peerCert = socket->peerCertificate();
-//         // 리소스(.qrc)에 포함된 “내 기준” 서버 공개 인증서
-//         QSslCertificate localCert =
-//             QSslCertificate::fromPath(":/certs/tcp_server.crt", QSsl::Pem).first();
+//     QSslCertificate peerCert = socket->peerCertificate();
+//     QSslCertificate localCert = certList.first();
 
-//         // SHA-256 지문 비교
+//     {
+
+//         QSslCertificate peerCert = socket->peerCertificate();
+
+//         QSslCertificate localCert =
+//             QSslCertificate::fromPath(":/certs/certs/tcp_server.crt", QSsl::Pem).first();
+
 //         QByteArray peerDigest  = peerCert.digest(QCryptographicHash::Sha256);
 //         QByteArray localDigest = localCert.digest(QCryptographicHash::Sha256);
 //         if (peerDigest != localDigest) {

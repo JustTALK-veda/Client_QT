@@ -4,7 +4,7 @@
 PageWidget::PageWidget(QWidget* parent) : QWidget(parent) {
     layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(5);
+    layout->setSpacing(1);
 
     for (int i = 0; i < 4; ++i) {
         QLabel* lbl = new QLabel(this);

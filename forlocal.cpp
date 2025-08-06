@@ -58,7 +58,7 @@ ForLocal::~ForLocal()
 
 void ForLocal::updateTime()
 {
-    QString currentTime = QDateTime::currentDateTime().toString("  hh:mm  ");
+    QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd AP hh:mm");
     ui->timeLabel->setText(currentTime);
 }
 

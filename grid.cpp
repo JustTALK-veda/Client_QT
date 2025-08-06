@@ -56,17 +56,17 @@ grid::grid(QWidget *parent)
 
     QString rtsp_ip, tcp_ip;
     int rtspPort, tcpPort;
-    if (!loadConfigFromJson(rtsp_ip, rtspPort, tcp_ip, tcpPort)) {
-        rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.30"; tcpPort = 12345;
-        //rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.60"; tcpPort = 12345;
-    }
-    QString rtspUrl = QString("rtsps://%1:%2/test").arg(rtsp_ip).arg(rtspPort);
-    videoThread = new VideoThread(rtspUrl, nullptr, coord);
-    tcpThread = new TcpThread(coord, tcp_ip, tcpPort);
+    // if (!loadConfigFromJson(rtsp_ip, rtspPort, tcp_ip, tcpPort)) {
+    //     rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.30"; tcpPort = 12345;
+    //     //rtsp_ip = "192.168.0.50"; rtspPort = 8555; tcp_ip = "192.168.0.60"; tcpPort = 12345;
+    // }
+    // QString rtspUrl = QString("rtsps://%1:%2/test").arg(rtsp_ip).arg(rtspPort);
+    // videoThread = new VideoThread(rtspUrl, nullptr, coord);
+    // tcpThread = new TcpThread(coord, tcp_ip, tcpPort);
     //meta data 수신 스레드
-    // tcpThread = new TcpThread(coord, "192.168.0.60", 12345);
+    tcpThread = new TcpThread(coord, "192.168.0.30", 12345);
 
-    // QString rtspUrl = QString("rtsps://192.168.0.60:8555/test");
+    QString rtspUrl = QString("rtsps://192.168.0.50:8555/test");
     videoThread = new VideoThread(rtspUrl, nullptr, coord);
     connect(videoThread, &VideoThread::fullFrame, this, &grid::updatePano, Qt::QueuedConnection);
     connect(videoThread, &VideoThread::cropped, ui->stackedWidget, &Stackpage::setLabel);

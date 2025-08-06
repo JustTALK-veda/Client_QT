@@ -121,13 +121,14 @@ void VideoThread::run() {
     cv::Mat undistorted_frames[3];
     cv::UMat srcU, dstU;
     
-    constexpr int FULL_ANGLE = 360; // 전체 각도 범위 (0~360도)
+    constexpr int FULL_ANGLE = 240; // 전체 각도 범위 (0~360도)
     int angle = 0;
     QVector<Coord> wdata;
     constexpr float IOU_THRESHOLD = 0.5f;
 
     auto computeIoU = [](const Coord &a, const Coord &b) {
         float ax1 = a.x - a.w * 0.5f;
+
         float ay1 = a.y - a.h * 0.5f;
         float ax2 = a.x + a.w * 0.5f;
         float ay2 = a.y + a.h * 0.5f;
@@ -229,38 +230,38 @@ void VideoThread::run() {
         cv::hconcat(undistorted_frames, 3, concatenated_undistorted);      
 
         // DEBUG : overlapped 영역 시각화 (반투명)
-        float alpha = 0.3f;  // 투명도 (0.0 ~ 1.0)
-        cv::Mat overlay;
-        concatenated_undistorted.copyTo(overlay);
+        // float alpha = 0.3f;  // 투명도 (0.0 ~ 1.0)
+        // cv::Mat overlay;
+        // concatenated_undistorted.copyTo(overlay);
 
-        for (size_t j = 0; j < 2; ++j)
-        {
-            // 겹침 영역 폭 계산
-            int w_overlap = static_cast<int>(cam_W * overlap);
-            // j==0: left‐center 경계, j==1: center‐right 경계
-            int x0 = static_cast<int>((j + 1) * cam_W - w_overlap);
-            int width = 2 * w_overlap;
-            int height = concatenated_undistorted.rows;
+        // for (size_t j = 0; j < 2; ++j)
+        // {
+        //     // 겹침 영역 폭 계산
+        //     int w_overlap = static_cast<int>(cam_W * overlap);
+        //     // j==0: left‐center 경계, j==1: center‐right 경계
+        //     int x0 = static_cast<int>((j + 1) * cam_W - w_overlap);
+        //     int width = 2 * w_overlap;
+        //     int height = concatenated_undistorted.rows;
 
-            // overlay에만 사각형 그리기
-            cv::rectangle(
-                overlay,
-                cv::Point(x0, 0),
-                cv::Point(x0 + width, height),
-                cv::Scalar(255, 0, 0),   // BGR 순서: 파란색
-                cv::FILLED
-            );
-        }
+        //     // overlay에만 사각형 그리기
+        //     cv::rectangle(
+        //         overlay,
+        //         cv::Point(x0, 0),
+        //         cv::Point(x0 + width, height),
+        //         cv::Scalar(255, 0, 0),   // BGR 순서: 파란색
+        //         cv::FILLED
+        //     );
+        // }
 
-        // 원본과 overlay를 blending
-        cv::addWeighted(
-            overlay,       // src1
-            alpha,         // α
-            concatenated_undistorted, // src2
-            1.0f - alpha,  // β = 1 - α
-            0.0,           // γ (가중치 보정값)
-            concatenated_undistorted  // dst
-        );
+        // // 원본과 overlay를 blending
+        // cv::addWeighted(
+        //     overlay,       // src1
+        //     alpha,         // α
+        //     concatenated_undistorted, // src2
+        //     1.0f - alpha,  // β = 1 - α
+        //     0.0,           // γ (가중치 보정값)
+        //     concatenated_undistorted  // dst
+        // );
 
         {
             QMutexLocker locker(&m_coord->mutex);
@@ -336,45 +337,63 @@ void VideoThread::run() {
         
         int fullW = concatenated_undistorted.cols;
         int fullH = concatenated_undistorted.rows;
+/*
+        add*///*
+        int sectionW = fullW / 3;
 
-        cv::Mat left(concatenated_undistorted, cv::Rect(0, 0, fullW / 3, fullH));
-        cv::Mat center(concatenated_undistorted, cv::Rect(fullW / 3, 0, fullW / 3, fullH));
-        cv::Mat right(concatenated_undistorted, cv::Rect(fullW * 2 / 3, 0, fullW / 3, fullH));
+        // 먼저 각 영역의 폭 계산
+        int w1 = static_cast<int>(sectionW * (1 - overlap))+49;
+        int w2 = sectionW;
+        int w3 = static_cast<int>(sectionW * (1 - overlap))+49;
 
-        // 1) 잘라낼 폭 계산
-        int w1 = static_cast<int>(left.cols * (1 - overlap));
-        int w2 = center.cols;
-        int w3 = static_cast<int>(right.cols * (1 - overlap));
+        // 애초에 잘라서 가져오기
+        cv::Mat left(concatenated_undistorted, cv::Rect(0, 0, w1, fullH));
+        cv::Mat center(concatenated_undistorted, cv::Rect(sectionW, 0, w2, fullH));
+        cv::Mat right(concatenated_undistorted, cv::Rect(fullW - w3, 0, w3, fullH));
 
-        // 2) 결과 pano 한 번만 할당
-        int panoW = w1 + w2 + w3;
-        cv::Mat pano(fullH, panoW, concatenated_undistorted.type());
+        float overlap_blend = 0.1f;
+        cv::Mat pano = blend(left, center, right, overlap_blend);
+        /*add*/
 
-        // 3) 각 조각을 pano 내 알맞은 위치에 복사
-        left(cv::Rect(0, 0, w1, fullH))
-            .copyTo(pano(cv::Rect(0,      0, w1, fullH)));
-        center.copyTo(pano(cv::Rect(w1,   0, w2, fullH)));
-        right(cv::Rect(static_cast<int>(right.cols * overlap), 0, w3, fullH))
-            .copyTo(pano(cv::Rect(w1+w2, 0, w3, fullH)));
+
+    //    cv::Mat left(concatenated_undistorted, cv::Rect(0, 0, fullW / 3, fullH));
+    // cv::Mat center(concatenated_undistorted, cv::Rect(fullW / 3, 0, fullW / 3, fullH));
+    // cv::Mat right(concatenated_undistorted, cv::Rect(fullW * 2 / 3, 0, fullW / 3, fullH));
+
+    //     // // 1) 잘라낼 폭*/ 계산
+    //     int w1 = static_cast<int>(left.cols * (1 - overlap));
+    //     int w2 = center.cols;
+    //     int w3 = static_cast<int>(right.cols * (1 - overlap));
+
+    //     // // 2) 결과 pano 한 번만 할당
+    //     int panoW = w1 + w2 + w3;
+    //     cv::Mat pano(fullH, panoW, concatenated_undistorted.type());
+
+    //     // 3) 각 조각을 pano 내 알맞은 위치에 복사
+    //     left(cv::Rect(0, 0, w1, fullH))
+    //         .copyTo(pano(cv::Rect(0,      0, w1, fullH)));
+    //     center.copyTo(pano(cv::Rect(w1,   0, w2, fullH)));
+    //     right(cv::Rect(static_cast<int>(right.cols * overlap), 0, w3, fullH))
+    //         .copyTo(pano(cv::Rect(w1+w2, 0, w3, fullH)));
 
         // DEBUG : detect, crop 시각화
-        for (const auto &pc : prev_coords) {
-            cv::rectangle(pano,
-                        cv::Point(pc.x - pc.w/2, pc.y - pc.h/2),
-                        cv::Point(pc.x + pc.w/2, pc.y + pc.h/2),
-                        cv::Scalar(0, 255, 0), 1);
-            cv::rectangle(pano,
-                        cv::Point(pc.x - W/2, pc.y - H/2),
-                        cv::Point(pc.x + W/2, pc.y + H/2),
-                        cv::Scalar(0, 255, 0), 2);
+        // for (const auto &pc : prev_coords) {
+        //     cv::rectangle(pano,
+        //                 cv::Point(pc.x - pc.w/2, pc.y - pc.h/2),
+        //                 cv::Point(pc.x + pc.w/2, pc.y + pc.h/2),
+        //                 cv::Scalar(0, 255, 0), 1);
+        //     cv::rectangle(pano,
+        //                 cv::Point(pc.x - W/2, pc.y - H/2),
+        //                 cv::Point(pc.x + W/2, pc.y + H/2),
+        //                 cv::Scalar(0, 255, 0), 2);
 
-            cv::circle(pano, cv::Point(pc.x, pc.y), 5, cv::Scalar(0, 255, 0), cv::FILLED);
-        }
+        //     cv::circle(pano, cv::Point(pc.x, pc.y), 5, cv::Scalar(0, 255, 0), cv::FILLED);
+        // }
 
         
-        // DEBUG : draw angle line
         int angle_px = (angle * pano.cols) / FULL_ANGLE; // angle을 0~360 범위로 가정
-        cv::line(pano, cv::Point(angle_px, 0), cv::Point(angle_px, pano.rows), cv::Scalar(0, 0, 255), 5);
+        // DEBUG : draw angle line
+        // cv::line(pano, cv::Point(angle_px, 0), cv::Point(angle_px, pano.rows), cv::Scalar(0, 0, 255), 5);
 
         QPixmap fullPix = QPixmap::fromImage(
             QImage(pano.data,
@@ -438,7 +457,8 @@ void VideoThread::run() {
         }
         emit peoplecount(crops.size());
 
-        if (highlighted_rect_index != -1) {
+
+        if (angle != -1 && highlighted_rect_index != -1) {
             QPixmap &highlighted_pix = crops[highlighted_rect_index].second;
             drawHighlightOverlay(highlighted_pix, myColor, 5, 10);
             highlighted_pix = roundedPixmap(highlighted_pix, 10);
@@ -548,6 +568,63 @@ int VideoThread::getUndistortionMap_hemi(cv::Mat& transform_map_x, cv::Mat& tran
     }
 
     return 0;
+}
+cv::Mat VideoThread::blend(const cv::Mat& left, const cv::Mat& center, const cv::Mat& right, float overlap)
+{
+    int fullH   = left.rows;
+    int sliceW  = left.cols;              // 각 조각 원래 폭 (동일하다고 가정)
+    int blendW  = static_cast<int>(sliceW * overlap);
+    int w1      = sliceW - blendW;        // 왼쪽에서 실제 쓸 폭
+    int w2      = center.cols;            // 중앙 전체 폭
+    int w3      = sliceW - blendW;        // 오른쪽에서 실제 쓸 폭
+    int panoW   = w1 + w2 + w3;
+
+    cv::Mat pano(fullH, panoW, left.type());
+
+    // 1) 조각 복사
+    left (cv::Rect(0, 0, w1, fullH))
+        .copyTo(pano(cv::Rect(0,      0, w1,     fullH)));
+    center.copyTo(pano(cv::Rect(w1,   0, w2,     fullH)));
+    right(cv::Rect(blendW, 0, w3, fullH))
+        .copyTo(pano(cv::Rect(w1+w2, 0, w3,     fullH)));
+
+    // 2) left↔center
+    for(int i = 0; i < blendW; ++i) {
+        float α = float(i) / float(blendW - 1);
+        // left↔center
+        {
+            cv::Mat L = left( cv::Rect(w1 + i, 0, 1, fullH) );
+            cv::Mat C = center( cv::Rect(       i, 0, 1, fullH) );
+            cv::Mat D = pano( cv::Rect(w1 + i, 0, 1, fullH) );
+            cv::addWeighted(L, 1-α, C, α, 0, D);
+        }
+        // center↔right
+        {
+            cv::Mat C = center( cv::Rect(w2 - blendW + i, 0, 1, fullH) );
+            cv::Mat R = right(  cv::Rect(              i, 0, 1, fullH) );
+            cv::Mat D = pano( cv::Rect(w1 + w2 - blendW + i, 0, 1, fullH) );
+            cv::addWeighted(C, 1-α, R, α, 0, D);
+        }
+    }
+    // 3) seam 만 흐리게: 폭 seamWidth 픽셀, 가로 방향 블러
+    int seamWidth = 3;  // 필요에 따라 1~5 정도로 조절
+    cv::Size ksize(9, 1);  // (가로 x 세로) → 세로 블러 안 걸리고, 가로로 살짝 퍼짐
+
+    // 좌-중 경계
+    {
+        int x = w1 - seamWidth/2;
+        cv::Rect roi(x, 0, seamWidth, fullH);
+        // 경계 영역 blur
+        cv::GaussianBlur(pano(roi), pano(roi), ksize, 0);
+    }
+    // 중-우 경계
+    {
+        int x = w1 + w2 - seamWidth/2;
+        cv::Rect roi(x, 0, seamWidth, fullH);
+        cv::GaussianBlur(pano(roi), pano(roi), ksize, 0);
+    }
+
+    return pano;
 }
 
 // //*/ // //복호화 추가해서 수정한 ver.

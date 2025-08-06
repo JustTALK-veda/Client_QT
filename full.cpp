@@ -23,7 +23,7 @@ Full::Full(QWidget *parent)
     m_layout->addWidget(m_label);
 
     /* Create Streaming Thread */
-    m_thread = new HanwhaThread("rtsp://admin:veda333%21@192.168.0.12/profile2/media.smp", this);
+    m_thread = new HanwhaThread("rtsp://admin:veda333%21@192.168.0.10/profile2/media.smp", this);
     connect(m_thread, &HanwhaThread::frameReady, this, &Full::onFrameReady, Qt::QueuedConnection );
 }
 

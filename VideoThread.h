@@ -45,6 +45,8 @@ private:
     void drawHighlightOverlay(QPixmap& pixmap, const QColor& color, int dotRadius, int cornerRadius);
     bool m_checkOnly = false;
     int getUndistortionMap_hemi(cv::Mat& transform_map_x, cv::Mat& transform_map_y, int n_width, int n_height);
+    cv::Mat blend(const cv::Mat& left, const cv::Mat& center, const cv::Mat& right, float overlap);
+
 };
 
 #endif // VIDEOTHREAD_H

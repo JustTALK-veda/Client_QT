@@ -16,6 +16,9 @@ meeting::meeting(QWidget *parent, CameraWidget* webcamFrame)
     ui->stackedWidget->addWidget(gridPage);
     ui->stackedWidget->addWidget(fullPage);
 
+    //const int barHeight = 45;
+    //ui->footbar->setFixedHeight(barHeight);
+
     // footbar
     // Setup timer for clock
     timeTimer = new QTimer(this);
@@ -98,7 +101,7 @@ void meeting::showEvent(QShowEvent *event)
 }
 
 void meeting::updateTime(){
-    QString currentTime = QDateTime::currentDateTime().toString("AP hh:mm");
+    QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd AP hh:mm");
     ui->currentTimeLabel->setText(currentTime);
 }
 
